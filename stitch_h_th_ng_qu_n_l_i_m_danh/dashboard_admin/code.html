@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2e3132",
+                    "tertiary": "#7b2600",
+                    "tertiary-fixed-dim": "#ffb59b",
+                    "secondary-fixed-dim": "#c0c7d3",
+                    "tertiary-container": "#a33500",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#0052cc",
+                    "tertiary-fixed": "#ffdbcf",
+                    "outline-variant": "#c3c6d6",
+                    "surface": "#f8f9fb",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#e1e2e4",
+                    "surface-bright": "#f8f9fb",
+                    "on-tertiary-container": "#ffc6b2",
+                    "surface-tint": "#0c56d0",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#b2c5ff",
+                    "background": "#f8f9fb",
+                    "surface-container-high": "#e7e8ea",
+                    "on-surface": "#191c1e",
+                    "surface-container-highest": "#e1e2e4",
+                    "primary": "#003d9b",
+                    "inverse-on-surface": "#f0f1f3",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f4f6",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#001848",
+                    "on-tertiary-fixed-variant": "#812800",
+                    "on-primary": "#ffffff",
+                    "primary-fixed": "#dae2ff",
+                    "secondary": "#585f6a",
+                    "surface-dim": "#d9dadc",
+                    "on-surface-variant": "#434654",
+                    "on-secondary-fixed": "#151c25",
+                    "on-primary-container": "#c4d2ff",
+                    "outline": "#737685",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#404751",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "secondary-fixed": "#dce3f0",
+                    "on-background": "#191c1e",
+                    "secondary-container": "#dce3f0",
+                    "on-secondary-container": "#5e6570",
+                    "surface-container": "#edeef0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "stack-lg": "24px",
+                    "container-margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base-unit": "4px",
+                    "container-margin-desktop": "32px"
+            },
+            "fontFamily": {
+                    "label-uppercase": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "table-header": ["Inter"],
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-main": ["Inter"]
+            },
+            "fontSize": {
+                    "label-uppercase": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "table-header": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+                    "display-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-main": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c3c6d6;
+        border-radius: 10px;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-main text-body-main">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-on-surface text-primary dark:text-primary-fixed-dim w-full top-0 sticky border-b border-outline-variant dark:border-on-surface-variant z-40">
+<div class="flex items-center justify-between px-container-margin-mobile md:px-container-margin-desktop h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Attendance Admin</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors active:scale-95 duration-100 rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="hidden md:flex items-center gap-2 ml-4 px-3 py-1.5 rounded-full border border-outline-variant bg-surface-container-low">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs">AD</div>
+<span class="font-label-uppercase text-label-uppercase">Admin User</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pb-24 md:pb-8">
+<div class="max-w-7xl mx-auto px-container-margin-mobile md:px-container-margin-desktop py-stack-lg">
+<!-- Greeting & Date -->
+<div class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<p class="font-label-uppercase text-label-uppercase text-on-surface-variant mb-1">Thứ Hai, 22 Tháng 5, 2024</p>
+<h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">Tổng quan hệ thống</h2>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-highest text-on-surface rounded-xl hover:bg-surface-variant transition-colors active:scale-95">
+<span class="material-symbols-outlined text-sm">download</span>
+<span class="font-label-uppercase text-label-uppercase">Xuất báo cáo</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-stack-lg">
+<!-- Students Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl flex flex-col justify-between hover:bg-surface-container-low transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-primary-fixed text-on-primary-fixed rounded-xl group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="text-on-surface-variant font-label-uppercase text-label-uppercase flex items-center gap-1">
+                            Học sinh <span class="material-symbols-outlined text-[16px]">trending_up</span>
+</span>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-primary mb-1">500</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tổng số học sinh toàn trường</p>
+</div>
+</div>
+<!-- Classes Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl flex flex-col justify-between hover:bg-surface-container-low transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-secondary-fixed text-on-secondary-fixed rounded-xl group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">school</span>
+</div>
+<span class="text-on-surface-variant font-label-uppercase text-label-uppercase">Lớp học</span>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface mb-1">20</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Đang hoạt động trong kỳ này</p>
+</div>
+</div>
+<!-- Teachers Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl flex flex-col justify-between hover:bg-surface-container-low transition-all group">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined">badge</span>
+</div>
+<span class="text-on-surface-variant font-label-uppercase text-label-uppercase">Giáo viên</span>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface mb-1">50</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cán bộ giáo viên quản lý</p>
+</div>
+</div>
+</div>
+<!-- Dashboard Content: Chart and Recent Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Simple Bar Chart Container -->
+<div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md overflow-hidden relative">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Tỷ lệ đi học</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Thống kê chuyên cần theo tuần gần nhất</p>
+</div>
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="font-display-lg text-display-lg">94%</span>
+<span class="font-label-uppercase text-label-uppercase">Trung bình</span>
+</div>
+</div>
+<!-- Simple Column Chart -->
+<div class="h-64 flex items-end justify-between gap-2 md:gap-4 px-2 md:px-4 mb-stack-md">
+<!-- Monday -->
+<div class="flex-1 flex flex-col items-center gap-3 group">
+<div class="w-full bg-primary-container opacity-20 rounded-t-lg h-[92%] transition-all group-hover:opacity-40"></div>
+<div class="absolute bottom-16 bg-primary text-on-primary px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">92%</div>
+<span class="font-label-uppercase text-label-uppercase text-on-surface-variant">T2</span>
+</div>
+<!-- Tuesday -->
+<div class="flex-1 flex flex-col items-center gap-3 group">
+<div class="w-full bg-primary-container opacity-20 rounded-t-lg h-[95%] transition-all group-hover:opacity-40"></div>
+<div class="absolute bottom-16 bg-primary text-on-primary px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">95%</div>
+<span class="font-label-uppercase text-label-uppercase text-on-surface-variant">T3</span>
+</div>
+<!-- Wednesday -->
+<div class="flex-1 flex flex-col items-center gap-3 group">
+<div class="w-full bg-primary rounded-t-lg h-[98%] transition-all"></div>
+<div class="absolute bottom-16 bg-primary text-on-primary px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">98%</div>
+<span class="font-label-uppercase text-label-uppercase text-on-surface font-bold">T4</span>
+</div>
+<!-- Thursday -->
+<div class="flex-1 flex flex-col items-center gap-3 group">
+<div class="w-full bg-primary-container opacity-20 rounded-t-lg h-[94%] transition-all group-hover:opacity-40"></div>
+<div class="absolute bottom-16 bg-primary text-on-primary px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">94%</div>
+<span class="font-label-uppercase text-label-uppercase text-on-surface-variant">T5</span>
+</div>
+<!-- Friday -->
+<div class="flex-1 flex flex-col items-center gap-3 group">
+<div class="w-full bg-primary-container opacity-20 rounded-t-lg h-[91%] transition-all group-hover:opacity-40"></div>
+<div class="absolute bottom-16 bg-primary text-on-primary px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">91%</div>
+<span class="font-label-uppercase text-label-uppercase text-on-surface-variant">T6</span>
+</div>
+<!-- Saturday -->
+<div class="flex-1 flex flex-col items-center gap-3 group">
+<div class="w-full bg-secondary-container rounded-t-lg h-[85%] transition-all group-hover:bg-secondary group-hover:bg-opacity-30"></div>
+<div class="absolute bottom-16 bg-primary text-on-primary px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">85%</div>
+<span class="font-label-uppercase text-label-uppercase text-on-surface-variant">T7</span>
+</div>
+</div>
+</div>
+<!-- Recent Logs Side Panel -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex-grow">
+<div class="flex items-center justify-between mb-stack-md">
+<h3 class="font-table-header text-table-header text-on-surface uppercase tracking-wider">Thông báo mới</h3>
+<button class="text-primary font-label-uppercase text-label-uppercase hover:underline">Tất cả</button>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4 items-start p-3 hover:bg-surface-container transition-colors rounded-lg cursor-pointer border-l-4 border-error">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-error flex-shrink-0">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<h4 class="font-body-main font-semibold text-on-surface">Vắng học tăng cao</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Lớp 12A1 có 5 học sinh vắng không phép sáng nay.</p>
+<span class="text-[11px] text-outline mt-1 block">15 phút trước</span>
+</div>
+</div>
+<div class="flex gap-4 items-start p-3 hover:bg-surface-container transition-colors rounded-lg cursor-pointer border-l-4 border-primary">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined">person_add</span>
+</div>
+<div>
+<h4 class="font-body-main font-semibold text-on-surface">Giáo viên mới</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Thầy Nguyễn Văn A vừa được cấp quyền Admin.</p>
+<span class="text-[11px] text-outline mt-1 block">2 giờ trước</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Action Card -->
+<div class="bg-primary text-on-primary rounded-xl p-stack-md relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-2">Thêm dữ liệu</h3>
+<p class="text-on-primary-container font-body-sm text-body-sm mb-4">Cập nhật danh sách học sinh hoặc lớp học nhanh chóng.</p>
+<button class="bg-white text-primary px-6 py-2 rounded-full font-label-uppercase text-label-uppercase shadow-md active:scale-95 transition-all">Bắt đầu</button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] text-white opacity-10 group-hover:rotate-12 transition-transform duration-500">add_circle</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container dark:bg-inverse-surface border-t border-outline-variant dark:border-transparent shadow-md h-20 flex justify-around items-center pb-safe px-2">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-weight="fill">dashboard</span>
+<span class="font-label-uppercase text-label-uppercase mt-0.5">Dashboard</span>
+</a>
+<!-- Học sinh -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-variant dark:hover:bg-on-secondary-fixed-variant transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-uppercase text-label-uppercase mt-0.5">Học sinh</span>
+</a>
+<!-- Lớp học -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-variant dark:hover:bg-on-secondary-fixed-variant transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-uppercase text-label-uppercase mt-0.5">Lớp học</span>
+</a>
+<!-- Giáo viên -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-variant dark:hover:bg-on-secondary-fixed-variant transition-colors active:scale-90" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-label-uppercase text-label-uppercase mt-0.5">Giáo viên</span>
+</a>
+</nav>
+<!-- Contextual FAB (Hidden on Dashboard based on prompt logic, but usually for Add actions) -->
+<button class="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-primary text-on-primary shadow-xl flex items-center justify-center active:scale-90 transition-transform z-40 md:hidden">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+      // Micro-interactions and simple state management
+      document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', (e) => {
+          // In a real app this would handle routing
+          // This is just for UI visual feedback
+        });
+      });
+
+      // Hover effect for bars - enhanced with JS if needed, but CSS handles it fine.
+    </script>
+</body></html>

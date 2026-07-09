@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hồ sơ cá nhân - Attendance Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdbcf",
+                        "tertiary-container": "#a33500",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#151c25",
+                        "on-error": "#ffffff",
+                        "surface": "#f8f9fb",
+                        "on-background": "#191c1e",
+                        "secondary-container": "#dce3f0",
+                        "surface-tint": "#0c56d0",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "background": "#f8f9fb",
+                        "surface-container-highest": "#e1e2e4",
+                        "surface-container": "#edeef0",
+                        "on-secondary-container": "#5e6570",
+                        "on-primary-fixed-variant": "#0040a2",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c3c6d6",
+                        "inverse-on-surface": "#f0f1f3",
+                        "tertiary": "#7b2600",
+                        "on-tertiary-fixed-variant": "#812800",
+                        "on-primary-fixed": "#001848",
+                        "surface-container-high": "#e7e8ea",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#404751",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#c0c7d3",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d9dadc",
+                        "on-surface-variant": "#434654",
+                        "surface-bright": "#f8f9fb",
+                        "secondary-fixed": "#dce3f0",
+                        "primary-fixed": "#dae2ff",
+                        "primary": "#003d9b",
+                        "outline": "#737685",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#0052cc",
+                        "inverse-primary": "#b2c5ff",
+                        "on-primary-container": "#c4d2ff",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "on-surface": "#191c1e",
+                        "surface-variant": "#e1e2e4",
+                        "surface-container-low": "#f3f4f6",
+                        "secondary": "#585f6a",
+                        "on-tertiary-container": "#ffc6b2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "container-margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-md": "16px",
+                        "stack-lg": "24px",
+                        "base-unit": "4px",
+                        "container-margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-main": ["Inter"],
+                        "label-uppercase": ["Inter"],
+                        "table-header": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-main": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-uppercase": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "table-header": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .bento-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bento-card:active {
+            transform: scale(0.98);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-container-margin-mobile md:px-container-margin-desktop h-16 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 duration-150">menu</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-primary">Attendance Pro</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer active:scale-95 duration-150">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 duration-150">account_circle</span>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-container-margin-mobile md:px-container-margin-desktop py-stack-lg">
+<!-- Profile Header Bento Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-stack-lg">
+<!-- Student Identity Card -->
+<div class="md:col-span-2 bg-surface-container-lowest border border-outline-variant p-stack-lg rounded-xl flex flex-col md:flex-row items-center md:items-start gap-gutter shadow-sm">
+<div class="relative">
+<div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional, high-quality headshot of a friendly Vietnamese high school student named Lê Thu Hà. She is wearing a neat white school uniform against a soft-focus campus background. The lighting is natural and bright, creating a clean, modern educational atmosphere. The image uses a light-mode color palette with subtle blue accents to match the corporate attendance app style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAWIXc6nj039IqTIzqQKnFrkpXO31vxAaxcHnRnvU3fN-TBPbjYkr_tNzrULtyo9qm-1cZJg0CLEtVzUlZOnm-_BXX03TrT38FZBMVXh1QeCqcdEcZK72wgwyRDiwNNuoKGbX867WjKxPYloN0NIM2QrZ7JoJGrvinOB0q3kjRi4ALWHadceb1_NXsckLMIqWz6yhDDH1Plmg-0QS6bjc8WFMS6kowz7vpvkOsWJZhUmZgS4lsQnfGIqeyZtJ84vCqKofr-4XUT4Pu"/>
+</div>
+<div class="absolute bottom-1 right-1 bg-primary text-on-primary p-1.5 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="flex-1 text-center md:text-left space-y-1">
+<h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface">Lê Thu Hà</h2>
+<p class="font-body-main text-body-main text-primary font-semibold">Học sinh</p>
+<div class="pt-2 space-y-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center justify-center md:justify-start gap-2">
+<span class="material-symbols-outlined text-base">id_card</span> Mã HS: HS2024005
+                        </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center justify-center md:justify-start gap-2">
+<span class="material-symbols-outlined text-base">school</span> Lớp: 12A1
+                        </p>
+</div>
+</div>
+</div>
+<!-- Attendance Metric Card -->
+<div class="bg-primary-container text-on-primary-container p-stack-lg rounded-xl flex flex-col justify-between shadow-md relative overflow-hidden">
+<div class="absolute -right-4 -top-4 opacity-10">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<span class="font-label-uppercase text-label-uppercase opacity-80">Tỉ lệ chuyên cần</span>
+<h3 class="font-display-lg text-display-lg-mobile md:text-display-lg mt-1">95%</h3>
+</div>
+<div class="mt-4">
+<p class="font-body-sm text-body-sm opacity-90">Học kỳ I • 2023-2024</p>
+<div class="w-full bg-on-primary-container/20 h-2 rounded-full mt-2">
+<div class="bg-white h-2 rounded-full" style="width: 95%;"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Settings List -->
+<section class="space-y-stack-sm mb-stack-lg">
+<h4 class="font-label-uppercase text-label-uppercase text-outline px-2 mb-2">Cài đặt tài khoản</h4>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<!-- Row 1 -->
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-secondary-container transition-colors active:scale-[0.99] duration-150 border-b border-outline-variant text-left">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person_edit</span>
+</div>
+<div>
+<span class="font-body-main text-body-main text-on-surface block">Cập nhật thông tin</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Thông tin cá nhân &amp; Liên lạc</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<!-- Row 2 -->
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-secondary-container transition-colors active:scale-[0.99] duration-150 border-b border-outline-variant text-left">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">grade</span>
+</div>
+<div>
+<span class="font-body-main text-body-main text-on-surface block">Kết quả học tập</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Điểm số &amp; Rèn luyện</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<!-- Row 3 -->
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-secondary-container transition-colors active:scale-[0.99] duration-150 border-b border-outline-variant text-left">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div>
+<span class="font-body-main text-body-main text-on-surface block">Đổi mật khẩu</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Bảo mật tài khoản</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<!-- Row 4 -->
+<button class="w-full flex items-center justify-between p-stack-md hover:bg-secondary-container transition-colors active:scale-[0.99] duration-150 text-left">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">notifications_active</span>
+</div>
+<div>
+<span class="font-body-main text-body-main text-on-surface block">Cài đặt thông báo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Push, Email, Tin nhắn</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Footer Actions -->
+<footer class="mt-stack-lg">
+<button class="w-full py-4 px-6 flex items-center justify-center gap-3 bg-white border-2 border-error text-error font-headline-md rounded-xl hover:bg-error/5 active:scale-95 transition-all duration-200 shadow-sm">
+<span class="material-symbols-outlined">logout</span>
+                Đăng xuất
+            </button>
+<p class="text-center mt-stack-lg font-body-sm text-body-sm text-outline">
+                Phiên bản 2.4.0 • Attendance Pro Team
+            </p>
+</footer>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center h-20 px-4 bg-surface border-t border-outline-variant">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-uppercase text-label-uppercase mt-1">Dashboard</span>
+</a>
+<!-- Schedule -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-uppercase text-label-uppercase mt-1">Lớp học</span>
+</a>
+<!-- Profile - ACTIVE -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-uppercase text-label-uppercase mt-0.5">Cá nhân</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for list items
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                const icon = btn.querySelector('.material-symbols-outlined:first-child');
+                if (icon) icon.style.transform = 'translateY(-2px)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                const icon = btn.querySelector('.material-symbols-outlined:first-child');
+                if (icon) icon.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>

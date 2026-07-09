@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Kstudy</string>
+    
+    <!-- Navigation Tabs -->
+    <string name="tab_dashboard">Tổng quan</string>
+    <string name="tab_teachers">Giáo viên</string>
+    <string name="tab_students">Học sinh</string>
+    <string name="tab_classes">Lớp học</string>
+    <string name="tab_profile">Cá nhân</string>
+    <string name="tab_scan">Quét QR</string>
+    <string name="tab_history">Lịch sử</string>
+</resources>

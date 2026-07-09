@@ -1,0 +1,53 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer gold ring -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#D4A017"
+        android:strokeWidth="2.2"
+        android:pathData="M25,54 A29,29 0 1,1 83,54 A29,29 0 1,1 25,54 Z" />
+
+    <!-- Inner offset gold ring, gives the interlocking double-circle look -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#D4A017"
+        android:strokeWidth="2.2"
+        android:pathData="M31,50 A26,26 0 1,1 83,50 A26,26 0 1,1 31,50 Z" />
+
+    <!-- Gold accent beads on the outer ring -->
+    <path android:fillColor="#D4A017" android:pathData="M51,25 A3,3 0 1,1 57,25 A3,3 0 1,1 51,25 Z" />
+    <path android:fillColor="#D4A017" android:pathData="M80,54 A3,3 0 1,1 86,54 A3,3 0 1,1 80,54 Z" />
+    <path android:fillColor="#D4A017" android:pathData="M51,83 A3,3 0 1,1 57,83 A3,3 0 1,1 51,83 Z" />
+    <path android:fillColor="#D4A017" android:pathData="M22,54 A3,3 0 1,1 28,54 A3,3 0 1,1 22,54 Z" />
+
+    <!-- Open book, line art -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#D32F2F"
+        android:strokeWidth="2.8"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M54,44 C48,40 41,38 33,40 L33,72 C41,70 48,72 54,76 C60,72 67,70 75,72 L75,40 C67,38 60,40 54,44 Z" />
+    <path
+        android:strokeColor="#D32F2F"
+        android:strokeWidth="2.2"
+        android:pathData="M54,44 L54,76" />
+
+    <!-- Star above the book -->
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M54,22.77 L55.55,26.42 L59.5,26.76 L56.5,29.36 L57.4,33.23 L54,31.17 L50.6,33.23 L51.5,29.36 L48.5,26.76 L52.45,26.42 Z" />
+
+    <!-- Key nested inside the book -->
+    <path
+        android:fillColor="#D32F2F"
+        android:fillType="evenOdd"
+        android:pathData="M49.7,52 A4.3,4.3 0 1,1 58.3,52 A4.3,4.3 0 1,1 49.7,52 Z M51.9,52 A2.1,2.1 0 1,1 56.1,52 A2.1,2.1 0 1,1 51.9,52 Z" />
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M52.7,56.3 L55.3,56.3 L55.3,61 L58,61 L58,63.2 L55.3,63.2 L55.3,65.5 L57.5,65.5 L57.5,67.7 L55.3,67.7 L55.3,69 L52.7,69 Z" />
+</vector>

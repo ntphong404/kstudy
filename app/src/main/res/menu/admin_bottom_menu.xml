@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_admin_dashboard"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Tổng quan" />
+    <item
+        android:id="@+id/menu_admin_teachers"
+        android:icon="@drawable/ic_teacher"
+        android:title="Giáo viên" />
+    <item
+        android:id="@+id/menu_admin_students"
+        android:icon="@drawable/ic_student"
+        android:title="Học sinh" />
+    <item
+        android:id="@+id/menu_admin_classes"
+        android:icon="@drawable/ic_class"
+        android:title="Lớp học" />
+    <item
+        android:id="@+id/menu_admin_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Cá nhân" />
+</menu>

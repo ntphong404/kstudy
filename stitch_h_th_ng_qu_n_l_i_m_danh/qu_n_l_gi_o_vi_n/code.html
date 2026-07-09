@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý Giáo viên | Attendance Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2e3132",
+                    "tertiary": "#7b2600",
+                    "tertiary-fixed-dim": "#ffb59b",
+                    "secondary-fixed-dim": "#c0c7d3",
+                    "tertiary-container": "#a33500",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#0052cc",
+                    "tertiary-fixed": "#ffdbcf",
+                    "outline-variant": "#c3c6d6",
+                    "surface": "#f8f9fb",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#e1e2e4",
+                    "surface-bright": "#f8f9fb",
+                    "on-tertiary-container": "#ffc6b2",
+                    "surface-tint": "#0c56d0",
+                    "on-tertiary-fixed": "#380d00",
+                    "on-error-container": "#93000a",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#b2c5ff",
+                    "background": "#f8f9fb",
+                    "surface-container-high": "#e7e8ea",
+                    "on-surface": "#191c1e",
+                    "surface-container-highest": "#e1e2e4",
+                    "primary": "#003d9b",
+                    "inverse-on-surface": "#f0f1f3",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#f3f4f6",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#001848",
+                    "on-tertiary-fixed-variant": "#812800",
+                    "on-primary": "#ffffff",
+                    "primary-fixed": "#dae2ff",
+                    "secondary": "#585f6a",
+                    "surface-dim": "#d9dadc",
+                    "on-surface-variant": "#434654",
+                    "on-secondary-fixed": "#151c25",
+                    "on-primary-container": "#c4d2ff",
+                    "outline": "#737685",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#404751",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "secondary-fixed": "#dce3f0",
+                    "on-background": "#191c1e",
+                    "secondary-container": "#dce3f0",
+                    "on-secondary-container": "#5e6570",
+                    "surface-container": "#edeef0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "stack-lg": "24px",
+                    "container-margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base-unit": "4px",
+                    "container-margin-desktop": "32px"
+            },
+            "fontFamily": {
+                    "label-uppercase": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "table-header": ["Inter"],
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-main": ["Inter"]
+            },
+            "fontSize": {
+                    "label-uppercase": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "table-header": ["13px", {"lineHeight": "18px", "fontWeight": "600"}],
+                    "display-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-main": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Hanken Grotesk', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(223, 225, 230, 0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-surface border-b border-outline-variant flex items-center justify-between px-container-margin-mobile md:px-container-margin-desktop h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-100" data-icon="menu">menu</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Attendance Admin</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-100" data-icon="search">search</button>
+<button class="material-symbols-outlined text-primary transition-colors p-2 rounded-full active:scale-95 duration-100" data-icon="notifications">notifications</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-container-margin-mobile md:px-container-margin-desktop py-stack-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<p class="font-label-uppercase text-label-uppercase text-on-surface-variant mb-1">HỆ THỐNG ĐÀO TẠO</p>
+<h2 class="font-display-lg text-display-lg text-primary">Danh sách Giáo viên</h2>
+</div>
+<button class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold shadow-md hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="font-body-main text-body-main">Thêm giáo viên</span>
+</button>
+</div>
+<!-- Filter & Search Bar (Bento-style layout) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="md:col-span-2 glass-card p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-main font-body-main" placeholder="Tìm kiếm tên giáo viên hoặc môn học..." type="text"/>
+</div>
+<div class="glass-card p-4 rounded-xl flex items-center justify-between cursor-pointer hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" data-icon="filter_list">filter_list</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Chuyên môn</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+<div class="glass-card p-4 rounded-xl flex items-center justify-between cursor-pointer hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline" data-icon="sort">sort</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Sắp xếp</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Teacher Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Teacher Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-lg transition-shadow group relative overflow-hidden">
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0 border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a female teacher in her early 40s, wearing a smart charcoal blazer and smiling warmly. The background is a brightly lit, modern school office with clean minimalist white walls and soft natural light from a large window. The photography style is high-end corporate headshot, with a slight depth of field blurring the background slightly to focus on her friendly yet authoritative expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN186zGx_D5Useu_3saHwx6LAmTMvPkpSILLN1MGpfyoNZfPe2fubKrHj-KYYsGuUZxk0SZIMK2GE1DFx2E3imq0G6sFl6B4k2-ps5evFU3liHwA6MSzKLrGkmNs5LHhJB7yfNxtWPowl2s0odtBVF2UKqDFVysC4jQHWXDGUYJgZpbqDX2hd5rWXe5lTIBssu-YaZTGs0ngfXjqvCyY4XiXT82a36oDpczfvFs0by3pRZNezVwGaICc6sufeO2tLisrzWIEh5JyJy"/>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-[18px] text-on-surface font-bold mb-1">Nguyễn Thị Mai</h3>
+<div class="inline-flex items-center px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[12px] font-semibold mb-3">
+                            Toán học
+                        </div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-body-sm text-body-sm">090 123 4567</span>
+</div>
+</div>
+</div>
+<div class="flex border-t border-outline-variant pt-4 mt-2 gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+<span class="text-label-uppercase font-label-uppercase">Sửa</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+<span class="text-label-uppercase font-label-uppercase">Xóa</span>
+</button>
+</div>
+<!-- Subtle background accent -->
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+</div>
+<!-- Teacher Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-lg transition-shadow group relative overflow-hidden">
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0 border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional close-up of a male teacher in his late 30s with a neat beard and glasses, wearing a light blue dress shirt. He is standing in a modern classroom setting with a clean whiteboard and blurred colorful educational charts behind him. The lighting is bright and even, conveying a sense of intelligence and modern pedagogy in a professional academic environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAfoCw0m2Ey0crQkcQZ7o70THdktSX9oag3Ngdm4tu3lFnOVx1D5Piwv4gNy2gAQWSerXyZcl0VRYuE1JB0GRc8mA0gDcLkelxjEvrZu9POUXFgY7zs8RfEYkQShd8X38a6Y46P9AAtjU6jViWnP56QPHMOxuq2FVadHfBHSX-K7COqxSfyBaxzc0t9lTbuPvnh_okRs8CgG0Bx9y1X5jFJXP8czw41S3a2tAera7jMVJ1mDeg-UoqLM04mPX_e6qYbj0mraEu-RZq"/>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-[18px] text-on-surface font-bold mb-1">Trần Văn Hùng</h3>
+<div class="inline-flex items-center px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[12px] font-semibold mb-3">
+                            Vật lý
+                        </div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-body-sm text-body-sm">091 888 9999</span>
+</div>
+</div>
+</div>
+<div class="flex border-t border-outline-variant pt-4 mt-2 gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+<span class="text-label-uppercase font-label-uppercase">Sửa</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+<span class="text-label-uppercase font-label-uppercase">Xóa</span>
+</button>
+</div>
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+</div>
+<!-- Teacher Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-lg transition-shadow group relative overflow-hidden">
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0 border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young female teacher with long dark hair, wearing a elegant cream-colored silk blouse. She has a confident and friendly expression. The background is a contemporary school library with rows of organized books creating a sophisticated academic atmosphere. The overall style is clean, airy, and professional with a light-mode aesthetic palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9nkr6vxBD4c6EjwUOQgTYfDLpJTAszSqC2Xg20hna_G7IrPiTNACOowEm8vemmqG2eJ14fNOD3zxe140IiQB8DlkODKjoB6EtDBD7q80GitNe1ZX_j2sZZw01kSo9DLmc7aDqm6uwwnR1aXEMPjBiT19owpMmxQWJAN7VkypgydG63BDyop-0RGrl-z9UlB-mIupJrEAhfiUCUF_mF0-jdv5dKqOs4gBM0ABw5V_l_aOsjOdB3AoiCgrrd5k60Rk3tSNaBsFC4avW"/>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-[18px] text-on-surface font-bold mb-1">Lê Minh Anh</h3>
+<div class="inline-flex items-center px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[12px] font-semibold mb-3">
+                            Tiếng Anh
+                        </div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-body-sm text-body-sm">098 765 4321</span>
+</div>
+</div>
+</div>
+<div class="flex border-t border-outline-variant pt-4 mt-2 gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+<span class="text-label-uppercase font-label-uppercase">Sửa</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+<span class="text-label-uppercase font-label-uppercase">Xóa</span>
+</button>
+</div>
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+</div>
+<!-- Teacher Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-lg transition-shadow group relative overflow-hidden">
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0 border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a senior male professor with grey hair and a warm smile, wearing a traditional dark navy waistcoat over a white shirt. He is sitting in a sun-drenched study filled with classic literature. The lighting is warm and intellectual, capturing a sense of profound wisdom and institutional stability in a professional corporate-academic photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_l0lvTbp3cRU0QrpbU6OSv9iRP6trrpSkFIkzk8IhbvZ0SPtuqw8CCzgKzi00zvpE293kse49hFjs5jjFEAM9pXxfzq5qjvY-kve4Mz_ZzcFDKwio5dP0AoEXTyV9-Ky__JvTCNSBFovjVQFB4feek92U0kNQKe-to8Zm7rteS90tX5zGT4JiW3fXINb1NETZYTn4gfLRp3mxRaP01W4pGmHfd5lMmapNu9Q_u8wPz57UbAufRQD3VRd0D4cmoCDht0bi_K5UdjiB"/>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-[18px] text-on-surface font-bold mb-1">Phạm Hoàng Nam</h3>
+<div class="inline-flex items-center px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[12px] font-semibold mb-3">
+                            Lịch sử
+                        </div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-body-sm text-body-sm">094 333 2211</span>
+</div>
+</div>
+</div>
+<div class="flex border-t border-outline-variant pt-4 mt-2 gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+<span class="text-label-uppercase font-label-uppercase">Sửa</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+<span class="text-label-uppercase font-label-uppercase">Xóa</span>
+</button>
+</div>
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+</div>
+<!-- Teacher Card 5 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-lg transition-shadow group relative overflow-hidden">
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0 border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male teacher in his 30s, wearing a crisp white shirt and a modern black digital watch. He is standing in a cutting-edge computer lab with soft glowing monitors in the background. The aesthetic is clean, technological, and precise, utilizing high-key lighting to emphasize professional accountability and corporate minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDheESoMiWcLZE4YLuA0IZvjiBISMQW1byacU0PdnpCWME_D9-RNVttV3cADIDMshkWd6VPCPAk4gY-dwHIMhjhgTGou36N0kvRtuUTKPuikcQEPi0tUTn2xo8G7k8309r2J1kCAxKL6EImdi0tDjIwDM_l9dGUVPKGXAAowILVDQA8aHHBn-RHie-oY8IyBt1Nf8cDhJxnWdKaIKDhVIrJmMt3o5Lgy6ZhJunqGJXojN2nUadhYDwl7RUokmsXV93It7nT6iW7LQ7g"/>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-[18px] text-on-surface font-bold mb-1">Đặng Quốc Trung</h3>
+<div class="inline-flex items-center px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[12px] font-semibold mb-3">
+                            Tin học
+                        </div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-body-sm text-body-sm">093 555 4433</span>
+</div>
+</div>
+</div>
+<div class="flex border-t border-outline-variant pt-4 mt-2 gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+<span class="text-label-uppercase font-label-uppercase">Sửa</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+<span class="text-label-uppercase font-label-uppercase">Xóa</span>
+</button>
+</div>
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+</div>
+<!-- Teacher Card 6 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-lg transition-shadow group relative overflow-hidden">
+<div class="flex gap-4 items-start relative z-10">
+<div class="w-16 h-16 rounded-full overflow-hidden bg-surface-container-high flex-shrink-0 border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A cheerful portrait of a female teacher in her late 20s, wearing a smart forest green blouse and a small silver necklace. She is in a vibrant art studio with blurred easels and canvases in the background. The lighting is soft and natural, emphasizing a creative yet highly professional and organized educational persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZMOIXafEUbnE2vDirYp25HDRdAlLhw02PkyUYuG_bkW_oOobfgHDb93m9oekYquP0Fa5HpEP2KU0OAdCOYIPcIME7tLLwYHXpOCzM5e3mopRtFc9KoH91NfnhFaB_5W2V86TtLlAgjEHd8R3CtELsuUnWbmi0C8QJbuXslkT9L2OMypBZ59rxRq_540vfvJvL99HJSkuvtsyc52jamFhEyHi4DN9B3yhxAYNXSAwF6u5m5zh7huq8CjZGAsY_nE8xEbqEhdszK2e5"/>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-[18px] text-on-surface font-bold mb-1">Vũ Thùy Linh</h3>
+<div class="inline-flex items-center px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[12px] font-semibold mb-3">
+                            Mỹ thuật
+                        </div>
+<div class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+<span class="font-body-sm text-body-sm">092 111 2222</span>
+</div>
+</div>
+</div>
+<div class="flex border-t border-outline-variant pt-4 mt-2 gap-3">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+<span class="text-label-uppercase font-label-uppercase">Sửa</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-error hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+<span class="text-label-uppercase font-label-uppercase">Xóa</span>
+</button>
+</div>
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary opacity-[0.03] rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<span class="text-body-sm font-body-sm">Trang <span class="font-bold">1</span> trên 12</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 flex justify-around items-center pb-safe px-2 bg-surface-container border-t border-outline-variant shadow-md z-50 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-uppercase text-label-uppercase">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-uppercase text-label-uppercase">Học sinh</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="font-label-uppercase text-label-uppercase">Lớp học</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+<span class="font-label-uppercase text-label-uppercase">Giáo viên</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for hover effects and dynamic UI updates
+        document.querySelectorAll('.active\\:scale-95').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Primary Theme Colors -->
+    <color name="primary">#5B21B6</color>
+    <color name="primary_dark">#4C1D95</color>
+    <color name="primary_container">#EDE9FE</color>
+    <color name="on_primary_container">#2E1065</color>
+    <color name="nav_indicator">#DDD6FE</color>
+    
+    <!-- Secondary & Neutral -->
+    <color name="secondary">#585F6A</color>
+    <color name="background">#F8F9FB</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_container">#EDEEF0</color>
+    <color name="surface_container_low">#F3F4F6</color>
+    
+    <!-- Greys -->
+    <color name="outline">#737685</color>
+    <color name="outline_variant">#C3C6D6</color>
+    <color name="text_secondary">#434654</color>
+    
+    <!-- Status / Attendance States -->
+    <color name="present">#4CAF50</color>
+    <color name="present_bg">#E8F5E9</color>
+    <color name="late">#FFC107</color>
+    <color name="late_bg">#FFFDE7</color>
+    <color name="absent">#F44336</color>
+    <color name="absent_bg">#FFEBEE</color>
+</resources>

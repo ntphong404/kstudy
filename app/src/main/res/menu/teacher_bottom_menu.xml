@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_teacher_dashboard"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Tổng quan" />
+    <item
+        android:id="@+id/menu_teacher_classes"
+        android:icon="@drawable/ic_class"
+        android:title="Lớp học" />
+    <item
+        android:id="@+id/menu_teacher_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Cá nhân" />
+</menu>

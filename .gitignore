@@ -1,15 +1,47 @@
+# Android Studio / IntelliJ (may contain local paths and user settings)
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Gradle and generated build output
+.gradle/
+.kotlin/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.apks
+
+# Machine-specific Android SDK configuration
 local.properties
+
+# Firebase / Google app configuration
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Environment files and local secrets
+.env
+.env.*
+!.env.example
+secrets.properties
+keystore.properties
+
+# Signing keys and certificates
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+
+# Firebase Admin / Google Cloud service-account credentials
+**/firebase-adminsdk*.json
+**/*service-account*.json
+**/service-account*.json
+
+# Logs, heap dumps, and OS metadata
+*.log
+*.hprof
+.DS_Store
+Thumbs.db

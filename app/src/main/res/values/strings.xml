@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">Kstudy</string>
+    <string name="login_tagline">Điểm danh thông minh, theo dõi dễ dàng</string>
+    <string name="login_title">Đăng nhập</string>
+    <string name="login_subtitle">Chào mừng bạn trở lại</string>
+    <string name="login_username">Tên đăng nhập</string>
+    <string name="login_password">Mật khẩu</string>
+    <string name="login_audience">Dành cho quản trị viên, giáo viên và học sinh</string>
     
     <!-- Navigation Tabs -->
     <string name="tab_dashboard">Tổng quan</string>

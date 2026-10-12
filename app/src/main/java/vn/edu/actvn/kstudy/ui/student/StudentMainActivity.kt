@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.edu.actvn.kstudy.R
 import androidx.lifecycle.ViewModelProvider
+import vn.edu.actvn.kstudy.ui.common.AiAssistantFragment
 import vn.edu.actvn.kstudy.ui.common.ProfileFragment
 import vn.edu.actvn.kstudy.viewmodel.AuthViewModel
 
@@ -43,6 +44,7 @@ class StudentMainActivity : AppCompatActivity() {
                 R.id.menu_student_dashboard -> StudentDashboardFragment.newInstance(studentUserId)
                 R.id.menu_student_classes -> StudentClassesFragment.newInstance(studentUserId)
                 R.id.menu_student_scan -> StudentScanFragment.newInstance(studentUserId)
+                R.id.menu_student_ai -> AiAssistantFragment.newInstance()
                 R.id.menu_student_profile -> ProfileFragment()
                 else -> StudentDashboardFragment.newInstance(studentUserId)
             }

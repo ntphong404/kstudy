@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import vn.edu.actvn.kstudy.R
 import androidx.lifecycle.ViewModelProvider
+import vn.edu.actvn.kstudy.ui.common.AiAssistantFragment
 import vn.edu.actvn.kstudy.ui.common.ProfileFragment
 import vn.edu.actvn.kstudy.viewmodel.AuthViewModel
 
@@ -42,6 +43,7 @@ class TeacherMainActivity : AppCompatActivity() {
             val fragment: Fragment = when (item.itemId) {
                 R.id.menu_teacher_dashboard -> TeacherDashboardFragment.newInstance(teacherUserId)
                 R.id.menu_teacher_classes -> TeacherClassesFragment.newInstance(teacherUserId)
+                R.id.menu_teacher_ai -> AiAssistantFragment.newInstance()
                 R.id.menu_teacher_profile -> ProfileFragment()
                 else -> TeacherDashboardFragment.newInstance(teacherUserId)
             }

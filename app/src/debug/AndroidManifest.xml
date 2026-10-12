@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Empty screen that the UI tests use to show one fragment at a time; debug builds only -->
+        <activity
+            android:name=".FragmentHostActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>

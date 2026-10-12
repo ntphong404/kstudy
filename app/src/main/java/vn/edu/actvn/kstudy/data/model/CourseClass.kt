@@ -7,5 +7,6 @@ data class CourseClass(
     val teacherId: String = "",
     val room: String = "",
     val schedule: String = "",
-    val totalStudents: Int = 0
+    val totalStudents: Int = 0,
+    val teacherName: String = ""
 )

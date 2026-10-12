@@ -336,25 +336,12 @@ class AdminRepository(private val context: Context) {
             val classesSnapshot = await(firestore.collection("classes").get())
             stats["classes"] = classesSnapshot.size()
 
-            // Calculate average attendance rate
-            val recordsSnapshot = await(firestore.collection("records").get())
-            var presentCount = 0
-            val totalCount = recordsSnapshot.size()
-            for (doc in recordsSnapshot.documents) {
-                val status = doc.getString("status") ?: ""
-                if (status == "PRESENT" || status == "LATE") {
-                    presentCount++
-                }
-            }
-            val rate = if (totalCount > 0) (presentCount * 100) / totalCount else 94
-            stats["avg_attendance"] = rate
-
+            // The attendance rate of the dashboard comes from StatsViewModel.loadSystemOverview()
         } catch (e: Exception) {
             e.printStackTrace()
             stats["students"] = 0
             stats["teachers"] = 0
             stats["classes"] = 0
-            stats["avg_attendance"] = 94
         }
         return stats
     }

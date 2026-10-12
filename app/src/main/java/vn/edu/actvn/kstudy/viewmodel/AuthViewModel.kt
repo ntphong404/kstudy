@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.model.User
 import vn.edu.actvn.kstudy.data.repository.UserRepository
@@ -24,13 +25,30 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         viewModelScope.launch {
-            val user = repository.login(username, pass)
+            val user = try {
+                repository.login(username, pass)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Without this the app crashes when there is no network or Firestore rejects the request
+                _loginResult.value = Pair(false, loginErrorMessage(e))
+                return@launch
+            }
             if (user != null) {
                 _currentUser.value = user
                 _loginResult.value = Pair(true, "Đăng nhập thành công!")
             } else {
                 _loginResult.value = Pair(false, "Tài khoản hoặc mật khẩu không chính xác!")
             }
+        }
+    }
+
+    private fun loginErrorMessage(e: Exception): String {
+        val detail = generateSequence<Throwable>(e) { it.cause }.joinToString(" ") { it.message.orEmpty() }
+        return if ("PERMISSION_DENIED" in detail) {
+            "Firestore từ chối truy cập. Hãy kiểm tra Rules trên Firebase!"
+        } else {
+            "Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại!"
         }
     }
 

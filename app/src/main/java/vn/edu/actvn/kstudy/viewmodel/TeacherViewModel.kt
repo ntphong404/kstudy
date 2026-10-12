@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.model.*
 import vn.edu.actvn.kstudy.data.repository.TeacherRepository
+import vn.edu.actvn.kstudy.util.SessionDates
 
 class TeacherViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = TeacherRepository(application.applicationContext)
@@ -109,22 +110,7 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
     fun loadPastSessions(classId: String) {
         viewModelScope.launch {
             val list = repository.getPastSessionsForClass(classId)
-            _pastSessions.value = list.sortedByDescending { parseSessionDateMillis(it.date) }
+            _pastSessions.value = list.sortedByDescending { SessionDates.toMillis(it.date) }
         }
-    }
-
-    // Sessions created before the time-stamp fix only have "dd/MM/yyyy", newer ones have "dd/MM/yyyy HH:mm"
-    private fun parseSessionDateMillis(dateStr: String): Long {
-        val withTime = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-        val dateOnly = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-        return try {
-            withTime.parse(dateStr)?.time
-        } catch (e: Exception) {
-            null
-        } ?: try {
-            dateOnly.parse(dateStr)?.time
-        } catch (e: Exception) {
-            null
-        } ?: 0L
     }
 }

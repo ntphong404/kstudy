@@ -114,6 +114,14 @@ class TeacherClassDetailFragment : Fragment() {
             }
         }
 
+        view.findViewById<View>(R.id.btnOpenClassStats).setOnClickListener {
+            val fragment = TeacherClassStatsFragment.newInstance(classId, className)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.teacherFragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
         viewModel.activeSession.observe(viewLifecycleOwner) { sess ->
             if (sess != null) {
                 layoutNoActive.visibility = View.GONE

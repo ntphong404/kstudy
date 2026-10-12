@@ -104,6 +104,15 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Attendance warnings, one card per class at risk (empty when the student is doing fine) -->
+            <LinearLayout
+                android:id="@+id/layoutStudentWarnings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
             <!-- Upcoming class card -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -137,6 +146,54 @@
                     android:layout_marginTop="4dp"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Attendance chart -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CHUYÊN CẦN CỦA TÔI"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <vn.edu.actvn.kstudy.ui.common.DonutChartView
+                        android:id="@+id/chartStudentAttendance"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp" />
+
+                    <include
+                        android:id="@+id/legendStudentAttendance"
+                        layout="@layout/view_attendance_legend"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvStudentChartNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Đang tải dữ liệu…"
+                    android:textColor="@color/outline"
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

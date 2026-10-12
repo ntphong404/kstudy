@@ -43,7 +43,7 @@ class BarChartView @JvmOverloads constructor(
         color = ContextCompat.getColor(context, R.color.text_secondary)
         textSize = sp(10f)
         textAlign = Paint.Align.CENTER
-        typeface = Typeface.DEFAULT_BOLD
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
     private val emptyTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.text_secondary)

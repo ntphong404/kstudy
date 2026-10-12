@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.ui.adapter.ClassSelectionAdapter
+import vn.edu.actvn.kstudy.ui.common.ListState
 import vn.edu.actvn.kstudy.viewmodel.TeacherViewModel
 
 class TeacherClassesFragment : Fragment() {
@@ -60,15 +61,21 @@ class TeacherClassesFragment : Fragment() {
         }
         rv.adapter = adapter
 
+        val listState = ListState(view)
+
         viewModel.teacher.observe(viewLifecycleOwner) { teacher ->
             if (teacher != null) {
                 tvWelcome.text = "Xin chào, ${teacher.name}"
                 tvDetails.text = "Môn học phụ trách: ${teacher.subject} • SĐT: ${teacher.phone}"
+            } else {
+                // Without the teacher record no class is ever loaded: end the loading state here
+                listState.show(0, "Không tải được thông tin giáo viên.")
             }
         }
 
         viewModel.classes.observe(viewLifecycleOwner) { classes ->
             adapter.updateData(classes)
+            listState.show(classes.size, "Bạn chưa được phân công lớp học nào.")
         }
 
         viewModel.loadTeacher(teacherUserId)

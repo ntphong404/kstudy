@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ===== Type scale: five sizes, two weights ===== -->
+
+    <!-- Screen title in the app bar -->
+    <style name="TextAppearance.Kstudy.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Title of a card or a list row -->
+    <style name="TextAppearance.Kstudy.ItemTitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Heading above a group of content -->
+    <style name="TextAppearance.Kstudy.Section" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="TextAppearance.Kstudy.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.Kstudy.Body.Secondary">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Body text that leads a compact row, e.g. a name above its details -->
+    <style name="TextAppearance.Kstudy.Body.Strong">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.Kstudy.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Short emphasised text: status tags, values in a legend -->
+    <style name="TextAppearance.Kstudy.Label" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Largest text: statistic figures and the sign-in heading -->
+    <style name="TextAppearance.Kstudy.Headline" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- ===== Buttons: filled (primary), outlined (secondary), text (low emphasis) ===== -->
+
+    <style name="ShapeAppearanceOverlay.Kstudy.Control" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/radius_control</item>
+    </style>
+
+    <style name="Widget.Kstudy.Button" parent="Widget.Material3.Button">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Kstudy.Control</item>
+    </style>
+
+    <!-- Irreversible primary action, e.g. closing an attendance session -->
+    <style name="Widget.Kstudy.Button.Danger">
+        <item name="backgroundTint">@color/danger_container</item>
+    </style>
+
+    <!-- One of the four attendance choices of a student row; the adapter fills the chosen one
+         with the colour of its status. Four of them have to fit next to the name on a narrow phone. -->
+    <style name="Widget.Kstudy.Button.Status">
+        <item name="android:layout_width">46dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Material3.LabelMedium</item>
+    </style>
+
+    <style name="Widget.Kstudy.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Kstudy.Control</item>
+    </style>
+
+    <style name="Widget.Kstudy.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Kstudy.Control</item>
+        <item name="android:minWidth">56dp</item>
+    </style>
+
+    <style name="Widget.Kstudy.Button.Text.Danger">
+        <item name="android:textColor">@color/danger_text</item>
+        <item name="rippleColor">@color/error_container</item>
+    </style>
+
+    <style name="Widget.Kstudy.Button.Text.Dialog" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Kstudy.Control</item>
+    </style>
+
+    <!-- Neutral dialog button, aligned with the dialog's start edge -->
+    <style name="Widget.Kstudy.Button.Text.Dialog.Flush">
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+    </style>
+
+    <!-- ===== Containers ===== -->
+
+    <!-- Outlined surface for a group of related content; no elevation -->
+    <style name="Widget.Kstudy.Card" parent="">
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:padding">16dp</item>
+        <!-- Lets the ripple of a button in the action row reach past the padding -->
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <!-- Row of text buttons that closes a card. The negative margins take back the buttons' own
+         padding, so their labels line up with the card's content instead of floating inside it. -->
+    <style name="Widget.Kstudy.CardActions" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">end</item>
+        <item name="android:layout_marginTop">-4dp</item>
+        <item name="android:layout_marginBottom">-12dp</item>
+        <item name="android:layout_marginEnd">-12dp</item>
+    </style>
+
+    <style name="Widget.Kstudy.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?attr/colorOutlineVariant</item>
+    </style>
+
+    <!-- ===== App bar: flat, same colour as the page ===== -->
+
+    <style name="Widget.Kstudy.AppBar" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/app_bar_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/screen_padding</item>
+        <item name="android:paddingEnd">@dimen/screen_padding</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <!-- 48dp touch target whose 24dp icon lines up with the page content: the negative start
+         margin takes back the padding around the icon -->
+    <style name="Widget.Kstudy.AppBar.BackButton" parent="">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_marginStart">-12dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:src">@drawable/ic_back</item>
+        <item name="tint">?attr/colorOnSurface</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <!-- Header of a tab that greets the user: a title with one line of details under it -->
+    <style name="Widget.Kstudy.PageHeader" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">@dimen/screen_padding</item>
+        <item name="android:paddingEnd">@dimen/screen_padding</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+    <!-- ===== Small pieces ===== -->
+
+    <!-- One figure with its label, laid out side by side with others inside a card -->
+    <style name="Widget.Kstudy.Stat" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Widget.Kstudy.Stat.Divider" parent="">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:background">?attr/colorOutlineVariant</item>
+    </style>
+
+    <style name="Widget.Kstudy.SectionHeader" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Kstudy.Section</item>
+    </style>
+
+    <!-- Tag showing a state; the code tints the background and the text together -->
+    <style name="Widget.Kstudy.StatusTag" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_chip_status</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Kstudy.Label</item>
+    </style>
+
+    <!-- Circle with a person's initials -->
+    <style name="Widget.Kstudy.Avatar" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">@drawable/bg_circle_avatar</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.Kstudy.Label</item>
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+    </style>
+</resources>

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import android.content.res.ColorStateList
 import androidx.core.content.ContextCompat
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.Student
@@ -45,6 +44,7 @@ class StudentAdapter(
         private val btnDelete: Button = view.findViewById(R.id.btnDeleteStudent)
         private val btnAction: Button = view.findViewById(R.id.btnActionStudent)
         private val tvInitials: TextView = view.findViewById(R.id.tvStudentInitials)
+        private val actions: View = view.findViewById(R.id.layoutStudentActions)
 
         fun bind(
             student: Student,
@@ -87,16 +87,20 @@ class StudentAdapter(
                 btnAction.visibility = View.VISIBLE
                 btnAction.text = actionLabel
                 btnAction.setOnClickListener { onAction(student) }
-                
+
+                // A removal is written in the error colour, any other action in the primary one
                 val context = btnAction.context
-                if (actionLabel.contains("Xóa", ignoreCase = true)) {
-                    btnAction.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.absent))
-                } else {
-                    btnAction.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary))
-                }
+                val isRemoval = actionLabel.contains("Xóa", ignoreCase = true)
+                btnAction.setTextColor(
+                    ContextCompat.getColorStateList(context, if (isRemoval) R.color.danger_text else R.color.primary)
+                )
             } else {
                 btnAction.visibility = View.GONE
             }
+
+            // A read-only row has no button at all, so the whole action row is left out
+            val hasActions = btnEdit.visibility == View.VISIBLE || btnAction.visibility == View.VISIBLE
+            actions.visibility = if (hasActions) View.VISIBLE else View.GONE
         }
     }
 }

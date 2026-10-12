@@ -3,49 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
-    <!-- Class Details Header -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
 
         <ImageView
             android:id="@+id/btnBackClassDetail"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back" />
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvDetailSubject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
             <TextView
                 android:id="@+id/tvDetailClassInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/primary_container"
-                android:textSize="13sp" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
@@ -59,64 +45,50 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingBottom="24dp">
 
-            <!-- Attendance Session Section -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PHIÊN ĐIỂM DANH"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:layout_marginTop="8dp"
+                android:text="Phiên điểm danh" />
 
             <!-- Case A: No Active Session -->
             <LinearLayout
                 android:id="@+id/layoutNoActiveSession"
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:gravity="center">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chưa có phiên điểm danh nào đang mở"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
 
                 <TextView
                     android:id="@+id/tvScheduleHint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center"
-                    android:textColor="@color/outline"
-                    android:textSize="12sp" />
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
 
                 <Button
                     android:id="@+id/btnCreateSession"
-                    style="@style/Widget.Material3.Button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="MỞ ĐIỂM DANH (QR/MÃ)"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
+                    android:text="Mở điểm danh (QR/mã)" />
             </LinearLayout>
 
             <!-- Case B: Active Session Ongoing -->
             <LinearLayout
                 android:id="@+id/layoutActiveSession"
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
                 android:orientation="vertical"
-                android:padding="16dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -126,9 +98,9 @@
                     android:orientation="horizontal">
 
                     <View
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:background="@drawable/bg_circle_avatar"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_legend_dot"
                         android:backgroundTint="@color/present" />
 
                     <TextView
@@ -136,46 +108,42 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="Phiên điểm danh đang hoạt động"
-                        android:textColor="@color/present"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/btnOpenActiveSession"
-                    style="@style/Widget.Material3.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="VÀO PHIÊN ĐIỂM DANH (QR/THỦ CÔNG)"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
+                    android:text="Vào phiên điểm danh (QR/thủ công)" />
             </LinearLayout>
 
             <!-- Statistics, AI analysis and Excel export -->
             <LinearLayout
                 android:id="@+id/btnOpenClassStats"
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
+                android:layout_marginTop="16dp"
                 android:clickable="true"
+                android:clipToOutline="true"
                 android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
+                android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/ic_chart"
-                    app:tint="@color/primary" />
+                    app:tint="?attr/colorPrimary" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -183,43 +151,35 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thống kê &amp; báo cáo"
-                        android:textColor="@color/black"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Biểu đồ, cảnh báo cấm thi, nhận xét AI, xuất Excel"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:rotation="-90"
-                    android:src="@drawable/ic_expand_more"
-                    app:tint="@color/outline" />
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="?attr/colorOutline" />
             </LinearLayout>
 
             <!-- Leave requests of this class, the ones waiting for a decision first -->
             <TextView
                 android:id="@+id/tvLeaveRequestsTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="ĐƠN XIN NGHỈ PHÉP"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:text="Đơn xin nghỉ phép" />
 
             <LinearLayout
                 android:id="@+id/layoutLeaveRequests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:orientation="vertical" />
 
             <!-- Attendance History Section (collapsible) -->
@@ -227,59 +187,48 @@
                 android:id="@+id/layoutSessionHistoryHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?android:attr/selectableItemBackground"
-                android:paddingVertical="6dp">
+                android:gravity="center_vertical"
+                android:minHeight="48dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="LỊCH SỬ ĐIỂM DANH"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:text="Lịch sử điểm danh"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Section" />
 
                 <ImageView
                     android:id="@+id/ivSessionHistoryToggle"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
                     android:rotation="-90"
                     android:src="@drawable/ic_expand_more"
-                    app:tint="@color/text_secondary" />
+                    app:tint="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layoutSessionHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:orientation="vertical"
                 android:visibility="gone" />
 
-            <!-- Students List -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="DANH SÁCH LỚP"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:layout_marginTop="16dp"
+                android:text="Danh sách lớp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvClassDetailStudents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
-                android:paddingBottom="16dp" />
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

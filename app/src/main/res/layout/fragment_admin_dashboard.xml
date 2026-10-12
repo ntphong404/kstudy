@@ -3,295 +3,216 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Top Header Panel -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="HỆ THỐNG ĐÀO TẠO"
-            android:textColor="@color/primary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+        <LinearLayout style="@style/Widget.Kstudy.AppBar">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Tổng quan hệ thống"
-            android:textColor="@color/black"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tổng quan hệ thống"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+        </LinearLayout>
 
-        <!-- Bento Grid Cards -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingBottom="24dp">
 
-            <!-- Card 1: Students -->
+            <!-- Headcount of the whole system -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="@drawable/bg_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tổng số học sinh"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvStatStudents"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="--"
-                    android:textColor="@color/primary"
-                    android:textSize="36sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Học sinh toàn trường"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- Card 2: Classes & Teachers in horizontal layout -->
-            <LinearLayout
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- Classes Card -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
+
+                    <TextView
+                        android:id="@+id/tvStatStudents"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lớp học"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="Học sinh"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
+                </LinearLayout>
+
+                <View style="@style/Widget.Kstudy.Stat.Divider" />
+
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStatClasses"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="--"
-                        android:textColor="@color/black"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Đang hoạt động"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
+                        android:text="Lớp học"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
 
-                <!-- Teachers Card -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                <View style="@style/Widget.Kstudy.Stat.Divider" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Giáo viên"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStatTeachers"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="--"
-                        android:textColor="@color/black"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Cán bộ giảng dạy"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
+                        android:text="Giáo viên"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- Chart Section -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical"
-            android:padding="16dp">
-
+            <!-- Attendance rate over every closed session -->
             <LinearLayout
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tỷ lệ đi học"
+                            android:textAppearance="@style/TextAppearance.Kstudy.ItemTitle" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Tính trên các buổi điểm danh đã chốt"
+                            android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvAvgAttendanceRate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="--"
+                        android:textAppearance="@style/TextAppearance.Kstudy.ItemTitle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <vn.edu.actvn.kstudy.ui.common.DonutChartView
+                        android:id="@+id/chartAdminAttendance"
+                        android:layout_width="112dp"
+                        android:layout_height="112dp" />
+
+                    <include
+                        android:id="@+id/legendAdminAttendance"
+                        layout="@layout/view_attendance_legend"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- AI assistant entry (the admin bottom bar already has five tabs) -->
+            <LinearLayout
+                android:id="@+id/btnAdminAiAssistant"
+                style="@style/Widget.Kstudy.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:clipToOutline="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_ai"
+                    app:tint="?attr/colorPrimary" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tỷ lệ đi học"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:text="Hỏi trợ lý AI"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tính trên các buổi điểm danh đã chốt"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:layout_marginTop="2dp"
+                        android:text="Hỏi đáp về chuyên cần của toàn hệ thống"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvAvgAttendanceRate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="--"
-                    android:textColor="@color/primary"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="?attr/colorOutline" />
             </LinearLayout>
 
+            <!-- Live attendance sessions panel (real Firestore data) -->
+            <TextView
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:text="Phiên điểm danh đang diễn ra" />
+
             <LinearLayout
+                android:id="@+id/layoutActiveSessions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <vn.edu.actvn.kstudy.ui.common.DonutChartView
-                    android:id="@+id/chartAdminAttendance"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp" />
-
-                <include
-                    android:id="@+id/legendAdminAttendance"
-                    layout="@layout/view_attendance_legend"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                android:orientation="vertical" />
         </LinearLayout>
-
-        <!-- AI assistant entry (the admin bottom bar already has five tabs) -->
-        <LinearLayout
-            android:id="@+id/btnAdminAiAssistant"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_card"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:src="@drawable/ic_ai"
-                app:tint="@color/primary" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hỏi trợ lý AI"
-                    android:textColor="@color/black"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Hỏi đáp về chuyên cần của toàn hệ thống"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:rotation="-90"
-                android:src="@drawable/ic_expand_more"
-                app:tint="@color/outline" />
-        </LinearLayout>
-
-        <!-- Live attendance sessions panel (real Firestore data) -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="PHIÊN ĐIỂM DANH ĐANG DIỄN RA"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/layoutActiveSessions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical" />
     </LinearLayout>
 </ScrollView>

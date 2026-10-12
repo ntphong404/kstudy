@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sits on top of a list: a spinner until the first load ends, then a message if nothing is listed -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/screen_padding"
+    android:paddingVertical="32dp">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/pbListLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/tvListEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary"
+        android:visibility="gone" />
+</FrameLayout>

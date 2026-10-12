@@ -1,6 +1,5 @@
 package vn.edu.actvn.kstudy.ui.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.AttendanceRecord
+import vn.edu.actvn.kstudy.ui.common.AttendanceViews
 
 class AttendanceHistoryAdapter(
     private var list: List<AttendanceRecord>
@@ -34,7 +34,6 @@ class AttendanceHistoryAdapter(
         private val tvDate: TextView = view.findViewById(R.id.tvHistoryDate)
         private val tvStatus: TextView = view.findViewById(R.id.tvHistoryStatus)
         private val tvTime: TextView = view.findViewById(R.id.tvHistoryTime)
-        private val indicator: View = view.findViewById(R.id.historyIndicator)
 
         fun bind(record: AttendanceRecord) {
             // record.timeMarked holds something like "08:15 (22/05/2024)"
@@ -49,34 +48,18 @@ class AttendanceHistoryAdapter(
                 tvTime.text = "Thời gian: $fullTime"
             }
 
-            when (record.status) {
-                "PRESENT" -> {
-                    tvStatus.text = "Có mặt"
-                    tvStatus.setTextColor(Color.parseColor("#4CAF50"))
-                    indicator.setBackgroundColor(Color.parseColor("#4CAF50"))
-                }
-                "LATE" -> {
-                    tvStatus.text = "Đi muộn"
-                    tvStatus.setTextColor(Color.parseColor("#FFC107"))
-                    indicator.setBackgroundColor(Color.parseColor("#FFC107"))
-                }
-                "ABSENT" -> {
-                    tvStatus.text = "Vắng mặt"
-                    tvStatus.setTextColor(Color.parseColor("#F44336"))
-                    indicator.setBackgroundColor(Color.parseColor("#F44336"))
-                }
-                "EXCUSED" -> {
-                    tvStatus.text = "Vắng có phép"
-                    tvStatus.setTextColor(Color.parseColor("#2196F3"))
-                    indicator.setBackgroundColor(Color.parseColor("#2196F3"))
-                    tvTime.text = "Đơn xin nghỉ đã được duyệt"
-                }
-                else -> {
-                    tvStatus.text = record.status
-                    tvStatus.setTextColor(Color.GRAY)
-                    indicator.setBackgroundColor(Color.GRAY)
-                }
+            tvStatus.text = when (record.status) {
+                "PRESENT" -> "Có mặt"
+                "LATE" -> "Đi muộn"
+                "ABSENT" -> "Vắng mặt"
+                "EXCUSED" -> "Vắng có phép"
+                else -> record.status
             }
+            if (record.status == "EXCUSED") {
+                tvTime.text = "Đơn xin nghỉ đã được duyệt"
+            }
+            val (textColor, tagColor) = AttendanceViews.statusColors(record.status)
+            AttendanceViews.tintTag(tvStatus, textColor, tagColor)
         }
     }
 }

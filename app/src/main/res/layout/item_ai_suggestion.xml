@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Kept compact so that two suggestions fit on a phone screen without scrolling the row -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -6,7 +7,7 @@
     android:background="@drawable/bg_chip_suggestion"
     android:clickable="true"
     android:focusable="true"
-    android:paddingHorizontal="14dp"
+    android:paddingHorizontal="12dp"
     android:paddingVertical="8dp"
-    android:textColor="@color/on_primary_container"
-    android:textSize="13sp" />
+    android:textAppearance="@style/TextAppearance.Kstudy.Caption"
+    android:textColor="?attr/colorOnSurface" />

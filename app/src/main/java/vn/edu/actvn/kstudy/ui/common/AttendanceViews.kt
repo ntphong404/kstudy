@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import vn.edu.actvn.kstudy.R
+import vn.edu.actvn.kstudy.data.model.AttendanceStatus
 import vn.edu.actvn.kstudy.data.model.LeaveRequest
 import vn.edu.actvn.kstudy.data.model.LeaveStatus
 import vn.edu.actvn.kstudy.util.RiskLevel
@@ -15,6 +16,23 @@ import vn.edu.actvn.kstudy.util.StatusCount
 
 // Small pieces of attendance UI shared by the student, teacher and admin screens
 object AttendanceViews {
+
+    // Colour resources of an attendance status: the strong tone (text, chart, selected button)
+    // and the soft tone behind it
+    fun statusColors(status: String): Pair<Int, Int> = when (status) {
+        AttendanceStatus.PRESENT -> R.color.present to R.color.present_bg
+        AttendanceStatus.LATE -> R.color.late to R.color.late_bg
+        AttendanceStatus.ABSENT -> R.color.absent to R.color.absent_bg
+        AttendanceStatus.EXCUSED -> R.color.excused to R.color.excused_bg
+        else -> R.color.text_secondary to R.color.surface_container
+    }
+
+    // Colours a status tag (Widget.Kstudy.StatusTag): text in the strong tone on the soft one
+    fun tintTag(tag: TextView, textColor: Int, backgroundColor: Int) {
+        val context = tag.context
+        tag.setTextColor(ContextCompat.getColor(context, textColor))
+        tag.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, backgroundColor))
+    }
 
     // Fills a donut chart and the legend from view_attendance_legend.xml next to it
     fun bindChart(chart: DonutChartView, legend: View, count: StatusCount) {
@@ -55,15 +73,14 @@ object AttendanceViews {
         }
         item.findViewById<TextView>(R.id.tvLeaveReason).text = "Lý do: ${request.reason}"
 
-        val (textColor, chipColor) = when (request.status) {
+        val (textColor, tagColor) = when (request.status) {
             LeaveStatus.APPROVED -> R.color.present to R.color.present_bg
             LeaveStatus.REJECTED -> R.color.absent to R.color.absent_bg
             else -> R.color.on_primary_container to R.color.primary_container
         }
         item.findViewById<TextView>(R.id.tvLeaveStatus).apply {
             text = LeaveStatus.label(request.status)
-            setTextColor(ContextCompat.getColor(context, textColor))
-            backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, chipColor))
+            tintTag(this, textColor, tagColor)
         }
 
         if (onDecide != null && request.status == LeaveStatus.PENDING) {
@@ -80,14 +97,13 @@ object AttendanceViews {
         container.addView(
             TextView(context).apply {
                 text = message
-                setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
-                textSize = 13f
+                setTextAppearance(R.style.TextAppearance_Kstudy_Body_Secondary)
                 setPadding(0, 0, 0, (8 * resources.displayMetrics.density).toInt())
             }
         )
     }
 
-    // Adds a red (danger) or yellow (warning) card to the container
+    // Adds a red (danger) or amber (warning) banner to the container
     fun addWarning(container: ViewGroup, risk: RiskLevel, title: String, body: String) {
         val context = container.context
         val item = LayoutInflater.from(context).inflate(R.layout.item_attendance_warning, container, false)

@@ -68,12 +68,7 @@ class AdminDashboardFragment : Fragment() {
         viewModel.activeSessions.observe(viewLifecycleOwner) { sessions ->
             layoutActiveSessions.removeAllViews()
             if (sessions.isEmpty()) {
-                val empty = TextView(requireContext()).apply {
-                    text = "Không có phiên điểm danh nào đang diễn ra."
-                    setTextColor(resources.getColor(R.color.text_secondary, null))
-                    textSize = 13f
-                }
-                layoutActiveSessions.addView(empty)
+                AttendanceViews.addEmptyNote(layoutActiveSessions, "Không có phiên điểm danh nào đang diễn ra.")
             } else {
                 for ((className, date) in sessions) {
                     val card = LayoutInflater.from(requireContext())

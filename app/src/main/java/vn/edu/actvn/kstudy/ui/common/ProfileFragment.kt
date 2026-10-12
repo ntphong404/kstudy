@@ -64,7 +64,11 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        // The name is the only required field; the view model rejects an empty one as well
+        val nameField = FormFields.required(view, R.id.tilProfileName)
+
         btnUpdate.setOnClickListener {
+            if (!FormFields.requireFilled(*nameField)) return@setOnClickListener
             val name = etName.text.toString().trim()
             val phone = etPhone.text.toString().trim()
             authViewModel.updateProfile(name, phone)

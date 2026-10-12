@@ -1,192 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
 
-    <!-- Top Header Banner -->
     <LinearLayout
         android:id="@+id/layoutStudentHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+        style="@style/Widget.Kstudy.AppBar">
 
         <ImageView
             android:id="@+id/btnBackStudentScan"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back" />
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="QUÉT MÃ ĐIỂM DANH"
-                android:textColor="@color/primary_container"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:text="Điểm danh lớp học"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Điểm danh lớp học"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:text="Quét mã điểm danh"
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/layoutStudentHeader"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp">
 
-            <!-- Scanner Box Frame -->
-            <FrameLayout
-                android:layout_width="260dp"
-                android:layout_height="260dp"
-                android:layout_marginTop="16dp"
-                android:background="#15000000"
-                android:padding="16dp">
-
-                <!-- Styled corner brackets -->
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="top|left"
-                    android:background="@color/present" />
-
-                <View
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="top|left"
-                    android:layout_margin="2dp"
-                    android:background="#EFEFEF" />
-
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="top|right"
-                    android:background="@color/present" />
-
-                <View
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="top|right"
-                    android:layout_margin="2dp"
-                    android:background="#EFEFEF" />
-
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="bottom|left"
-                    android:background="@color/present" />
-
-                <View
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="bottom|left"
-                    android:layout_margin="2dp"
-                    android:background="#EFEFEF" />
-
-                <View
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="bottom|right"
-                    android:background="@color/present" />
-
-                <View
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_gravity="bottom|right"
-                    android:layout_margin="2dp"
-                    android:background="#EFEFEF" />
-
-                <!-- Action inside scanner box -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:src="@drawable/ic_scan"
-                        app:tint="@color/primary" />
-
-                    <Button
-                        android:id="@+id/btnStartCameraScan"
-                        style="@style/Widget.Material3.Button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="MỞ CAMERA QUÉT"
-                        android:textColor="@color/white"
-                        android:textStyle="bold"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- Divider -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="HOẶC NHẬP MÃ ĐIỂM DANH THỦ CÔNG"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <!-- Text Input -->
-            <EditText
-                android:id="@+id/etScanCode"
+            <!-- Way 1: scan the teacher's QR code with the camera -->
+            <Button
+                android:id="@+id/btnStartCameraScan"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_edit_text"
-                android:gravity="center"
-                android:hint="Nhập mã 6 ký tự đang hiển thị"
-                android:inputType="textCapCharacters"
-                android:maxLength="10"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1" />
+                android:layout_height="wrap_content"
+                android:text="Mở camera quét"
+                app:icon="@drawable/ic_scan"
+                app:iconGravity="textStart" />
+
+            <!-- Way 2: type the code shown next to the QR -->
+            <TextView
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:layout_marginBottom="12dp"
+                android:text="Hoặc nhập mã điểm danh thủ công" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mã điểm danh"
+                app:helperText="Nhập mã 6 ký tự đang hiển thị">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etScanCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="textCapCharacters|textNoSuggestions"
+                    android:maxLength="10"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btnSubmitScanCode"
-                style="@style/Widget.Material3.Button"
+                style="@style/Widget.Kstudy.Button.Outlined"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"
-                android:text="XÁC NHẬN ĐIỂM DANH"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:text="Xác nhận điểm danh" />
         </LinearLayout>
     </ScrollView>
-</RelativeLayout>
+</LinearLayout>

@@ -3,71 +3,44 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
-    <!-- Header -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
 
+        <!-- Only shown when the screen was opened on top of another one -->
         <ImageView
             android:id="@+id/btnBackAi"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại"
             android:visibility="gone" />
-
-        <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:src="@drawable/ic_ai"
-            app:tint="@color/white" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TRỢ LÝ AI"
-                android:textColor="@color/primary_container"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:text="Trợ lý AI"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Hỏi đáp chuyên cần"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
 
-        <TextView
+        <Button
             android:id="@+id/btnClearChat"
+            style="@style/Widget.Kstudy.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_chip_role"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="6dp"
-            android:text="Làm mới"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:layout_marginEnd="-12dp"
+            android:text="Làm mới" />
     </LinearLayout>
 
     <!-- Conversation -->
@@ -77,19 +50,17 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="@dimen/screen_padding"
         android:paddingVertical="8dp" />
 
     <TextView
         android:id="@+id/tvAiTyping"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="6dp"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingBottom="8dp"
         android:text="Trợ lý đang trả lời…"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp"
-        android:textStyle="italic"
+        android:textAppearance="@style/TextAppearance.Kstudy.Caption"
         android:visibility="gone" />
 
     <!-- Suggested questions -->
@@ -97,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="@dimen/screen_padding"
         android:scrollbars="none">
 
         <LinearLayout
@@ -113,7 +84,8 @@
         android:layout_height="wrap_content"
         android:gravity="bottom"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingVertical="12dp">
 
         <EditText
             android:id="@+id/etAiMessage"
@@ -122,13 +94,14 @@
             android:layout_weight="1"
             android:background="@drawable/bg_edit_text"
             android:hint="Nhập câu hỏi về điểm danh…"
+            android:importantForAutofill="no"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLines="4"
             android:minHeight="48dp"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="10dp"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:paddingVertical="12dp"
+            android:textAppearance="@style/TextAppearance.Kstudy.Body"
+            android:textColorHint="?attr/colorOnSurfaceVariant" />
 
         <ImageButton
             android:id="@+id/btnSendAi"
@@ -140,6 +113,6 @@
             android:padding="12dp"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_send"
-            app:tint="@color/white" />
+            app:tint="?attr/colorOnPrimary" />
     </LinearLayout>
 </LinearLayout>

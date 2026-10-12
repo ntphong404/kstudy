@@ -21,6 +21,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.CourseClass
 import vn.edu.actvn.kstudy.ui.adapter.ClassAdapter
+import vn.edu.actvn.kstudy.ui.common.FormFields
+import vn.edu.actvn.kstudy.ui.common.ListState
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
 import java.util.*
 
@@ -29,6 +31,8 @@ class ManageClassesFragment : Fragment() {
     private lateinit var viewModel: AdminViewModel
     private lateinit var adapter: ClassAdapter
     private var allClasses = listOf<CourseClass>()
+    private lateinit var listState: ListState
+    private var loaded = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,8 +71,11 @@ class ManageClassesFragment : Fragment() {
         val btnAdd = view.findViewById<Button>(R.id.btnAddClass)
         btnAdd.setOnClickListener { showAddDialog() }
 
+        listState = ListState(view)
+
         viewModel.classes.observe(viewLifecycleOwner) { classes ->
             allClasses = classes
+            loaded = true
             filterList(etSearch.text.toString())
         }
 
@@ -94,6 +101,13 @@ class ManageClassesFragment : Fragment() {
                     it.academicYear.lowercase(Locale.getDefault()).contains(lowerQuery)
         }
         adapter.updateList(filtered)
+        // Typing in the search box before the list has arrived must not end the loading state
+        if (loaded) {
+            listState.show(
+                filtered.size,
+                if (query.isBlank()) "Chưa có lớp học nào." else "Không tìm thấy lớp học phù hợp."
+            )
+        }
     }
 
     private fun showAddDialog() {
@@ -110,7 +124,12 @@ class ManageClassesFragment : Fragment() {
             .create()
 
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
-        tvTitle.text = "Thêm Lớp học mới"
+        tvTitle.text = "Thêm lớp học mới"
+
+        // Every field is required; an empty one is marked where it is
+        val fields = FormFields.required(
+            dialogView, R.id.tilClassName, R.id.tilAcademicYear, R.id.tilRoom, R.id.tilTimeSlot, R.id.tilDays
+        )
 
         val etName = dialogView.findViewById<EditText>(R.id.etClassName)
         val etAcademic = dialogView.findViewById<EditText>(R.id.etAcademicYear)
@@ -140,7 +159,7 @@ class ManageClassesFragment : Fragment() {
 
         etDays.setOnClickListener {
             hideKeyboard(etDays)
-            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(context)
                 .setTitle("Chọn ngày học")
                 .setMultiChoiceItems(daysArray, selectedDaysBoolean) { _, index, isChecked ->
                     selectedDaysBoolean[index] = isChecked
@@ -160,15 +179,15 @@ class ManageClassesFragment : Fragment() {
 
         // Teacher selector
         var selectedTeacherId = teachers[0].id
-        btnSelectTeacher.text = "Chọn Giáo viên: ${teachers[0].name}"
+        btnSelectTeacher.text = "Chọn giáo viên: ${teachers[0].name}"
         btnSelectTeacher.setOnClickListener {
             hideKeyboard(btnSelectTeacher)
             val teacherNames = teachers.map { "${it.name} (${it.subject})" }.toTypedArray()
-            AlertDialog.Builder(context)
-                .setTitle("Chọn Giáo viên phụ trách")
+            MaterialAlertDialogBuilder(context)
+                .setTitle("Chọn giáo viên phụ trách")
                 .setItems(teacherNames) { _, index ->
                     selectedTeacherId = teachers[index].id
-                    btnSelectTeacher.text = "Chọn Giáo viên: ${teachers[index].name}"
+                    btnSelectTeacher.text = "Chọn giáo viên: ${teachers[index].name}"
                 }
                 .show()
         }
@@ -182,8 +201,7 @@ class ManageClassesFragment : Fragment() {
             val timeSlot = actvTimeSlot.text.toString().trim()
             val daysStr = etDays.text.toString().trim()
 
-            if (name.isEmpty() || academicYear.isEmpty() || room.isEmpty() || timeSlot.isEmpty() || daysStr.isEmpty()) {
-                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show()
+            if (!FormFields.requireFilled(*fields)) {
                 return@setOnClickListener
             }
 
@@ -216,7 +234,11 @@ class ManageClassesFragment : Fragment() {
             .create()
 
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
-        tvTitle.text = "Sửa thông tin Lớp học"
+        tvTitle.text = "Sửa thông tin lớp học"
+
+        val fields = FormFields.required(
+            dialogView, R.id.tilClassName, R.id.tilAcademicYear, R.id.tilRoom, R.id.tilTimeSlot, R.id.tilDays
+        )
 
         val etName = dialogView.findViewById<EditText>(R.id.etClassName)
         val etAcademic = dialogView.findViewById<EditText>(R.id.etAcademicYear)
@@ -268,7 +290,7 @@ class ManageClassesFragment : Fragment() {
 
         etDays.setOnClickListener {
             hideKeyboard(etDays)
-            AlertDialog.Builder(context)
+            MaterialAlertDialogBuilder(context)
                 .setTitle("Chọn ngày học")
                 .setMultiChoiceItems(daysArray, selectedDaysBoolean) { _, index, isChecked ->
                     selectedDaysBoolean[index] = isChecked
@@ -297,8 +319,8 @@ class ManageClassesFragment : Fragment() {
                 return@setOnClickListener
             }
             val teacherNames = teachers.map { "${it.name} (${it.subject})" }.toTypedArray()
-            AlertDialog.Builder(context)
-                .setTitle("Chọn Giáo viên phụ trách")
+            MaterialAlertDialogBuilder(context)
+                .setTitle("Chọn giáo viên phụ trách")
                 .setItems(teacherNames) { _, index ->
                     selectedTeacherId = teachers[index].id
                     btnSelectTeacher.text = "Giáo viên: ${teachers[index].name}"
@@ -315,8 +337,7 @@ class ManageClassesFragment : Fragment() {
             val timeSlot = actvTimeSlot.text.toString().trim()
             val daysStr = etDays.text.toString().trim()
 
-            if (name.isEmpty() || academicYear.isEmpty() || room.isEmpty() || timeSlot.isEmpty() || daysStr.isEmpty()) {
-                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show()
+            if (!FormFields.requireFilled(*fields)) {
                 return@setOnClickListener
             }
 

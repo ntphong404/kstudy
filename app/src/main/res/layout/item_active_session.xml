@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Kstudy.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/bg_card"
-    android:orientation="horizontal"
-    android:padding="12dp">
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
+    <!-- Green dot: the session is open right now -->
     <View
-        android:layout_width="4dp"
-        android:layout_height="match_parent"
-        android:background="@color/present" />
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:background="@drawable/bg_legend_dot"
+        android:backgroundTint="@color/present" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,16 +24,13 @@
             android:id="@+id/tvActiveSessionClass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
 
         <TextView
             android:id="@+id/tvActiveSessionDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textColor="@color/present"
-            android:textSize="12sp" />
+            android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
     </LinearLayout>
 </LinearLayout>

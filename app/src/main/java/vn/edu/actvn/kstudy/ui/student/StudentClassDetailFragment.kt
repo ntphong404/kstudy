@@ -19,6 +19,7 @@ import com.google.android.material.textfield.TextInputLayout
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.ui.adapter.AttendanceHistoryAdapter
 import vn.edu.actvn.kstudy.ui.common.AttendanceViews
+import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.util.LeaveRequestRules
 import vn.edu.actvn.kstudy.viewmodel.StudentViewModel
 import java.text.SimpleDateFormat
@@ -91,8 +92,11 @@ class StudentClassDetailFragment : Fragment() {
         historyAdapter = AttendanceHistoryAdapter(emptyList())
         rv.adapter = historyAdapter
 
+        val tvHistoryEmpty = view.findViewById<View>(R.id.tvStudentClassHistoryEmpty)
+
         viewModel.history.observe(viewLifecycleOwner) { history ->
             historyAdapter.updateList(history)
+            tvHistoryEmpty.visibility = if (history.isEmpty()) View.VISIBLE else View.GONE
 
             val total = history.size
             if (total > 0) {
@@ -166,11 +170,12 @@ class StudentClassDetailFragment : Fragment() {
             .setNegativeButton("Hủy", null)
             .setPositiveButton("Gửi đơn", null)
             .show()
+        FormFields.clearErrorOnEdit(tilReason)
         // Set after show() so that an empty reason keeps the dialog open instead of closing it
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val reason = etReason.text.toString().trim()
             if (reason.isEmpty()) {
-                tilReason.error = "Vui lòng nhập lý do xin nghỉ"
+                FormFields.setError(tilReason, "Vui lòng nhập lý do xin nghỉ")
             } else {
                 viewModel.submitLeaveRequest(studentId, classId, etDate.text.toString(), reason)
                 dialog.dismiss()

@@ -102,12 +102,12 @@ class ClassRosterFragment : Fragment() {
 
         viewModel.classStudents.observe(viewLifecycleOwner) { students ->
             enrolledAdapter.updateList(students)
-            tvEnrolledTitle.text = "DANH SÁCH LỚP (${students.size} học sinh)"
+            tvEnrolledTitle.text = "Danh sách lớp (${students.size} học sinh)"
         }
 
         viewModel.nonClassStudents.observe(viewLifecycleOwner) { students ->
             nonEnrolledAdapter.updateList(students)
-            tvUnenrolledTitle.text = "THÊM HỌC SINH VÀO LỚP (${students.size} có thể thêm)"
+            tvUnenrolledTitle.text = "Thêm học sinh vào lớp (${students.size} có thể thêm)"
         }
 
         viewModel.operationResult.observe(viewLifecycleOwner) { (success, message) ->

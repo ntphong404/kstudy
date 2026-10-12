@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Kstudy.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    android:background="@drawable/bg_card"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_marginBottom="8dp"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tvStudentInitials"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_circle_avatar"
-            android:gravity="center"
-            android:textColor="@color/on_primary_container"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            style="@style/Widget.Kstudy.Avatar" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -35,80 +26,64 @@
                 android:id="@+id/tvStudentName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Kstudy.ItemTitle" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="2dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tvStudentCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
 
                 <TextView
                     android:id="@+id/tvStudentClass"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvStudentPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvStudentPhone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp" />
-
-    <!-- Action Divider & Buttons -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="12dp"
-        android:background="@color/outline_variant" />
-
+    <!-- Hidden when the list is read-only, as in the roster a teacher sees -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnEditStudent"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sửa"
-            android:textColor="@color/primary"
-            android:visibility="gone" />
+        android:id="@+id/layoutStudentActions"
+        style="@style/Widget.Kstudy.CardActions"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/btnDeleteStudent"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="0dp"
+            style="@style/Widget.Kstudy.Button.Text.Danger"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Xóa"
-            android:textColor="@color/absent"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnEditStudent"
+            style="@style/Widget.Kstudy.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sửa"
             android:visibility="gone" />
 
         <Button
             android:id="@+id/btnActionStudent"
-            style="@style/Widget.Material3.Button"
-            android:layout_width="match_parent"
+            style="@style/Widget.Kstudy.Button.Text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

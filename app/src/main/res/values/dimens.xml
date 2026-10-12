@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Buttons, text fields, chips -->
+    <dimen name="radius_control">8dp</dimen>
+    <!-- Cards, dialogs, banners -->
+    <dimen name="radius_container">12dp</dimen>
+    <!-- Small status tags -->
+    <dimen name="radius_tag">6dp</dimen>
+
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="app_bar_height">64dp</dimen>
+</resources>

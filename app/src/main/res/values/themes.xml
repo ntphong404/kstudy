@@ -1,17 +1,77 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
     <style name="Base.Theme.Kstudy" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
+        <!-- Every colour role is set so that no component falls back to the purple Material baseline -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/on_primary_container</item>
+        <item name="colorPrimaryInverse">@color/primary_inverse</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_primary</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/on_secondary_container</item>
+        <item name="colorTertiary">@color/secondary</item>
+        <item name="colorOnTertiary">@color/on_primary</item>
+        <item name="colorTertiaryContainer">@color/secondary_container</item>
+        <item name="colorOnTertiaryContainer">@color/on_secondary_container</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/on_surface</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceVariant">@color/surface_container</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorSurfaceInverse">@color/surface_inverse</item>
+        <item name="colorOnSurfaceInverse">@color/on_surface_inverse</item>
+        <item name="colorSurfaceBright">@color/surface</item>
+        <item name="colorSurfaceDim">@color/surface_dim</item>
+        <item name="colorSurfaceContainerLowest">@color/surface</item>
+        <item name="colorSurfaceContainerLow">@color/surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/surface_container_high</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/outline_variant</item>
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/on_primary</item>
+        <item name="colorErrorContainer">@color/error_container</item>
+        <item name="colorOnErrorContainer">@color/on_error_container</item>
+
+        <!-- Raised surfaces (dialogs, menus) stay neutral instead of being tinted with the primary colour -->
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!-- Shape: 8dp for controls, 12dp for containers -->
+        <item name="shapeCornerSizeExtraSmall">@dimen/radius_control</item>
+        <item name="shapeCornerSizeSmall">@dimen/radius_control</item>
+        <item name="shapeCornerSizeMedium">@dimen/radius_container</item>
+        <item name="shapeCornerSizeLarge">@dimen/radius_container</item>
+        <item name="shapeCornerSizeLargeIncreased">@dimen/radius_container</item>
+        <item name="shapeCornerSizeExtraLarge">@dimen/radius_container</item>
+        <item name="shapeCornerSizeExtraLargeIncreased">@dimen/radius_container</item>
+
+        <item name="materialButtonStyle">@style/Widget.Kstudy.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.Kstudy.Button.Outlined</item>
+        <item name="borderlessButtonStyle">@style/Widget.Kstudy.Button.Text</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Kstudy.MaterialAlertDialog</item>
     </style>
 
     <style name="Theme.Kstudy" parent="Base.Theme.Kstudy" />
 
+    <!-- Window of the add/edit form dialogs; the form layout draws its own surface -->
     <style name="CustomDialogTheme" parent="Theme.Material3.Light.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+    </style>
+
+    <style name="ThemeOverlay.Kstudy.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.Kstudy</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Kstudy.Button.Text.Dialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.Kstudy.Button.Text.Dialog</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.Kstudy.Button.Text.Dialog.Flush</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Kstudy" parent="MaterialAlertDialog.Material3">
+        <item name="backgroundTint">?attr/colorSurface</item>
     </style>
 </resources>

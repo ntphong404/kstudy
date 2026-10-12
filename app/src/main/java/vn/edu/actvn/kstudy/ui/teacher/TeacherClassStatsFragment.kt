@@ -91,9 +91,9 @@ class TeacherClassStatsFragment : Fragment() {
 
             val shown = report.sessions.takeLast(MAX_BARS)
             tvBarTitle.text = if (report.sessions.size > MAX_BARS) {
-                "TỶ LỆ ĐI HỌC THEO BUỔI ($MAX_BARS BUỔI GẦN NHẤT)"
+                "Tỷ lệ đi học theo buổi ($MAX_BARS buổi gần nhất)"
             } else {
-                "TỶ LỆ ĐI HỌC THEO BUỔI"
+                "Tỷ lệ đi học theo buổi"
             }
             chartSessions.setBars(
                 shown.map { stat ->
@@ -118,12 +118,12 @@ class TeacherClassStatsFragment : Fragment() {
                 }
                 is AiAnalysisState.Success -> {
                     tvAiAnalysis.text = state.text
-                    tvAiAnalysis.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                    btnAiAnalysis.text = "PHÂN TÍCH LẠI"
+                    tvAiAnalysis.setTextColor(ContextCompat.getColor(requireContext(), R.color.on_surface))
+                    btnAiAnalysis.text = "Phân tích lại"
                 }
                 is AiAnalysisState.Error -> {
                     tvAiAnalysis.text = state.message
-                    tvAiAnalysis.setTextColor(ContextCompat.getColor(requireContext(), R.color.absent))
+                    tvAiAnalysis.setTextColor(ContextCompat.getColor(requireContext(), R.color.error))
                 }
             }
         }
@@ -158,20 +158,17 @@ class TeacherClassStatsFragment : Fragment() {
 
     private fun showAtRiskStudents(report: ClassReport, tvTitle: TextView, container: LinearLayout) {
         val atRisk = report.atRisk
-        tvTitle.text = "HỌC SINH CẦN LƯU Ý (${atRisk.size})"
+        tvTitle.text = "Học sinh cần lưu ý (${atRisk.size})"
         container.removeAllViews()
         if (atRisk.isEmpty()) {
-            val empty = TextView(requireContext()).apply {
-                text = if (report.sessions.isEmpty()) {
+            AttendanceViews.addEmptyNote(
+                container,
+                if (report.sessions.isEmpty()) {
                     "Chưa có buổi điểm danh nào đã chốt."
                 } else {
                     "Không có học sinh nào vắng quá ${AttendanceAnalyzer.WARNING_THRESHOLD_PERCENT}% số buổi."
                 }
-                setTextColor(resources.getColor(R.color.text_secondary, null))
-                textSize = 13f
-                setPadding(0, 0, 0, (8 * resources.displayMetrics.density).toInt())
-            }
-            container.addView(empty)
+            )
             return
         }
         for (stat in atRisk) {

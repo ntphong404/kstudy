@@ -133,7 +133,7 @@ class TeacherClassDetailFragment : Fragment() {
 
         viewModel.openingSession.observe(viewLifecycleOwner) { opening ->
             btnCreate.isEnabled = canOpenNow && !opening
-            btnCreate.text = if (opening) "ĐANG LẤY VỊ TRÍ…" else "MỞ ĐIỂM DANH (QR/MÃ)"
+            btnCreate.text = if (opening) "Đang lấy vị trí…" else "Mở điểm danh (QR/mã)"
         }
 
         viewModel.openedSession.observe(viewLifecycleOwner) { sess ->
@@ -155,7 +155,7 @@ class TeacherClassDetailFragment : Fragment() {
         viewModel.leaveRequests.observe(viewLifecycleOwner) { requests ->
             val pending = requests.count { it.status == LeaveStatus.PENDING }
             tvLeaveRequestsTitle.text =
-                if (pending > 0) "ĐƠN XIN NGHỈ PHÉP ($pending CHỜ DUYỆT)" else "ĐƠN XIN NGHỈ PHÉP"
+                if (pending > 0) "Đơn xin nghỉ phép ($pending chờ duyệt)" else "Đơn xin nghỉ phép"
             layoutLeaveRequests.removeAllViews()
             if (requests.isEmpty()) {
                 AttendanceViews.addEmptyNote(layoutLeaveRequests, "Chưa có đơn xin nghỉ nào.")
@@ -199,12 +199,7 @@ class TeacherClassDetailFragment : Fragment() {
         viewModel.pastSessions.observe(viewLifecycleOwner) { sessions ->
             layoutSessionHistory.removeAllViews()
             if (sessions.isEmpty()) {
-                val empty = TextView(requireContext()).apply {
-                    text = "Chưa có phiên điểm danh nào trước đó."
-                    setTextColor(resources.getColor(R.color.text_secondary, null))
-                    textSize = 13f
-                }
-                layoutSessionHistory.addView(empty)
+                AttendanceViews.addEmptyNote(layoutSessionHistory, "Chưa có phiên điểm danh nào trước đó.")
             } else {
                 for (session in sessions) {
                     val item = LayoutInflater.from(requireContext())

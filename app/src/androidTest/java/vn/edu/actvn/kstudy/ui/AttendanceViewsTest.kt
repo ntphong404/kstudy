@@ -82,7 +82,7 @@ class AttendanceViewsTest {
             AttendanceViews.addLeaveRequest(list, pending.copy(status = LeaveStatus.APPROVED), forTeacher = true) { }
         }.use {
             onView(withId(R.id.tvLeaveStatus)).check(matches(withText("Đã duyệt")))
-            onView(allOf(withText("DUYỆT"), isDisplayed())).check(doesNotExist())
+            onView(allOf(withText("Duyệt"), isDisplayed())).check(doesNotExist())
         }
     }
 
@@ -100,8 +100,9 @@ class AttendanceViewsTest {
             onView(withText("Ngày 12/10/2026")).check(matches(isDisplayed()))
             onView(withText("Chờ duyệt")).check(matches(isDisplayed()))
             onView(withText("Đã duyệt")).check(matches(isDisplayed()))
-            onView(withText("Từ chối")).check(matches(isDisplayed()))
-            onView(allOf(withText("DUYỆT"), isDisplayed())).check(doesNotExist())
+            // The status tag; the hidden "Từ chối" button of each card carries the same text
+            onView(allOf(withText("Từ chối"), isDisplayed())).check(matches(isDisplayed()))
+            onView(allOf(withText("Duyệt"), isDisplayed())).check(doesNotExist())
             onView(withText("Học sinh 3 (SV003)")).check(doesNotExist())
             saveScreenshot("leave_1_student_requests")
         }

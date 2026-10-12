@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Kstudy.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/bg_card"
-    android:orientation="vertical"
-    android:padding="14dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
@@ -18,20 +16,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
 
         <TextView
             android:id="@+id/tvLeaveStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_chip_status"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="3dp"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            style="@style/Widget.Kstudy.StatusTag"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <TextView
@@ -39,44 +29,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
+        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
 
     <TextView
         android:id="@+id/tvLeaveReason"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp" />
+        android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
 
     <!-- Only shown to the teacher while the request is waiting for a decision -->
     <LinearLayout
         android:id="@+id/layoutLeaveActions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         android:gravity="end"
         android:orientation="horizontal"
         android:visibility="gone">
 
         <Button
             android:id="@+id/btnLeaveReject"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Kstudy.Button.Text.Danger"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="TỪ CHỐI"
-            android:textColor="@color/absent"
-            android:textStyle="bold" />
+            android:text="Từ chối" />
 
         <Button
             android:id="@+id/btnLeaveApprove"
-            style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="DUYỆT"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:text="Duyệt" />
     </LinearLayout>
 </LinearLayout>

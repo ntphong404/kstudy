@@ -88,7 +88,7 @@ class TeacherClassStatsFragmentTest {
         launch().use { scenario ->
             waitForReport()
 
-            onView(withId(R.id.tvStatsRiskTitle)).check(matches(withText("HỌC SINH CẦN LƯU Ý (2)")))
+            onView(withId(R.id.tvStatsRiskTitle)).check(matches(withText("Học sinh cần lưu ý (2)")))
             onView(withText("Học sinh 3 (SV003)")).perform(nestedScrollTo()).check(matches(isDisplayed()))
             onView(withText("Nguy cơ cấm thi • vắng 2/5 buổi (40%)")).check(matches(isDisplayed()))
             onView(withText("Học sinh 2 (SV002)")).perform(nestedScrollTo()).check(matches(isDisplayed()))
@@ -117,7 +117,7 @@ class TeacherClassStatsFragmentTest {
             waitUntil {
                 onView(withId(R.id.tvAiAnalysis)).check(matches(withText(startsWith("1. Tổng quan: lớp đi học 80%."))))
             }
-            onView(withId(R.id.btnAiAnalysis)).check(matches(withText("PHÂN TÍCH LẠI")))
+            onView(withId(R.id.btnAiAnalysis)).check(matches(withText("Phân tích lại")))
             onView(withId(R.id.btnAiAnalysis)).check(matches(isEnabled()))
             assertTrue(ai.requests.single().message.contains("Lớp \"Toán cao cấp A1\""))
             saveScreenshot("stats_3_ai_analysis")
@@ -173,7 +173,7 @@ class TeacherClassStatsFragmentTest {
             waitForReport("Sĩ số: 1 học sinh • Đã chốt 0 buổi điểm danh")
 
             onView(withId(R.id.tvLegendPresent)).check(matches(withText("0")))
-            onView(withId(R.id.tvStatsRiskTitle)).check(matches(withText("HỌC SINH CẦN LƯU Ý (0)")))
+            onView(withId(R.id.tvStatsRiskTitle)).check(matches(withText("Học sinh cần lưu ý (0)")))
             onView(withText("Chưa có buổi điểm danh nào đã chốt.")).perform(nestedScrollTo()).check(matches(isDisplayed()))
 
             onView(withId(R.id.btnAiAnalysis)).perform(nestedScrollTo(), click())

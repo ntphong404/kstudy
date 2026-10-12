@@ -45,10 +45,10 @@ class ChatMessageAdapter(
             val context = itemView.context
             if (message.isError) {
                 tvText.setBackgroundResource(R.drawable.bg_chat_error)
-                tvText.setTextColor(ContextCompat.getColor(context, R.color.absent))
+                tvText.setTextColor(ContextCompat.getColor(context, R.color.on_error_container))
             } else {
                 tvText.setBackgroundResource(R.drawable.bg_chat_ai)
-                tvText.setTextColor(ContextCompat.getColor(context, R.color.black))
+                tvText.setTextColor(ContextCompat.getColor(context, R.color.on_surface))
             }
         }
     }

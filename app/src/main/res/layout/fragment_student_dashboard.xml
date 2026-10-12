@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:fillViewport="true">
 
     <LinearLayout
@@ -10,172 +10,123 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Greeting Banner -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_gradient_blue"
-            android:orientation="vertical"
-            android:padding="24dp">
+        <LinearLayout style="@style/Widget.Kstudy.PageHeader">
 
             <TextView
                 android:id="@+id/tvStudentDashboardWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
             <TextView
                 android:id="@+id/tvStudentDashboardSubDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="@color/primary_container"
-                android:textSize="14sp" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingBottom="24dp">
 
-            <!-- Stat cards -->
             <LinearLayout
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lớp đang học"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStudentStatClasses"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="--"
-                        android:textColor="@color/primary"
-                        android:textSize="32sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_card"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tỷ lệ điểm danh TB"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:text="Lớp đang học"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
+                </LinearLayout>
+
+                <View style="@style/Widget.Kstudy.Stat.Divider" />
+
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStudentStatAttendance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="--"
-                        android:textColor="@color/black"
-                        android:textSize="32sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tỷ lệ điểm danh TB"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Attendance warnings, one card per class at risk (empty when the student is doing fine) -->
+            <!-- Attendance warnings, one banner per class at risk (empty when the student is doing fine) -->
             <LinearLayout
                 android:id="@+id/layoutStudentWarnings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 android:visibility="gone" />
 
-            <!-- Upcoming class card -->
+            <TextView
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:text="Lớp học sắp tới" />
+
             <LinearLayout
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="LỚP HỌC SẮP TỚI"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tvStudentUpcomingClassName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.ItemTitle" />
 
                 <TextView
                     android:id="@+id/tvStudentUpcomingClassInfo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
             </LinearLayout>
 
-            <!-- Attendance chart -->
+            <TextView
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:text="Chuyên cần của tôi" />
+
             <LinearLayout
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CHUYÊN CẦN CỦA TÔI"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <vn.edu.actvn.kstudy.ui.common.DonutChartView
                         android:id="@+id/chartStudentAttendance"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp" />
+                        android:layout_width="112dp"
+                        android:layout_height="112dp" />
 
                     <include
                         android:id="@+id/legendStudentAttendance"
@@ -190,10 +141,9 @@
                     android:id="@+id/tvStudentChartNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="16dp"
                     android:text="Đang tải dữ liệu…"
-                    android:textColor="@color/outline"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

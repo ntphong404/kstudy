@@ -20,6 +20,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.Teacher
 import vn.edu.actvn.kstudy.ui.adapter.TeacherAdapter
+import vn.edu.actvn.kstudy.ui.common.FormFields
+import vn.edu.actvn.kstudy.ui.common.ListState
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
 import java.util.*
 
@@ -28,6 +30,8 @@ class ManageTeachersFragment : Fragment() {
     private lateinit var viewModel: AdminViewModel
     private lateinit var adapter: TeacherAdapter
     private var allTeachers = listOf<Teacher>()
+    private lateinit var listState: ListState
+    private var loaded = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,8 +63,11 @@ class ManageTeachersFragment : Fragment() {
         val btnAdd = view.findViewById<Button>(R.id.btnAddTeacher)
         btnAdd.setOnClickListener { showAddDialog() }
 
+        listState = ListState(view)
+
         viewModel.teachers.observe(viewLifecycleOwner) { teachers ->
             allTeachers = teachers
+            loaded = true
             filterList(etSearch.text.toString())
         }
 
@@ -80,6 +87,13 @@ class ManageTeachersFragment : Fragment() {
                     it.subject.lowercase(Locale.getDefault()).contains(lowerQuery)
         }
         adapter.updateList(filtered)
+        // Typing in the search box before the list has arrived must not end the loading state
+        if (loaded) {
+            listState.show(
+                filtered.size,
+                if (query.isBlank()) "Chưa có giáo viên nào." else "Không tìm thấy giáo viên phù hợp."
+            )
+        }
     }
 
     private fun showAddDialog() {
@@ -90,7 +104,13 @@ class ManageTeachersFragment : Fragment() {
             .create()
 
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
-        tvTitle.text = "Thêm Giáo viên mới"
+        tvTitle.text = "Thêm giáo viên mới"
+
+        // Every field is required; an empty one is marked where it is
+        val fields = FormFields.required(
+            dialogView, R.id.tilUsername, R.id.tilPassword,
+            R.id.tilTeacherName, R.id.tilTeacherSub, R.id.tilTeacherPhone
+        )
 
         val etUser = dialogView.findViewById<EditText>(R.id.etTeacherUser)
         val etPass = dialogView.findViewById<EditText>(R.id.etTeacherPass)
@@ -110,8 +130,7 @@ class ManageTeachersFragment : Fragment() {
             val sub = etSub.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            if (user.isEmpty() || pass.isEmpty() || name.isEmpty() || sub.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show()
+            if (!FormFields.requireFilled(*fields)) {
                 return@setOnClickListener
             }
 
@@ -140,7 +159,9 @@ class ManageTeachersFragment : Fragment() {
             .create()
 
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
-        tvTitle.text = "Sửa thông tin Giáo viên"
+        tvTitle.text = "Sửa thông tin giáo viên"
+
+        val fields = FormFields.required(dialogView, R.id.tilTeacherName, R.id.tilTeacherSub, R.id.tilTeacherPhone)
 
         // Hide username and password fields when editing
         dialogView.findViewById<View>(R.id.tilUsername).visibility = View.GONE
@@ -164,8 +185,7 @@ class ManageTeachersFragment : Fragment() {
             val sub = etSub.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            if (name.isEmpty() || sub.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show()
+            if (!FormFields.requireFilled(*fields)) {
                 return@setOnClickListener
             }
 

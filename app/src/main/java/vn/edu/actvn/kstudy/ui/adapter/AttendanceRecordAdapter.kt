@@ -1,6 +1,6 @@
 package vn.edu.actvn.kstudy.ui.adapter
 
-import android.graphics.Color
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.AttendanceRecord
+import vn.edu.actvn.kstudy.ui.common.AttendanceViews
 
 class AttendanceRecordAdapter(
     private var list: List<AttendanceRecord>,
@@ -37,68 +38,38 @@ class AttendanceRecordAdapter(
         private val tvName: TextView = view.findViewById(R.id.tvRecordStudentName)
         private val tvCode: TextView = view.findViewById(R.id.tvRecordStudentCode)
         private val tvTime: TextView = view.findViewById(R.id.tvRecordTime)
-        private val btnPresent: Button = view.findViewById(R.id.btnStatusPresent)
-        private val btnLate: Button = view.findViewById(R.id.btnStatusLate)
-        private val btnAbsent: Button = view.findViewById(R.id.btnStatusAbsent)
-        private val btnExcused: Button = view.findViewById(R.id.btnStatusExcused)
+
+        // Each button with the status it sets
+        private val statusButtons: List<Pair<Button, String>> = listOf(
+            view.findViewById<Button>(R.id.btnStatusPresent) to "PRESENT",
+            view.findViewById<Button>(R.id.btnStatusLate) to "LATE",
+            view.findViewById<Button>(R.id.btnStatusAbsent) to "ABSENT",
+            view.findViewById<Button>(R.id.btnStatusExcused) to "EXCUSED"
+        )
 
         fun bind(record: AttendanceRecord, onStatusChange: (AttendanceRecord, String) -> Unit) {
             tvName.text = record.studentName
             tvCode.text = record.studentCode
-            tvTime.text = if (record.timeMarked == "-") "" else "Lúc: ${record.timeMarked}"
+            // No time yet: the line is left out so the name and code stay centred next to the buttons
+            val hasTime = record.timeMarked != "-"
+            tvTime.text = if (hasTime) "Lúc: ${record.timeMarked}" else ""
+            tvTime.visibility = if (hasTime) View.VISIBLE else View.GONE
 
-            // Reset buttons styling to defaults
-            resetButtonStyles()
-
-            // Highlight current status
-            when (record.status) {
-                "PRESENT" -> {
-                    btnPresent.setBackgroundColor(Color.parseColor("#4CAF50"))
-                    btnPresent.setTextColor(Color.WHITE)
+            for ((button, status) in statusButtons) {
+                highlight(button, status, selected = record.status == status)
+                button.setOnClickListener {
+                    if (record.status != status) onStatusChange(record, status)
                 }
-                "LATE" -> {
-                    btnLate.setBackgroundColor(Color.parseColor("#FFC107"))
-                    btnLate.setTextColor(Color.WHITE)
-                }
-                "ABSENT" -> {
-                    btnAbsent.setBackgroundColor(Color.parseColor("#F44336"))
-                    btnAbsent.setTextColor(Color.WHITE)
-                }
-                "EXCUSED" -> {
-                    btnExcused.setBackgroundColor(Color.parseColor("#2196F3"))
-                    btnExcused.setTextColor(Color.WHITE)
-                }
-            }
-
-            btnPresent.setOnClickListener {
-                if (record.status != "PRESENT") onStatusChange(record, "PRESENT")
-            }
-            btnLate.setOnClickListener {
-                if (record.status != "LATE") onStatusChange(record, "LATE")
-            }
-            btnAbsent.setOnClickListener {
-                if (record.status != "ABSENT") onStatusChange(record, "ABSENT")
-            }
-            btnExcused.setOnClickListener {
-                if (record.status != "EXCUSED") onStatusChange(record, "EXCUSED")
             }
         }
 
-        private fun resetButtonStyles() {
-            val context = itemView.context
-            
-            // Set unselected flat styles
-            btnPresent.setBackgroundColor(Color.parseColor("#EDEFEF"))
-            btnPresent.setTextColor(Color.parseColor("#5A5C5D"))
-            
-            btnLate.setBackgroundColor(Color.parseColor("#EDEFEF"))
-            btnLate.setTextColor(Color.parseColor("#5A5C5D"))
-            
-            btnAbsent.setBackgroundColor(Color.parseColor("#EDEFEF"))
-            btnAbsent.setTextColor(Color.parseColor("#5A5C5D"))
-
-            btnExcused.setBackgroundColor(Color.parseColor("#EDEFEF"))
-            btnExcused.setTextColor(Color.parseColor("#5A5C5D"))
+        // The current status is filled with its own colour; the other three stay neutral
+        private fun highlight(button: Button, status: String, selected: Boolean) {
+            val context = button.context
+            val background = if (selected) AttendanceViews.statusColors(status).first else R.color.surface_container
+            val text = if (selected) R.color.on_primary else R.color.text_secondary
+            button.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, background))
+            button.setTextColor(ContextCompat.getColor(context, text))
         }
     }
 }

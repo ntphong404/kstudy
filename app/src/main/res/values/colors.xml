@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    
-    <!-- Primary Theme Colors -->
-    <color name="primary">#5B21B6</color>
-    <color name="primary_dark">#4C1D95</color>
-    <color name="primary_container">#EDE9FE</color>
-    <color name="on_primary_container">#2E1065</color>
-    <color name="nav_indicator">#DDD6FE</color>
-    
-    <!-- Secondary & Neutral -->
-    <color name="secondary">#585F6A</color>
-    <color name="background">#F8F9FB</color>
+
+    <!-- Brand: one navy accent -->
+    <color name="primary">#1F3A5F</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#E2E9F3</color>
+    <color name="on_primary_container">#14263F</color>
+    <color name="primary_inverse">#A9C1E3</color>
+    <color name="nav_indicator">#E2E9F3</color>
+
+    <!-- Neutrals -->
+    <color name="secondary">#56606E</color>
+    <color name="secondary_container">#E7EAEF</color>
+    <color name="on_secondary_container">#1C2430</color>
+    <color name="background">#F5F6F8</color>
     <color name="surface">#FFFFFF</color>
-    <color name="surface_container">#EDEEF0</color>
-    <color name="surface_container_low">#F3F4F6</color>
-    
-    <!-- Greys -->
-    <color name="outline">#737685</color>
-    <color name="outline_variant">#C3C6D6</color>
-    <color name="text_secondary">#434654</color>
-    
-    <!-- Status / Attendance States -->
-    <color name="present">#4CAF50</color>
-    <color name="present_bg">#E8F5E9</color>
-    <color name="late">#FFC107</color>
-    <color name="late_bg">#FFFDE7</color>
-    <color name="absent">#F44336</color>
-    <color name="absent_bg">#FFEBEE</color>
-    <color name="excused">#2196F3</color>
-    <color name="excused_bg">#E3F2FD</color>
+    <color name="surface_container_low">#F5F6F8</color>
+    <color name="surface_container">#ECEEF2</color>
+    <color name="surface_container_high">#E4E7EC</color>
+    <color name="surface_dim">#DCDEE3</color>
+    <color name="surface_inverse">#2F3237</color>
+    <color name="on_surface_inverse">#F1F2F4</color>
+    <color name="on_surface">#1B1D21</color>
+    <color name="text_secondary">#555B66</color>
+    <color name="outline">#7A808C</color>
+    <color name="outline_variant">#DDE0E6</color>
+
+    <!-- Errors and destructive actions -->
+    <color name="error">#B3261E</color>
+    <color name="error_container">#FBEAE8</color>
+    <color name="on_error_container">#5F1410</color>
+
+    <!-- Attendance states; the strong tone is dark enough to be used as text on white -->
+    <color name="present">#2E7D32</color>
+    <color name="present_bg">#E8F3E9</color>
+    <color name="late">#B26A00</color>
+    <color name="late_bg">#FBF1DF</color>
+    <color name="absent">#C62828</color>
+    <color name="absent_bg">#FBEAEA</color>
+    <color name="excused">#1565C0</color>
+    <color name="excused_bg">#E6EFFA</color>
 </resources>

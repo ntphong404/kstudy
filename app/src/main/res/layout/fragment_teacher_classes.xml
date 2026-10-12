@@ -2,54 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
-    <!-- Teacher Greeting Banner -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:orientation="vertical"
-        android:padding="24dp">
+    <LinearLayout style="@style/Widget.Kstudy.PageHeader">
 
         <TextView
             android:id="@+id/tvTeacherWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
         <TextView
             android:id="@+id/tvTeacherSubDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/primary_container"
-            android:textSize="14sp" />
+            android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+    <TextView
+        style="@style/Widget.Kstudy.SectionHeader"
+        android:layout_marginStart="@dimen/screen_padding"
+        android:layout_marginTop="8dp"
+        android:text="Lớp học đang phụ trách" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LỚP HỌC ĐANG PHỤ TRÁCH"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTeacherClasses"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
             android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/screen_padding"
             android:paddingBottom="16dp" />
-    </LinearLayout>
+
+        <include layout="@layout/view_list_state" />
+    </FrameLayout>
 </LinearLayout>

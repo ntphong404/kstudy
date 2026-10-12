@@ -2,49 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
-    <!-- Header Panel -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
 
         <ImageView
             android:id="@+id/btnBackStudentDetail"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back" />
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvStudentDetailSubject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
             <TextView
                 android:id="@+id/tvStudentDetailClassInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/primary_container"
-                android:textSize="13sp" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
@@ -57,96 +43,67 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="@dimen/screen_padding"
+            android:paddingBottom="24dp">
 
-            <!-- Stats Card -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="THÔNG TIN CHUYÊN CẦN"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:layout_marginTop="8dp"
+                android:text="Thông tin chuyên cần" />
 
             <LinearLayout
+                style="@style/Widget.Kstudy.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_card"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:weightSum="3">
+                android:orientation="horizontal">
 
-                <!-- Rate -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStudentDetailRate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/primary"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Đi học"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
 
-                <!-- Present Count -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <View style="@style/Widget.Kstudy.Stat.Divider" />
+
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStudentDetailPresentCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/present"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Có mặt"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
 
-                <!-- Absent Count -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <View style="@style/Widget.Kstudy.Stat.Divider" />
+
+                <LinearLayout style="@style/Widget.Kstudy.Stat">
 
                     <TextView
                         android:id="@+id/tvStudentDetailAbsentCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/absent"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Vắng mặt"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
+                        android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -155,6 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -162,44 +120,42 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="ĐƠN XIN NGHỈ PHÉP"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:text="Đơn xin nghỉ phép"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Section" />
 
                 <Button
                     android:id="@+id/btnRequestLeave"
-                    style="@style/Widget.Material3.Button.TonalButton"
+                    style="@style/Widget.Kstudy.Button.Outlined"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="XIN NGHỈ PHÉP"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:text="Xin nghỉ phép" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layoutStudentLeaveRequests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:orientation="vertical" />
 
-            <!-- History log -->
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/Widget.Kstudy.SectionHeader"
                 android:layout_marginTop="16dp"
-                android:text="LỊCH SỬ ĐIỂM DANH"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:text="Lịch sử điểm danh" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvStudentClassHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false" />
+
+            <!-- Shown instead of the list while it has no records -->
+            <TextView
+                android:id="@+id/tvStudentClassHistoryEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chưa có buổi điểm danh nào."
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary"
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

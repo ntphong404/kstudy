@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="56dp"
+    android:paddingStart="48dp"
     android:paddingTop="4dp"
     android:paddingEnd="0dp"
     android:paddingBottom="4dp">
@@ -14,8 +14,8 @@
         android:layout_gravity="end"
         android:background="@drawable/bg_chat_user"
         android:lineSpacingExtra="2dp"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="10dp"
-        android:textColor="@color/white"
-        android:textSize="15sp" />
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textAppearance="@style/TextAppearance.Kstudy.Body"
+        android:textColor="?attr/colorOnPrimary" />
 </FrameLayout>

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
     android:paddingTop="4dp"
-    android:paddingEnd="40dp"
+    android:paddingEnd="48dp"
     android:paddingBottom="4dp">
 
     <TextView
@@ -14,8 +14,7 @@
         android:layout_gravity="start"
         android:background="@drawable/bg_chat_ai"
         android:lineSpacingExtra="2dp"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="10dp"
-        android:textColor="@color/black"
-        android:textSize="15sp" />
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:textAppearance="@style/TextAppearance.Kstudy.Body" />
 </FrameLayout>

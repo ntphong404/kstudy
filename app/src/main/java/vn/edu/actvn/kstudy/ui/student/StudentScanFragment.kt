@@ -120,7 +120,7 @@ class StudentScanFragment : Fragment() {
         viewModel.checkingIn.observe(viewLifecycleOwner) { checking ->
             btnSubmit.isEnabled = !checking
             btnStartScan.isEnabled = !checking
-            btnSubmit.text = if (checking) "ĐANG KIỂM TRA…" else "XÁC NHẬN ĐIỂM DANH"
+            btnSubmit.text = if (checking) "Đang kiểm tra…" else "Xác nhận điểm danh"
         }
 
         viewModel.attendanceResult.observe(viewLifecycleOwner) { result ->

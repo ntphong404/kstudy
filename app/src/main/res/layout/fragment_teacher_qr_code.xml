@@ -3,150 +3,117 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:keepScreenOn="true"
     android:orientation="vertical">
 
-    <!-- Header Panel with Back Button -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
 
         <ImageView
             android:id="@+id/btnBackQrCode"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back" />
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PHIÊN ĐIỂM DANH"
-                android:textColor="@color/primary_container"
-                android:textSize="11sp"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvQrClassTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phiên điểm danh"
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Main Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="@dimen/screen_padding">
 
-        <!-- Compact QR Display Card -->
+        <!-- The rotating code: QR for scanning, text for typing -->
         <LinearLayout
             android:id="@+id/layoutQrCodeCard"
+            style="@style/Widget.Kstudy.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:padding="14dp">
+            android:orientation="horizontal">
 
-            <!-- Left side: QrView preview -->
             <vn.edu.actvn.kstudy.ui.common.QrView
                 android:id="@+id/qrView"
-                android:layout_width="100dp"
-                android:layout_height="100dp" />
+                android:layout_width="104dp"
+                android:layout_height="104dp" />
 
-            <!-- Right side: Info and Zoom Button -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="16dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="MÃ XÁC THỰC THỦ CÔNG"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:text="Mã xác thực thủ công"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
 
                 <TextView
                     android:id="@+id/tvManualCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/primary"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.1" />
+                    android:letterSpacing="0.1"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Headline" />
 
                 <TextView
                     android:id="@+id/tvQrCountdown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
 
                 <Button
                     android:id="@+id/btnZoomQr"
-                    style="@style/Widget.Material3.Button.ElevatedButton"
+                    style="@style/Widget.Kstudy.Button.Outlined"
                     android:layout_width="match_parent"
-                    android:layout_height="36dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:padding="0dp"
-                    android:text="PHÓNG TO MÃ QR"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    app:iconSize="14dp"
-                    app:icon="@drawable/ic_scan" />
+                    android:text="Phóng to mã QR" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Checkin Stats Card -->
+        <!-- Progress of the check-in and the rules this session applies -->
         <LinearLayout
+            style="@style/Widget.Kstudy.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_card"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvQrStats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đã điểm danh: -- / -- học sinh"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
 
-            <ProgressBar
+            <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/pbQrProgress"
-                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="6dp"
-                android:layout_marginTop="6dp"
-                android:progressDrawable="@android:drawable/progress_horizontal" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:trackCornerRadius="2dp" />
 
             <!-- Which checks this session applies: location radius and late threshold -->
             <TextView
@@ -154,41 +121,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
         </LinearLayout>
 
-        <!-- Manual Attendance Section -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="DANH SÁCH ĐIỂM DANH THỦ CÔNG"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            style="@style/Widget.Kstudy.SectionHeader"
+            android:layout_marginTop="16dp"
+            android:text="Danh sách điểm danh thủ công" />
 
-        <!-- Scrollable Student List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvQrManualAttendance"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/bg_card"
             android:clipToPadding="false"
             android:paddingBottom="8dp" />
+    </LinearLayout>
 
-        <!-- Fixed Action Button at the Bottom -->
+    <View style="@style/Widget.Kstudy.Divider" />
+
+    <!-- Action pinned under the list -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingVertical="8dp">
+
         <Button
             android:id="@+id/btnEndSession"
-            style="@style/Widget.Material3.Button"
+            style="@style/Widget.Kstudy.Button.Danger"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/absent"
-            android:text="CHỐT DANH SÁCH &amp; ĐÓNG PHIÊN"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:text="Chốt danh sách &amp; đóng phiên" />
     </LinearLayout>
 </LinearLayout>

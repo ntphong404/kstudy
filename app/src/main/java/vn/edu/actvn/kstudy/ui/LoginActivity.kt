@@ -4,16 +4,20 @@ import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.content.Context
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.textfield.TextInputLayout
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.Role
 import vn.edu.actvn.kstudy.ui.admin.AdminMainActivity
+import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.student.StudentMainActivity
 import vn.edu.actvn.kstudy.ui.teacher.TeacherMainActivity
 import vn.edu.actvn.kstudy.viewmodel.AuthViewModel
@@ -29,23 +33,45 @@ class LoginActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         viewModel.initializeMockData()
 
-        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
+        androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
 
+        val tilUsername = findViewById<TextInputLayout>(R.id.tilUsername)
+        val tilPassword = findViewById<TextInputLayout>(R.id.tilPassword)
         val etUsername = findViewById<EditText>(R.id.etUsername)
         val etPassword = findViewById<EditText>(R.id.etPassword)
+        val tvError = findViewById<TextView>(R.id.tvLoginError)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
 
+        FormFields.clearErrorOnEdit(tilUsername, tilPassword)
 
+        // The button is locked while the account is being checked, so it cannot be sent twice
+        fun setSigningIn(signingIn: Boolean) {
+            btnLogin.isEnabled = !signingIn
+            btnLogin.text = if (signingIn) "Đang đăng nhập…" else "Đăng nhập"
+        }
 
         btnLogin.setOnClickListener {
             val user = etUsername.text.toString().trim()
             val pass = etPassword.text.toString().trim()
+
+            tvError.visibility = View.GONE
+            FormFields.setError(tilUsername, if (user.isEmpty()) "Vui lòng nhập tên đăng nhập" else null)
+            FormFields.setError(tilPassword, if (pass.isEmpty()) "Vui lòng nhập mật khẩu" else null)
+            if (user.isEmpty() || pass.isEmpty()) return@setOnClickListener
+
+            setSigningIn(true)
             viewModel.login(user, pass)
         }
 
         // Observe results
         viewModel.loginResult.observe(this) { (success, message) ->
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            setSigningIn(false)
+            if (success) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            } else {
+                tvError.text = message
+                tvError.visibility = View.VISIBLE
+            }
         }
 
         viewModel.currentUser.observe(this) { user ->

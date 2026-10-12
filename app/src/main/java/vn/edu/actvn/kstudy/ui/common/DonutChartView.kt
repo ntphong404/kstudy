@@ -37,8 +37,8 @@ class DonutChartView @JvmOverloads constructor(
     }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
-        typeface = Typeface.DEFAULT_BOLD
-        color = ContextCompat.getColor(context, R.color.black)
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        color = ContextCompat.getColor(context, R.color.on_surface)
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER

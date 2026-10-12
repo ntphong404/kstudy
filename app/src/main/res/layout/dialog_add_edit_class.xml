@@ -11,18 +11,15 @@
         android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm Lớp học mới"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
+        android:text="Thêm lớp học mới"
+        android:textAppearance="@style/TextAppearance.Kstudy.Title" />
 
+    <!-- Scrolls when the keyboard leaves too little room for all the fields -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        android:layout_marginBottom="16dp">
+        android:layout_marginTop="16dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,112 +27,118 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilClassName"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                android:hint="Tên lớp"
+                app:placeholderText="Ví dụ: Lớp 12A1">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etClassName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Tên lớp (ví dụ: Lớp 12A1)"
-                    android:textColor="@color/black"
-                    android:singleLine="true" />
+                    android:inputType="textCapSentences"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilAcademicYear"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                android:hint="Năm học"
+                app:placeholderText="Ví dụ: 2025-2026">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etAcademicYear"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Năm học (ví dụ: 2025-2026)"
-                    android:textColor="@color/black"
-                    android:singleLine="true" />
+                    android:inputType="text"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRoom"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                android:hint="Phòng học"
+                app:placeholderText="Ví dụ: Phòng 302">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etRoom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Phòng học (ví dụ: Phòng 302)"
-                    android:textColor="@color/black"
-                    android:singleLine="true" />
+                    android:inputType="textCapSentences"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Khung giờ học Dropdown -->
+            <!-- Time slot: one of the fixed slots -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTimeSlot"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:hint="Khung giờ học"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                android:hint="Khung giờ học">
+
                 <AutoCompleteTextView
                     android:id="@+id/actvTimeSlot"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:textColor="@color/black" />
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Ngày học trong tuần Multi-select Dropdown/Popup -->
+            <!-- Days of the week: tapping the field opens a multi-choice list -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDays"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Ngày học trong tuần"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                android:layout_marginBottom="12dp"
+                android:hint="Ngày học trong tuần">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDays"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
                     android:clickable="true"
                     android:cursorVisible="false"
-                    android:textColor="@color/black" />
+                    android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btnSelectTeacherDialog"
-                style="@style/Widget.Material3.Button.ElevatedButton"
+                style="@style/Widget.Kstudy.Button.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chọn Giáo viên phụ trách"
-                android:layout_marginBottom="8dp" />
-
+                android:text="Chọn giáo viên phụ trách" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end">
+        android:layout_marginTop="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnCancelClass"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Kstudy.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="HỦY"
-            android:textColor="@color/secondary"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:text="Hủy" />
 
         <Button
             android:id="@+id/btnSaveClass"
-            style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LƯU"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:text="Lưu" />
     </LinearLayout>
 </LinearLayout>

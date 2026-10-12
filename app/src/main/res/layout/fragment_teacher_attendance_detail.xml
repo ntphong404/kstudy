@@ -2,78 +2,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
-    <!-- Header Panel -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_gradient_blue"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
 
         <ImageView
             android:id="@+id/btnBackAttendanceDetail"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:padding="8dp"
-            android:src="@drawable/ic_back"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back" />
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ĐIỂM DANH THỦ CÔNG"
-                android:textColor="@color/primary_container"
-                android:textSize="12sp"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvManualClassTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Điểm danh thủ công"
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Student Attendance Records List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvManualAttendance"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        android:layout_marginTop="8dp" />
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
 
-    <!-- Bottom Action Button -->
+    <View style="@style/Widget.Kstudy.Divider" />
+
+    <!-- Action pinned under the list -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="@color/white">
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingVertical="8dp">
 
         <Button
             android:id="@+id/btnSaveManual"
-            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="HOÀN TẤT ĐIỂM DANH"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:text="Hoàn tất điểm danh" />
     </LinearLayout>
 </LinearLayout>

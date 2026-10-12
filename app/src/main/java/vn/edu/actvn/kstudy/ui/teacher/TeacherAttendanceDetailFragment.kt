@@ -67,7 +67,7 @@ class TeacherAttendanceDetailFragment : Fragment() {
 
         adapter = AttendanceRecordAdapter(emptyList()) { record, newStatus ->
             val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val timeMarked = if (newStatus == "ABSENT") "-" else formatter.format(Date())
+            val timeMarked = if (newStatus == "ABSENT" || newStatus == "EXCUSED") "-" else formatter.format(Date())
             viewModel.updateRecordStatus(record.id, sessionId, newStatus, timeMarked)
         }
         rv.adapter = adapter

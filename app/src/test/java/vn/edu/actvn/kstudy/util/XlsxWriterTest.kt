@@ -145,7 +145,8 @@ class XlsxWriterTest {
                         XlsxCell.text("Muộn", XlsxStyle.LATE),
                         XlsxCell.text("Vắng", XlsxStyle.ABSENT),
                         XlsxCell.text("Nguy cơ cấm thi", XlsxStyle.DANGER),
-                        XlsxCell.text("thường", XlsxStyle.BODY)
+                        XlsxCell.text("thường", XlsxStyle.BODY),
+                        XlsxCell.text("Có phép", XlsxStyle.EXCUSED)
                     )
                 )
             )
@@ -161,6 +162,8 @@ class XlsxWriterTest {
             assertEquals("FFFFEBEE", style(3).fillForegroundColorColor.argbHex)
             assertTrue(style(3).font.bold)
             assertFalse(style(4).font.bold)
+            assertEquals("FFE3F2FD", style(5).fillForegroundColorColor.argbHex)
+            assertFalse(style(5).font.bold)
         }
     }
 

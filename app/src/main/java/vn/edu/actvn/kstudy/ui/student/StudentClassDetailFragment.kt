@@ -1,17 +1,29 @@
 package vn.edu.actvn.kstudy.ui.student
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.ui.adapter.AttendanceHistoryAdapter
+import vn.edu.actvn.kstudy.ui.common.AttendanceViews
+import vn.edu.actvn.kstudy.util.LeaveRequestRules
 import vn.edu.actvn.kstudy.viewmodel.StudentViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class StudentClassDetailFragment : Fragment() {
 
@@ -99,8 +111,70 @@ class StudentClassDetailFragment : Fragment() {
             }
         }
 
+        val layoutLeaveRequests = view.findViewById<LinearLayout>(R.id.layoutStudentLeaveRequests)
+        view.findViewById<View>(R.id.btnRequestLeave).setOnClickListener {
+            showLeaveRequestDialog()
+        }
+
+        viewModel.leaveRequests.observe(viewLifecycleOwner) { requests ->
+            layoutLeaveRequests.removeAllViews()
+            if (requests.isEmpty()) {
+                AttendanceViews.addEmptyNote(layoutLeaveRequests, "Bạn chưa gửi đơn xin nghỉ nào cho lớp này.")
+            }
+            for (request in requests) {
+                AttendanceViews.addLeaveRequest(layoutLeaveRequests, request, forTeacher = false)
+            }
+        }
+
+        viewModel.leaveResult.observe(viewLifecycleOwner) { result ->
+            if (result != null) {
+                Toast.makeText(requireContext(), result.second, Toast.LENGTH_LONG).show()
+                viewModel.clearLeaveResult()
+            }
+        }
+
         viewModel.loadHistory(studentId, classId)
+        viewModel.loadLeaveRequests(studentId, classId)
 
         return view
+    }
+
+    // A request is for one day of this class; it may be sent before the lesson or afterwards
+    private fun showLeaveRequestDialog() {
+        val content = layoutInflater.inflate(R.layout.dialog_leave_request, null)
+        val etDate = content.findViewById<EditText>(R.id.etLeaveDate)
+        val tilReason = content.findViewById<TextInputLayout>(R.id.tilLeaveReason)
+        val etReason = content.findViewById<EditText>(R.id.etLeaveReason)
+
+        val formatter = SimpleDateFormat(LeaveRequestRules.DATE_PATTERN, Locale.US)
+        val day = Calendar.getInstance()
+        etDate.setText(formatter.format(day.time))
+        etDate.setOnClickListener {
+            DatePickerDialog(
+                requireContext(),
+                { _, year, month, dayOfMonth ->
+                    day.set(year, month, dayOfMonth)
+                    etDate.setText(formatter.format(day.time))
+                },
+                day.get(Calendar.YEAR), day.get(Calendar.MONTH), day.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Xin nghỉ phép • $className")
+            .setView(content)
+            .setNegativeButton("Hủy", null)
+            .setPositiveButton("Gửi đơn", null)
+            .show()
+        // Set after show() so that an empty reason keeps the dialog open instead of closing it
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val reason = etReason.text.toString().trim()
+            if (reason.isEmpty()) {
+                tilReason.error = "Vui lòng nhập lý do xin nghỉ"
+            } else {
+                viewModel.submitLeaveRequest(studentId, classId, etDate.text.toString(), reason)
+                dialog.dismiss()
+            }
+        }
     }
 }

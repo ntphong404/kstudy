@@ -29,4 +29,6 @@
     <color name="late_bg">#FFFDE7</color>
     <color name="absent">#F44336</color>
     <color name="absent_bg">#FFEBEE</color>
+    <color name="excused">#2196F3</color>
+    <color name="excused_bg">#E3F2FD</color>
 </resources>

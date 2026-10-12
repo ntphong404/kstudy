@@ -9,12 +9,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import vn.edu.actvn.kstudy.R
+import vn.edu.actvn.kstudy.data.location.DeviceLocation
+import vn.edu.actvn.kstudy.data.model.AttendanceSession
+import vn.edu.actvn.kstudy.data.model.LeaveStatus
 import vn.edu.actvn.kstudy.ui.adapter.StudentAdapter
+import vn.edu.actvn.kstudy.ui.common.AttendanceViews
+import vn.edu.actvn.kstudy.util.CheckInRules
 import vn.edu.actvn.kstudy.util.ScheduleUtils
 import vn.edu.actvn.kstudy.viewmodel.TeacherViewModel
 
@@ -27,6 +34,17 @@ class TeacherClassDetailFragment : Fragment() {
 
     private lateinit var viewModel: TeacherViewModel
     private lateinit var studentAdapter: StudentAdapter
+
+    // Late threshold chosen in the dialog, kept while the location permission is being asked
+    private var pendingLateAfterMinutes: Int? = null
+
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        // Whatever the answer the session is opened; without the permission it has no location check
+        pendingLateAfterMinutes?.let { viewModel.createSession(classId, it) }
+        pendingLateAfterMinutes = null
+    }
 
     companion object {
         fun newInstance(
@@ -103,14 +121,49 @@ class TeacherClassDetailFragment : Fragment() {
         }
 
         btnCreate.setOnClickListener {
-            val code = generateRandomCode()
-            viewModel.createSession(classId, code)
+            showOpenSessionDialog()
         }
 
         btnOpenActive.setOnClickListener {
             val sess = viewModel.activeSession.value
             if (sess != null) {
-                navigateToQrCodeScreen(sess.id, sess.qrCode)
+                navigateToQrCodeScreen(sess)
+            }
+        }
+
+        viewModel.openingSession.observe(viewLifecycleOwner) { opening ->
+            btnCreate.isEnabled = canOpenNow && !opening
+            btnCreate.text = if (opening) "ĐANG LẤY VỊ TRÍ…" else "MỞ ĐIỂM DANH (QR/MÃ)"
+        }
+
+        viewModel.openedSession.observe(viewLifecycleOwner) { sess ->
+            if (sess != null) {
+                viewModel.clearOpenedSession()
+                if (sess.location == null) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Không lấy được vị trí của bạn nên phiên này không kiểm tra vị trí học sinh.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                navigateToQrCodeScreen(sess)
+            }
+        }
+
+        val tvLeaveRequestsTitle = view.findViewById<TextView>(R.id.tvLeaveRequestsTitle)
+        val layoutLeaveRequests = view.findViewById<LinearLayout>(R.id.layoutLeaveRequests)
+        viewModel.leaveRequests.observe(viewLifecycleOwner) { requests ->
+            val pending = requests.count { it.status == LeaveStatus.PENDING }
+            tvLeaveRequestsTitle.text =
+                if (pending > 0) "ĐƠN XIN NGHỈ PHÉP ($pending CHỜ DUYỆT)" else "ĐƠN XIN NGHỈ PHÉP"
+            layoutLeaveRequests.removeAllViews()
+            if (requests.isEmpty()) {
+                AttendanceViews.addEmptyNote(layoutLeaveRequests, "Chưa có đơn xin nghỉ nào.")
+            }
+            for (request in requests) {
+                AttendanceViews.addLeaveRequest(layoutLeaveRequests, request, forTeacher = true) { approve ->
+                    viewModel.decideLeaveRequest(request, approve)
+                }
             }
         }
 
@@ -138,12 +191,7 @@ class TeacherClassDetailFragment : Fragment() {
         }
 
         viewModel.operationResult.observe(viewLifecycleOwner) { (success, message) ->
-            if (success && message.contains("Mở phiên")) {
-                val sess = viewModel.activeSession.value
-                if (sess != null) {
-                    navigateToQrCodeScreen(sess.id, sess.qrCode)
-                }
-            } else if (!success) {
+            if (!success) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }
         }
@@ -162,7 +210,7 @@ class TeacherClassDetailFragment : Fragment() {
                     val item = LayoutInflater.from(requireContext())
                         .inflate(R.layout.item_session_history, layoutSessionHistory, false)
                     item.findViewById<TextView>(R.id.tvSessionHistoryDate).text = "Ngày ${session.date}"
-                    item.findViewById<TextView>(R.id.tvSessionHistorySummary).text = "Mã: ${session.qrCode} • Chạm để xem/chỉnh sửa"
+                    item.findViewById<TextView>(R.id.tvSessionHistorySummary).text = "Chạm để xem/chỉnh sửa"
                     item.setOnClickListener {
                         val fragment = TeacherAttendanceDetailFragment.newInstance(session.id, className, academicYear)
                         parentFragmentManager.beginTransaction()
@@ -178,17 +226,39 @@ class TeacherClassDetailFragment : Fragment() {
         viewModel.loadClassStudents(classId)
         viewModel.loadActiveSession(classId)
         viewModel.loadPastSessions(classId)
+        viewModel.loadLeaveRequests(classId)
 
         return view
     }
 
-    private fun generateRandomCode(): String {
-        val chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789" // Omit I, O, 0, 1 for clarity
-        return (1..4).map { chars.random() }.joinToString("")
+    // The teacher picks how long students have before a scan counts as late, then the session
+    // is opened at the teacher's current position.
+    private fun showOpenSessionDialog() {
+        val options = CheckInRules.LATE_OPTIONS_MINUTES
+        var selected = options.indexOf(CheckInRules.DEFAULT_LATE_AFTER_MINUTES).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Tính đi muộn nếu quét sau")
+            .setSingleChoiceItems(
+                options.map { "$it phút kể từ khi mở phiên" }.toTypedArray(), selected
+            ) { _, which -> selected = which }
+            .setNegativeButton("Hủy", null)
+            .setPositiveButton("Mở phiên") { _, _ ->
+                val lateAfterMinutes = options[selected]
+                if (DeviceLocation.hasPermission(requireContext())) {
+                    viewModel.createSession(classId, lateAfterMinutes)
+                } else {
+                    pendingLateAfterMinutes = lateAfterMinutes
+                    locationPermissionLauncher.launch(DeviceLocation.PERMISSIONS)
+                }
+            }
+            .show()
     }
 
-    private fun navigateToQrCodeScreen(sessionId: String, qrText: String) {
-        val fragment = TeacherQrCodeFragment.newInstance(sessionId, classId, className, academicYear, qrText)
+    private fun navigateToQrCodeScreen(session: AttendanceSession) {
+        val fragment = TeacherQrCodeFragment.newInstance(
+            session.id, classId, className, academicYear,
+            session.secret, session.location != null, session.lateAfterMinutes
+        )
         parentFragmentManager.beginTransaction()
             .replace(R.id.teacherFragmentContainer, fragment)
             .addToBackStack(null)

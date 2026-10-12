@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="#1A1A1A"
     android:gravity="center"
+    android:keepScreenOn="true"
     android:orientation="vertical"
     android:padding="24dp">
 
@@ -66,6 +67,14 @@
         android:textSize="44sp"
         android:textStyle="bold"
         android:letterSpacing="0.2" />
+
+    <TextView
+        android:id="@+id/dialogTvCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="#B0B0B0"
+        android:textSize="14sp" />
 
     <TextView
         android:layout_width="wrap_content"

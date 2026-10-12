@@ -5,13 +5,18 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import vn.edu.actvn.kstudy.data.location.DeviceLocation
 import vn.edu.actvn.kstudy.data.model.*
+import vn.edu.actvn.kstudy.data.repository.LeaveRequestRepository
 import vn.edu.actvn.kstudy.data.repository.TeacherRepository
+import vn.edu.actvn.kstudy.util.LeaveRequestRules
 import vn.edu.actvn.kstudy.util.SessionDates
 
 class TeacherViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = TeacherRepository(application.applicationContext)
+    private val leaveRepository = LeaveRequestRepository()
 
     private val _teacher = MutableLiveData<Teacher?>()
     val teacher: LiveData<Teacher?> = _teacher
@@ -25,11 +30,23 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
     private val _activeSession = MutableLiveData<AttendanceSession?>()
     val activeSession: LiveData<AttendanceSession?> = _activeSession
 
+    // True while the phone is being located and the session is being created
+    private val _openingSession = MutableLiveData(false)
+    val openingSession: LiveData<Boolean> = _openingSession
+
+    // The session that has just been opened. The screen clears it after moving to the QR code,
+    // so coming back does not open the QR code a second time.
+    private val _openedSession = MutableLiveData<AttendanceSession?>()
+    val openedSession: LiveData<AttendanceSession?> = _openedSession
+
     private val _records = MutableLiveData<List<AttendanceRecord>>()
     val records: LiveData<List<AttendanceRecord>> = _records
 
     private val _pastSessions = MutableLiveData<List<AttendanceSession>>()
     val pastSessions: LiveData<List<AttendanceSession>> = _pastSessions
+
+    private val _leaveRequests = MutableLiveData<List<LeaveRequest>>()
+    val leaveRequests: LiveData<List<LeaveRequest>> = _leaveRequests
 
     private val _operationResult = MutableLiveData<Pair<Boolean, String>>()
     val operationResult: LiveData<Pair<Boolean, String>> = _operationResult
@@ -68,20 +85,33 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun createSession(classId: String, qrCode: String) {
-        if (qrCode.isBlank()) {
-            _operationResult.value = Pair(false, "Mã QR không được trống!")
-            return
-        }
+    fun createSession(classId: String, lateAfterMinutes: Int) {
+        if (_openingSession.value == true) return
+        _openingSession.value = true
         viewModelScope.launch {
-            val sessId = repository.createAttendanceSession(classId, qrCode)
-            if (sessId.isNotEmpty()) {
-                loadActiveSession(classId)
-                _operationResult.value = Pair(true, "Mở phiên điểm danh thành công!")
+            val session = try {
+                // Null when the teacher refused the permission or the phone has no position:
+                // the session is then opened without a location check.
+                val position = DeviceLocation.current(getApplication())
+                val sessId = repository.createAttendanceSession(classId, lateAfterMinutes, position)
+                if (sessId.isNotEmpty()) repository.getActiveSession(classId) else null
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
+            _openingSession.value = false
+            if (session != null) {
+                _activeSession.value = session
+                _openedSession.value = session
             } else {
                 _operationResult.value = Pair(false, "Mở phiên điểm danh thất bại!")
             }
         }
+    }
+
+    fun clearOpenedSession() {
+        _openedSession.value = null
     }
 
     fun closeSession(sessionId: String, classId: String) {
@@ -111,6 +141,31 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             val list = repository.getPastSessionsForClass(classId)
             _pastSessions.value = list.sortedByDescending { SessionDates.toMillis(it.date) }
+        }
+    }
+
+    fun loadLeaveRequests(classId: String) {
+        viewModelScope.launch {
+            try {
+                _leaveRequests.value = LeaveRequestRules.sorted(leaveRepository.getForClass(classId))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _operationResult.value = Pair(false, "Không tải được đơn xin nghỉ!")
+            }
+        }
+    }
+
+    fun decideLeaveRequest(request: LeaveRequest, approve: Boolean) {
+        viewModelScope.launch {
+            try {
+                leaveRepository.decide(request, approve)
+                loadLeaveRequests(request.classId)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _operationResult.value = Pair(false, "Không lưu được quyết định. Vui lòng thử lại!")
+            }
         }
     }
 }

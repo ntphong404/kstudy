@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:keepScreenOn="true"
     android:orientation="vertical">
 
     <!-- Header Panel with Back Button -->
@@ -99,6 +100,13 @@
                     android:textStyle="bold"
                     android:letterSpacing="0.1" />
 
+                <TextView
+                    android:id="@+id/tvQrCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
                 <Button
                     android:id="@+id/btnZoomQr"
                     style="@style/Widget.Material3.Button.ElevatedButton"
@@ -139,6 +147,15 @@
                 android:layout_height="6dp"
                 android:layout_marginTop="6dp"
                 android:progressDrawable="@android:drawable/progress_horizontal" />
+
+            <!-- Which checks this session applies: location radius and late threshold -->
+            <TextView
+                android:id="@+id/tvQrRules"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <!-- Manual Attendance Section -->

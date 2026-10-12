@@ -50,7 +50,7 @@ class AttendanceReportBuilderTest {
             listOf(
                 "STT", "Mã SV", "Họ và tên",
                 "01/09/2026", "08/09/2026", "15/09/2026", "22/09/2026", "29/09/2026",
-                "Có mặt", "Muộn", "Vắng", "Chuyên cần (%)", "Ghi chú"
+                "Có mặt", "Muộn", "Vắng", "Có phép", "Chuyên cần (%)", "Ghi chú"
             ),
             roster.texts(headerRow)
         )
@@ -65,15 +65,15 @@ class AttendanceReportBuilderTest {
     @Test
     fun rosterSheet_hasOneRowPerStudentWithStatusesAndTotals() {
         assertEquals(
-            listOf("1", "SV001", "Học sinh 1", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "5", "0", "0", "100", ""),
+            listOf("1", "SV001", "Học sinh 1", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "5", "0", "0", "0", "100", ""),
             roster.texts(headerRow + 1)
         )
         assertEquals(
-            listOf("2", "SV002", "Học sinh 2", "Có mặt", "Muộn", "Vắng", "Có mặt", "Có mặt", "3", "1", "1", "80", "Cảnh báo"),
+            listOf("2", "SV002", "Học sinh 2", "Có mặt", "Muộn", "Vắng", "Có mặt", "Có mặt", "3", "1", "1", "0", "80", "Cảnh báo"),
             roster.texts(headerRow + 2)
         )
         assertEquals(
-            listOf("3", "SV003", "Học sinh 3", "Vắng", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "2", "60", "Nguy cơ cấm thi"),
+            listOf("3", "SV003", "Học sinh 3", "Vắng", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "2", "0", "60", "Nguy cơ cấm thi"),
             roster.texts(headerRow + 3)
         )
     }
@@ -87,6 +87,24 @@ class AttendanceReportBuilderTest {
         assertEquals(XlsxStyle.LATE, row[6].style)
         assertEquals(XlsxStyle.DANGER, row.last().style)
         assertEquals(XlsxStyle.WARNING, roster.rows[headerRow + 2].last().style)
+    }
+
+    @Test
+    fun rosterSheet_showsExcusedAbsencesInTheirOwnColumn() {
+        val base = TestData.sampleClass()
+        val data = base.copy(
+            records = base.records.map {
+                if (it.sessionId == "d1" && it.studentId == "s3") it.copy(status = "EXCUSED") else it
+            }
+        )
+
+        val sheet = AttendanceReportBuilder.build(AttendanceAnalyzer.analyzeClass(data), exportedAt)[0]
+
+        assertEquals(
+            listOf("3", "SV003", "Học sinh 3", "Có phép", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "1", "1", "60", "Cảnh báo"),
+            sheet.texts(headerRow + 3)
+        )
+        assertEquals(XlsxStyle.EXCUSED, sheet.rows[headerRow + 3][3].style)
     }
 
     @Test
@@ -114,7 +132,7 @@ class AttendanceReportBuilderTest {
         val sheet = AttendanceReportBuilder.build(AttendanceAnalyzer.analyzeClass(data), exportedAt)[0]
 
         assertEquals(
-            listOf("4", "SV004", "Học sinh 4", "-", "-", "-", "-", "Có mặt", "1", "0", "0", "100", ""),
+            listOf("4", "SV004", "Học sinh 4", "-", "-", "-", "-", "Có mặt", "1", "0", "0", "0", "100", ""),
             sheet.texts(headerRow + 4)
         )
     }
@@ -122,12 +140,12 @@ class AttendanceReportBuilderTest {
     @Test
     fun sessionSheet_listsEverySessionWithCounts() {
         assertEquals(
-            listOf("STT", "Ngày điểm danh", "Có mặt", "Muộn", "Vắng", "Tỷ lệ đi học (%)"),
+            listOf("STT", "Ngày điểm danh", "Có mặt", "Muộn", "Vắng", "Có phép", "Tỷ lệ đi học (%)"),
             bySession.texts(2)
         )
-        assertEquals(listOf("1", "01/09/2026", "2", "0", "1", "67"), bySession.texts(3))
-        assertEquals(listOf("2", "08/09/2026 07:31", "1", "1", "1", "67"), bySession.texts(4))
-        assertEquals(listOf("5", "29/09/2026 07:30", "3", "0", "0", "100"), bySession.texts(7))
+        assertEquals(listOf("1", "01/09/2026", "2", "0", "1", "0", "67"), bySession.texts(3))
+        assertEquals(listOf("2", "08/09/2026 07:31", "1", "1", "1", "0", "67"), bySession.texts(4))
+        assertEquals(listOf("5", "29/09/2026 07:30", "3", "0", "0", "0", "100"), bySession.texts(7))
         assertEquals(8, bySession.rows.size)
     }
 
@@ -136,11 +154,11 @@ class AttendanceReportBuilderTest {
         val emptySheets = AttendanceReportBuilder.build(AttendanceAnalyzer.analyzeClass(TestData.emptyClass()), exportedAt)
 
         assertEquals(
-            listOf("STT", "Mã SV", "Họ và tên", "Có mặt", "Muộn", "Vắng", "Chuyên cần (%)", "Ghi chú"),
+            listOf("STT", "Mã SV", "Họ và tên", "Có mặt", "Muộn", "Vắng", "Có phép", "Chuyên cần (%)", "Ghi chú"),
             emptySheets[0].texts(headerRow)
         )
         assertEquals(
-            listOf("1", "SV003", "Học sinh 3", "0", "0", "0", "-", ""),
+            listOf("1", "SV003", "Học sinh 3", "0", "0", "0", "0", "-", ""),
             emptySheets[0].texts(headerRow + 1)
         )
         assertEquals("no per-session footer without sessions", headerRow + 2, emptySheets[0].rows.size)
@@ -160,8 +178,8 @@ class AttendanceReportBuilderTest {
             assertEquals("Vắng", danger.getCell(3).stringCellValue)
             assertEquals(CellType.NUMERIC, danger.getCell(10).cellType)
             assertEquals(2.0, danger.getCell(10).numericCellValue, 0.0)
-            assertEquals(60.0, danger.getCell(11).numericCellValue, 0.0)
-            assertEquals("Nguy cơ cấm thi", danger.getCell(12).stringCellValue)
+            assertEquals(60.0, danger.getCell(12).numericCellValue, 0.0)
+            assertEquals("Nguy cơ cấm thi", danger.getCell(13).stringCellValue)
             assertEquals(5, workbook.getSheet("Theo buổi").lastRowNum - 2)
         }
     }

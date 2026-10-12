@@ -9,6 +9,10 @@ import vn.edu.actvn.kstudy.data.model.Role
 // so every number it may quote has to come from Firestore through AttendanceAnalyzer.
 object AiPromptBuilder {
 
+    private const val EXCUSED_RULE =
+        "\"Có phép\" là buổi vắng có đơn xin nghỉ đã được giáo viên duyệt: không tính là đi học, " +
+            "nhưng cũng không tính vào số buổi \"vắng\" dùng để xét cảnh báo và cấm thi."
+
     fun chatSystemInstruction(role: Role, userName: String, today: String, data: String): String {
         val roleLabel = when (role) {
             Role.ADMIN -> "quản trị viên"
@@ -24,6 +28,7 @@ QUY TẮC:
 - Trả lời bằng tiếng Việt, ngắn gọn, thân thiện và nêu con số cụ thể khi có.
 - Chỉ dùng văn bản thuần, không dùng Markdown (không dùng dấu **, dấu #, bảng). Khi cần liệt kê thì gạch đầu dòng bằng dấu "-".
 - Quy định chuyên cần: vắng quá ${AttendanceAnalyzer.BAN_THRESHOLD_PERCENT}% số buổi đã học của một lớp thì có nguy cơ bị cấm thi; vắng quá ${AttendanceAnalyzer.WARNING_THRESHOLD_PERCENT}% là mức cảnh báo. Đi muộn vẫn được tính là có đi học.
+- $EXCUSED_RULE
 - Số liệu chỉ tính các buổi đã chốt (phiên điểm danh đã đóng).
 - Nếu câu hỏi không liên quan đến việc học, lịch học hay điểm danh thì lịch sự từ chối và gợi ý người dùng hỏi về chuyên cần.
 
@@ -90,6 +95,7 @@ Bạn là trợ lý phân tích chuyên cần của ứng dụng điểm danh Ks
 - Chỉ dùng số liệu trong dữ liệu được cung cấp, không tự bịa số liệu.
 - Viết bằng tiếng Việt, văn bản thuần, không dùng Markdown (không dùng dấu **, dấu #, bảng).
 - Quy định: vắng quá ${AttendanceAnalyzer.BAN_THRESHOLD_PERCENT}% số buổi thì có nguy cơ bị cấm thi; vắng quá ${AttendanceAnalyzer.WARNING_THRESHOLD_PERCENT}% là mức cảnh báo. Đi muộn vẫn tính là có đi học.
+- $EXCUSED_RULE
 """.trim()
 
     fun classAnalysisPrompt(report: ClassReport): String = """
@@ -156,7 +162,8 @@ ${classDetail(report, includeTeacher = false)}
 
     private fun countText(count: StatusCount): String {
         val rate = count.attendanceRate?.let { "$it%" } ?: "chưa có dữ liệu"
-        return "có mặt ${count.present}, muộn ${count.late}, vắng ${count.absent}, tỷ lệ đi học $rate"
+        val excused = if (count.excused > 0) ", có phép ${count.excused}" else ""
+        return "có mặt ${count.present}, muộn ${count.late}, vắng ${count.absent}$excused, tỷ lệ đi học $rate"
     }
 
     private fun namesWithStatus(report: ClassReport, sessionId: String, status: String): String {

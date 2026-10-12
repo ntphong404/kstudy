@@ -5,6 +5,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import vn.edu.actvn.kstudy.data.model.AttendanceStatus.ABSENT
+import vn.edu.actvn.kstudy.data.model.AttendanceStatus.EXCUSED
 import vn.edu.actvn.kstudy.data.model.AttendanceStatus.LATE
 import vn.edu.actvn.kstudy.data.model.AttendanceStatus.PRESENT
 import vn.edu.actvn.kstudy.data.model.ClassAttendanceData
@@ -43,16 +44,26 @@ class AttendanceAnalyzerTest {
 
     @Test
     fun statusCount_ofCountsOnlyKnownStatuses() {
-        val count = StatusCount.of(listOf(PRESENT, PRESENT, LATE, ABSENT, "", "EXCUSED"))
+        val count = StatusCount.of(listOf(PRESENT, PRESENT, LATE, ABSENT, EXCUSED, "", "UNKNOWN"))
 
-        assertEquals(StatusCount(present = 2, late = 1, absent = 1), count)
+        assertEquals(StatusCount(present = 2, late = 1, absent = 1, excused = 1), count)
     }
 
     @Test
     fun statusCount_plusAddsEachField() {
-        val sum = StatusCount(1, 2, 3) + StatusCount(10, 20, 30)
+        val sum = StatusCount(1, 2, 3, 4) + StatusCount(10, 20, 30, 40)
 
-        assertEquals(StatusCount(11, 22, 33), sum)
+        assertEquals(StatusCount(11, 22, 33, 44), sum)
+    }
+
+    @Test
+    fun statusCount_excusedIsASessionHeldButNeitherAttendedNorAnAbsence() {
+        val count = StatusCount(present = 3, late = 0, absent = 1, excused = 1)
+
+        assertEquals(5, count.total)
+        assertEquals(3, count.attended)
+        assertEquals(60, count.attendanceRate)
+        assertEquals("only the absence without permission", 20, count.absenceRate)
     }
 
     // --- Risk level ---
@@ -93,10 +104,26 @@ class AttendanceAnalyzerTest {
     }
 
     @Test
+    fun riskOf_excusedAbsencesDoNotCountTowardsTheExamBan() {
+        // 2 of 5 sessions missed: DANGER if both are unexcused, only WARNING once one is excused
+        assertEquals(RiskLevel.DANGER, AttendanceAnalyzer.riskOf(StatusCount(present = 3, absent = 2)))
+        assertEquals(RiskLevel.WARNING, AttendanceAnalyzer.riskOf(StatusCount(present = 3, absent = 1, excused = 1)))
+        assertEquals(RiskLevel.SAFE, AttendanceAnalyzer.riskOf(StatusCount(present = 3, absent = 0, excused = 2)))
+        assertEquals(RiskLevel.SAFE, AttendanceAnalyzer.riskOf(StatusCount(excused = 4)))
+    }
+
+    @Test
     fun absenceSummary_describesAbsencesOverSessions() {
         val text = AttendanceAnalyzer.absenceSummary(StatusCount(present = 2, late = 1, absent = 2))
 
         assertEquals("vắng 2/5 buổi (40%)", text)
+    }
+
+    @Test
+    fun absenceSummary_namesExcusedAbsencesSeparately() {
+        val text = AttendanceAnalyzer.absenceSummary(StatusCount(present = 3, late = 0, absent = 1, excused = 1))
+
+        assertEquals("vắng không phép 1/5 buổi (20%), có phép 1 buổi", text)
     }
 
     @Test
@@ -224,6 +251,26 @@ class AttendanceAnalyzerTest {
     }
 
     @Test
+    fun analyzeClass_approvedLeaveRequest_liftsTheStudentOutOfDanger() {
+        val base = TestData.sampleClass()
+        // The teacher approves s3's request for d1: that absence becomes an excused one
+        val data = base.copy(
+            records = base.records.map {
+                if (it.sessionId == "d1" && it.studentId == "s3") it.copy(status = EXCUSED) else it
+            }
+        )
+
+        val report = AttendanceAnalyzer.analyzeClass(data)
+        val stat = report.students.first { it.student.id == "s3" }
+
+        assertEquals(StatusCount(present = 2, late = 1, absent = 1, excused = 1), stat.count)
+        assertEquals(RiskLevel.WARNING, stat.risk)
+        assertEquals(EXCUSED, report.statusOf("s3", "d1"))
+        assertEquals(StatusCount(present = 2, late = 0, absent = 0, excused = 1), report.sessions.first().count)
+        assertEquals(StatusCount(present = 10, late = 2, absent = 2, excused = 1), report.overall)
+    }
+
+    @Test
     fun analyzeClass_onlyOpenSession_producesNoStatistics() {
         val base = TestData.sampleClass()
         val data = ClassAttendanceData(
@@ -259,6 +306,22 @@ class AttendanceAnalyzerTest {
             listOf("d1" to ABSENT, "d2" to ABSENT, "d3" to PRESENT, "d4" to LATE, "d5" to PRESENT),
             stat.history.map { it.first.id to it.second }
         )
+    }
+
+    @Test
+    fun analyzeStudent_showsExcusedSessionsInTheHistory() {
+        val base = TestData.sampleClass()
+        val data = base.copy(
+            records = base.records.map {
+                if (it.sessionId == "d2" && it.studentId == "s3") it.copy(status = EXCUSED) else it
+            }
+        )
+
+        val stat = AttendanceAnalyzer.analyzeStudent("s3", listOf(data)).single()
+
+        assertEquals(StatusCount(present = 2, late = 1, absent = 1, excused = 1), stat.count)
+        assertEquals(RiskLevel.WARNING, stat.risk)
+        assertEquals(EXCUSED, stat.history[1].second)
     }
 
     @Test

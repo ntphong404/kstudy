@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import vn.edu.actvn.kstudy.R
+import vn.edu.actvn.kstudy.data.location.DeviceLocation
 import vn.edu.actvn.kstudy.viewmodel.StudentViewModel
 
 class StudentScanFragment : Fragment() {
@@ -26,12 +28,24 @@ class StudentScanFragment : Fragment() {
             val qrText = result.contents
             val etCode = view?.findViewById<EditText>(R.id.etScanCode)
             etCode?.setText(qrText)
-            
+
             val studentId = viewModel.student.value?.id ?: ""
             if (studentId.isNotEmpty()) {
-                viewModel.markAttendance(studentId, qrText)
+                viewModel.markAttendance(studentId, qrText, System.currentTimeMillis())
             }
         }
+    }
+
+    // What to carry on with once the student has answered the location permission dialog
+    private var afterLocationPermission: (() -> Unit)? = null
+
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        // Carry on whatever the answer: a session without a location check still works, and one
+        // with a check explains what is missing when it refuses the scan.
+        afterLocationPermission?.invoke()
+        afterLocationPermission = null
     }
 
     companion object {
@@ -69,15 +83,19 @@ class StudentScanFragment : Fragment() {
         }
 
         btnStartScan.setOnClickListener {
-            val options = com.journeyapps.barcodescanner.ScanOptions().apply {
-                setDesiredBarcodeFormats(com.journeyapps.barcodescanner.ScanOptions.QR_CODE)
-                setPrompt("Đưa mã QR điểm danh của giáo viên vào khung quét")
-                setCameraId(0)
-                setBeepEnabled(true)
-                setBarcodeImageEnabled(false)
-                setOrientationLocked(true)
+            // The permission is asked before the camera opens, so nothing stands between
+            // scanning the code and sending it while the code is still valid
+            withLocationPermission {
+                val options = com.journeyapps.barcodescanner.ScanOptions().apply {
+                    setDesiredBarcodeFormats(com.journeyapps.barcodescanner.ScanOptions.QR_CODE)
+                    setPrompt("Đưa mã QR điểm danh của giáo viên vào khung quét")
+                    setCameraId(0)
+                    setBeepEnabled(true)
+                    setBarcodeImageEnabled(false)
+                    setOrientationLocked(true)
+                }
+                barcodeLauncher.launch(options)
             }
-            barcodeLauncher.launch(options)
         }
 
         viewModel.student.observe(viewLifecycleOwner) { student ->
@@ -93,7 +111,16 @@ class StudentScanFragment : Fragment() {
                 return@setOnClickListener
             }
             val code = etCode.text.toString().trim()
-            viewModel.markAttendance(studentId, code)
+            val typedAt = System.currentTimeMillis()
+            withLocationPermission {
+                viewModel.markAttendance(studentId, code, typedAt)
+            }
+        }
+
+        viewModel.checkingIn.observe(viewLifecycleOwner) { checking ->
+            btnSubmit.isEnabled = !checking
+            btnStartScan.isEnabled = !checking
+            btnSubmit.text = if (checking) "ĐANG KIỂM TRA…" else "XÁC NHẬN ĐIỂM DANH"
         }
 
         viewModel.attendanceResult.observe(viewLifecycleOwner) { result ->
@@ -110,5 +137,14 @@ class StudentScanFragment : Fragment() {
         viewModel.loadStudent(studentUserId)
 
         return view
+    }
+
+    private fun withLocationPermission(action: () -> Unit) {
+        if (DeviceLocation.hasPermission(requireContext())) {
+            action()
+        } else {
+            afterLocationPermission = action
+            locationPermissionLauncher.launch(DeviceLocation.PERMISSIONS)
+        }
     }
 }

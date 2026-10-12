@@ -58,6 +58,22 @@ class AiPromptBuilderTest {
     }
 
     @Test
+    fun studentData_reportsExcusedAbsencesSeparately() {
+        val base = TestData.sampleClass()
+        val withApprovedLeave = base.copy(
+            records = base.records.map {
+                if (it.sessionId == "d1" && it.studentId == "s3") it.copy(status = "EXCUSED") else it
+            }
+        )
+
+        val data = AiPromptBuilder.studentData("s3", listOf(withApprovedLeave))
+
+        assertTrue(data.contains("có mặt 2, muộn 1, vắng 1, có phép 1, tỷ lệ đi học 60%"))
+        assertTrue(data.contains("01/09/2026: Có phép; 08/09/2026 07:31: Vắng"))
+        assertTrue(data.contains("Đánh giá: Cảnh báo chuyên cần"))
+    }
+
+    @Test
     fun studentData_classWithoutSessions_saysSo() {
         val data = AiPromptBuilder.studentData("s3", listOf(TestData.emptyClass()))
 
@@ -163,6 +179,7 @@ class AiPromptBuilderTest {
         assertTrue(instruction.contains("Hôm nay là Chủ Nhật, 11/10/2026"))
         assertTrue(instruction.contains("vắng quá 20% số buổi"))
         assertTrue(instruction.contains("vắng quá 10% là mức cảnh báo"))
+        assertTrue(instruction.contains("\"Có phép\" là buổi vắng có đơn xin nghỉ đã được giáo viên duyệt"))
         assertTrue(instruction.contains("không tự bịa số liệu"))
         assertTrue(instruction.contains("không dùng Markdown"))
         assertTrue(instruction.endsWith("DỮ LIỆU ĐIỂM DANH:\nDỮ-LIỆU-MẪU"))

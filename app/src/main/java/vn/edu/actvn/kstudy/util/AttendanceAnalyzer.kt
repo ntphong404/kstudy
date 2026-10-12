@@ -10,9 +10,10 @@ import kotlin.math.roundToInt
 data class StatusCount(
     val present: Int = 0,
     val late: Int = 0,
-    val absent: Int = 0
+    val absent: Int = 0, // absent without permission: the only kind that counts towards the exam ban
+    val excused: Int = 0 // absent with an approved leave request
 ) {
-    val total: Int get() = present + late + absent
+    val total: Int get() = present + late + absent + excused
 
     // Being late still counts as having attended the session
     val attended: Int get() = present + late
@@ -20,16 +21,28 @@ data class StatusCount(
     // Percent of sessions attended; null while there is no data, so the UI can show "--" instead of a made-up number
     val attendanceRate: Int? get() = if (total > 0) (attended * 100.0 / total).roundToInt() else null
 
-    val absenceRate: Int? get() = attendanceRate?.let { 100 - it }
+    // Percent of sessions missed without permission. Without excused absences it is the complement
+    // of attendanceRate, so the two always sum to 100 despite rounding.
+    val absenceRate: Int?
+        get() = when {
+            total == 0 -> null
+            excused == 0 -> attendanceRate?.let { 100 - it }
+            else -> (absent * 100.0 / total).roundToInt()
+        }
 
-    operator fun plus(other: StatusCount) =
-        StatusCount(present + other.present, late + other.late, absent + other.absent)
+    operator fun plus(other: StatusCount) = StatusCount(
+        present + other.present,
+        late + other.late,
+        absent + other.absent,
+        excused + other.excused
+    )
 
     companion object {
         fun of(statuses: Collection<String>) = StatusCount(
             present = statuses.count { it == AttendanceStatus.PRESENT },
             late = statuses.count { it == AttendanceStatus.LATE },
-            absent = statuses.count { it == AttendanceStatus.ABSENT }
+            absent = statuses.count { it == AttendanceStatus.ABSENT },
+            excused = statuses.count { it == AttendanceStatus.EXCUSED }
         )
     }
 }
@@ -77,7 +90,8 @@ data class StudentClassStat(
 // student who has not scanned yet is stored as ABSENT, which would raise false warnings.
 object AttendanceAnalyzer {
 
-    // Absent in more than 20% of the sessions held so far => at risk of being barred from the exam
+    // Absent without permission in more than 20% of the sessions held so far => at risk of being
+    // barred from the exam. Excused absences are sessions held, but never push a student over.
     const val BAN_THRESHOLD_PERCENT = 20
     const val WARNING_THRESHOLD_PERCENT = 10
 
@@ -94,9 +108,11 @@ object AttendanceAnalyzer {
         RiskLevel.SAFE -> "Đạt yêu cầu"
     }
 
-    // e.g. "vắng 2/5 buổi (40%)"
-    fun absenceSummary(count: StatusCount): String =
-        "vắng ${count.absent}/${count.total} buổi (${count.absenceRate ?: 0}%)"
+    // e.g. "vắng 2/5 buổi (40%)", or "vắng không phép 1/5 buổi (20%), có phép 1 buổi"
+    fun absenceSummary(count: StatusCount): String {
+        val rate = "${count.absent}/${count.total} buổi (${count.absenceRate ?: 0}%)"
+        return if (count.excused > 0) "vắng không phép $rate, có phép ${count.excused} buổi" else "vắng $rate"
+    }
 
     // Text of the warning card on the student dashboard; empty when there is nothing to warn about
     fun studentWarning(count: StatusCount, risk: RiskLevel): String = when (risk) {
@@ -150,5 +166,6 @@ object AttendanceAnalyzer {
         data.sessions.filter { !it.isActive }.sortedBy { SessionDates.toMillis(it.date) }
 
     private fun isKnownStatus(status: String): Boolean =
-        status == AttendanceStatus.PRESENT || status == AttendanceStatus.LATE || status == AttendanceStatus.ABSENT
+        status == AttendanceStatus.PRESENT || status == AttendanceStatus.LATE ||
+            status == AttendanceStatus.ABSENT || status == AttendanceStatus.EXCUSED
 }

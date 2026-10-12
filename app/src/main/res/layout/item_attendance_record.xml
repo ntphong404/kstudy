@@ -46,12 +46,13 @@
         android:gravity="center"
         android:orientation="horizontal">
 
+        <!-- Four buttons have to fit next to the name on a narrow phone, hence 46dp each -->
         <Button
             android:id="@+id/btnStatusPresent"
             style="@style/Widget.Material3.Button"
-            android:layout_width="54dp"
+            android:layout_width="46dp"
             android:layout_height="36dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="3dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="0dp"
@@ -62,9 +63,9 @@
         <Button
             android:id="@+id/btnStatusLate"
             style="@style/Widget.Material3.Button"
-            android:layout_width="54dp"
+            android:layout_width="46dp"
             android:layout_height="36dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="3dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="0dp"
@@ -75,12 +76,25 @@
         <Button
             android:id="@+id/btnStatusAbsent"
             style="@style/Widget.Material3.Button"
-            android:layout_width="54dp"
+            android:layout_width="46dp"
             android:layout_height="36dp"
+            android:layout_marginEnd="3dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:padding="0dp"
             android:text="Vắng"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnStatusExcused"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="46dp"
+            android:layout_height="36dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="Phép"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>

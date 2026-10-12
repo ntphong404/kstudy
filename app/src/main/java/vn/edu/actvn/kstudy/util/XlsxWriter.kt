@@ -15,7 +15,8 @@ enum class XlsxStyle {
     LATE,
     ABSENT,
     WARNING,
-    DANGER
+    DANGER,
+    EXCUSED
 }
 
 data class XlsxCell(
@@ -230,13 +231,14 @@ object XlsxWriter {
             "<font><b/><sz val=\"11\"/><color rgb=\"FF8D6E00\"/><name val=\"Calibri\"/></font>" +
             "</fonts>" +
             // Fills 0 and 1 are reserved by the file format
-            "<fills count=\"6\">" +
+            "<fills count=\"7\">" +
             "<fill><patternFill patternType=\"none\"/></fill>" +
             "<fill><patternFill patternType=\"gray125\"/></fill>" +
             solidFill("FF5B21B6") +
             solidFill("FFE8F5E9") +
             solidFill("FFFFF3C4") +
             solidFill("FFFFEBEE") +
+            solidFill("FFE3F2FD") +
             "</fills>" +
             "<borders count=\"2\">" +
             "<border><left/><right/><top/><bottom/><diagonal/></border>" +
@@ -269,6 +271,8 @@ object XlsxWriter {
             "<xf numFmtId=\"0\" fontId=\"4\" fillId=\"4\" $border xfId=\"0\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\">$center</xf>" +
             // DANGER
             "<xf numFmtId=\"0\" fontId=\"3\" fillId=\"5\" $border xfId=\"0\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\">$center</xf>" +
+            // EXCUSED
+            "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"6\" $border xfId=\"0\" applyFill=\"1\" applyAlignment=\"1\">$center</xf>" +
             "</cellXfs>" +
             "<cellStyles count=\"1\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/></cellStyles>" +
             "</styleSheet>"

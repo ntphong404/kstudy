@@ -65,6 +65,12 @@ class AttendanceHistoryAdapter(
                     tvStatus.setTextColor(Color.parseColor("#F44336"))
                     indicator.setBackgroundColor(Color.parseColor("#F44336"))
                 }
+                "EXCUSED" -> {
+                    tvStatus.text = "Vắng có phép"
+                    tvStatus.setTextColor(Color.parseColor("#2196F3"))
+                    indicator.setBackgroundColor(Color.parseColor("#2196F3"))
+                    tvTime.text = "Đơn xin nghỉ đã được duyệt"
+                }
                 else -> {
                     tvStatus.text = record.status
                     tvStatus.setTextColor(Color.GRAY)

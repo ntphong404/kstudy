@@ -169,7 +169,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_edit_text"
                 android:gravity="center"
-                android:hint="Nhập mã 4 chữ số (ví dụ: A123)"
+                android:hint="Nhập mã 6 ký tự đang hiển thị"
                 android:inputType="textCapCharacters"
                 android:maxLength="10"
                 android:textColor="@color/black"

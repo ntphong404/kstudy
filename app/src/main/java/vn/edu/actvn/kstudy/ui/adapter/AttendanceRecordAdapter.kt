@@ -40,6 +40,7 @@ class AttendanceRecordAdapter(
         private val btnPresent: Button = view.findViewById(R.id.btnStatusPresent)
         private val btnLate: Button = view.findViewById(R.id.btnStatusLate)
         private val btnAbsent: Button = view.findViewById(R.id.btnStatusAbsent)
+        private val btnExcused: Button = view.findViewById(R.id.btnStatusExcused)
 
         fun bind(record: AttendanceRecord, onStatusChange: (AttendanceRecord, String) -> Unit) {
             tvName.text = record.studentName
@@ -63,6 +64,10 @@ class AttendanceRecordAdapter(
                     btnAbsent.setBackgroundColor(Color.parseColor("#F44336"))
                     btnAbsent.setTextColor(Color.WHITE)
                 }
+                "EXCUSED" -> {
+                    btnExcused.setBackgroundColor(Color.parseColor("#2196F3"))
+                    btnExcused.setTextColor(Color.WHITE)
+                }
             }
 
             btnPresent.setOnClickListener {
@@ -73,6 +78,9 @@ class AttendanceRecordAdapter(
             }
             btnAbsent.setOnClickListener {
                 if (record.status != "ABSENT") onStatusChange(record, "ABSENT")
+            }
+            btnExcused.setOnClickListener {
+                if (record.status != "EXCUSED") onStatusChange(record, "EXCUSED")
             }
         }
 
@@ -88,6 +96,9 @@ class AttendanceRecordAdapter(
             
             btnAbsent.setBackgroundColor(Color.parseColor("#EDEFEF"))
             btnAbsent.setTextColor(Color.parseColor("#5A5C5D"))
+
+            btnExcused.setBackgroundColor(Color.parseColor("#EDEFEF"))
+            btnExcused.setTextColor(Color.parseColor("#5A5C5D"))
         }
     }
 }

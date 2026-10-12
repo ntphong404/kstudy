@@ -204,12 +204,30 @@
                     app:tint="@color/outline" />
             </LinearLayout>
 
+            <!-- Leave requests of this class, the ones waiting for a decision first -->
+            <TextView
+                android:id="@+id/tvLeaveRequestsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="ĐƠN XIN NGHỈ PHÉP"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/layoutLeaveRequests"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" />
+
             <!-- Attendance History Section (collapsible) -->
             <LinearLayout
                 android:id="@+id/layoutSessionHistoryHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:clickable="true"

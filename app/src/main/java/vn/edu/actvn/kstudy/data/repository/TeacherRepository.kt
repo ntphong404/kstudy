@@ -6,11 +6,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vn.edu.actvn.kstudy.data.model.*
+import vn.edu.actvn.kstudy.util.CheckInRules
+import vn.edu.actvn.kstudy.util.LeaveRequestRules
+import vn.edu.actvn.kstudy.util.RotatingCode
 import java.text.SimpleDateFormat
 import java.util.*
 
 class TeacherRepository(private val context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
+    private val leaveRequests = LeaveRequestRepository()
 
     private suspend fun <T> await(task: com.google.android.gms.tasks.Task<T>): T = withContext(Dispatchers.IO) {
         Tasks.await(task)
@@ -78,9 +82,11 @@ class TeacherRepository(private val context: Context) {
         return list
     }
 
-    suspend fun createAttendanceSession(classId: String, qrCode: String): String {
+    // position: where the teacher is standing, or null to open the session without a location check
+    suspend fun createAttendanceSession(classId: String, lateAfterMinutes: Int, position: CheckInRules.Position?): String {
         try {
-            val todayDateOnly = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+            val now = Date()
+            val todayDateOnly = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(now)
 
             // A class only meets once per calendar day, so a session already opened today
             // for this class IS today's session — reopen it instead of creating a duplicate.
@@ -101,44 +107,58 @@ class TeacherRepository(private val context: Context) {
                 }
             }
 
+            // Every opening gets a new key for the rotating QR code and the teacher's current position
+            val opening = mapOf(
+                "isActive" to true,
+                "secret" to RotatingCode.newSecret(),
+                "lateAfterMinutes" to lateAfterMinutes,
+                "latitude" to position?.location?.latitude,
+                "longitude" to position?.location?.longitude,
+                "locationAccuracy" to position?.accuracyMeters
+            )
+
             if (todaySessionDoc != null) {
-                // Reopen today's session with a fresh QR code, keep its original records untouched
-                await(
-                    firestore.collection("sessions").document(todaySessionDoc.id).update(
-                        mapOf("isActive" to true, "qrCode" to qrCode)
-                    )
-                )
+                // Reopen today's session, keep its original records and opening time untouched
+                await(firestore.collection("sessions").document(todaySessionDoc.id).update(opening))
                 return todaySessionDoc.id
             }
 
-            // No session yet today: create a brand new one
-            val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-            val dateStr = formatter.format(Date())
-
-            val sessionData = mapOf(
-                "classId" to classId,
-                "date" to dateStr,
-                "qrCode" to qrCode,
-                "isActive" to true
-            )
-            val sessionRef = await(firestore.collection("sessions").add(sessionData))
-            val sessionId = sessionRef.id
-
-            // Pre-populate records as ABSENT for all students in the class
+            // No session yet today: create a brand new one. Everything it needs is read first, then
+            // the session and its records are written in a single batch (at most 500 writes, so up
+            // to 499 students). Either all of it is saved or nothing: a network failure cannot
+            // leave a session with missing records that every later attempt would just reopen.
+            val excusedStudentIds = leaveRequests.excusedStudentIds(classId, todayDateOnly)
             val students = getStudentsForClass(classId)
-            for (student in students) {
-                val recordData = mapOf(
-                    "sessionId" to sessionId,
-                    "studentId" to student.id,
-                    "studentName" to student.name,
-                    "studentCode" to student.studentCode,
-                    "status" to "ABSENT",
-                    "timeMarked" to "-"
-                )
-                await(firestore.collection("records").add(recordData))
-            }
+            val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
-            return sessionId
+            val sessionRef = firestore.collection("sessions").document()
+            val batch = firestore.batch()
+            batch.set(
+                sessionRef,
+                opening + mapOf(
+                    "classId" to classId,
+                    "date" to formatter.format(now),
+                    "openedAt" to now.time
+                )
+            )
+            // One record per student in the class: ABSENT until they scan,
+            // or EXCUSED when their leave request for today has been approved
+            for (student in students) {
+                batch.set(
+                    firestore.collection("records").document(),
+                    mapOf(
+                        "sessionId" to sessionRef.id,
+                        "studentId" to student.id,
+                        "studentName" to student.name,
+                        "studentCode" to student.studentCode,
+                        "status" to LeaveRequestRules.initialStatus(student.id, excusedStudentIds),
+                        "timeMarked" to "-"
+                    )
+                )
+            }
+            await(batch.commit())
+
+            return sessionRef.id
         } catch (e: Exception) {
             return ""
         }
@@ -202,14 +222,7 @@ class TeacherRepository(private val context: Context) {
                 .get()
         )
         if (querySnapshot.isEmpty) return null
-        val doc = querySnapshot.documents[0]
-        return AttendanceSession(
-            id = doc.id,
-            classId = doc.getString("classId") ?: "",
-            date = doc.getString("date") ?: "",
-            qrCode = doc.getString("qrCode") ?: "",
-            isActive = true
-        )
+        return querySnapshot.documents[0].toAttendanceSession()
     }
 
     suspend fun getPastSessionsForClass(classId: String): List<AttendanceSession> {

@@ -6,6 +6,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vn.edu.actvn.kstudy.data.model.*
+import vn.edu.actvn.kstudy.util.CheckInRules
+import vn.edu.actvn.kstudy.util.RotatingCode
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -124,56 +126,62 @@ class StudentRepository(private val context: Context) {
         return list
     }
 
-    suspend fun markAttendanceViaCode(studentId: String, code: String): Pair<Boolean, String> {
+    // scannedAt: when the code was scanned or typed. The code is checked against that moment,
+    // so the seconds spent waiting for a GPS position cannot make a valid code expire.
+    // locate: asks the phone for its position; only called when the session checks the location.
+    suspend fun markAttendanceViaCode(
+        studentId: String,
+        code: String,
+        scannedAt: Long,
+        deviceId: String,
+        locate: suspend () -> CheckInRules.Position?
+    ): Pair<Boolean, String> {
         try {
-            val querySession = await(
+            // The rotating code is not stored anywhere, so it is compared with what each open session shows now
+            val activeSessions = await(
                 firestore.collection("sessions")
-                    .whereEqualTo("qrCode", code)
                     .whereEqualTo("isActive", true)
-                    .limit(1)
                     .get()
-            )
-            if (querySession.isEmpty) {
-                return Pair(false, "Mã điểm danh không hợp lệ hoặc đã hết hạn!")
-            }
-            val sessionDoc = querySession.documents[0]
-            val sessionId = sessionDoc.id
-            val classId = sessionDoc.getString("classId") ?: ""
+            ).documents.map { it.toAttendanceSession() }
+            val session = activeSessions.firstOrNull { RotatingCode.matches(it.secret, code, scannedAt) }
+                ?: return Pair(false, "Mã điểm danh không đúng hoặc đã hết hạn! Hãy quét lại mã đang hiển thị.")
 
-            val classDoc = await(firestore.collection("classes").document(classId).get())
+            val classDoc = await(firestore.collection("classes").document(session.classId).get())
             val enrolledIds = (classDoc.get("studentIds") as? List<*>)?.map { it.toString() } ?: emptyList()
             if (!enrolledIds.contains(studentId)) {
                 return Pair(false, "Bạn không có trong danh sách lớp!")
             }
 
-            val queryRecord = await(
+            val records = await(
                 firestore.collection("records")
-                    .whereEqualTo("sessionId", sessionId)
-                    .whereEqualTo("studentId", studentId)
-                    .limit(1)
+                    .whereEqualTo("sessionId", session.id)
                     .get()
-            )
-            if (queryRecord.isEmpty) {
-                return Pair(false, "Không tìm thấy thông tin điểm danh của bạn!")
-            }
-            val recordDoc = queryRecord.documents[0]
-            val currentStatus = recordDoc.getString("status") ?: ""
-            if (currentStatus == "PRESENT" || currentStatus == "LATE") {
-                return Pair(false, "Bạn đã điểm danh lớp này rồi!")
-            }
+            ).documents.map { it.toAttendanceRecord() }
+            val position = if (session.location != null) locate() else null
 
-            val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val timeStr = timeFormatter.format(Date())
-
-            await(
-                firestore.collection("records").document(recordDoc.id).update(
-                    mapOf(
-                        "status" to "PRESENT",
-                        "timeMarked" to timeStr
+            when (val result = CheckInRules.check(session, records, studentId, deviceId, position, scannedAt)) {
+                is CheckInRules.Result.Rejected -> return Pair(false, result.message)
+                is CheckInRules.Result.Accepted -> {
+                    val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(scannedAt))
+                    await(
+                        firestore.collection("records").document(result.recordId).update(
+                            mapOf(
+                                "status" to result.status,
+                                "timeMarked" to timeStr,
+                                "deviceId" to deviceId
+                            )
+                        )
                     )
-                )
-            )
-            return Pair(true, "Điểm danh thành công lúc $timeStr!")
+                    return if (result.status == AttendanceStatus.LATE) {
+                        Pair(
+                            true,
+                            "Đã điểm danh lúc $timeStr, tính ĐI MUỘN vì quá ${session.lateAfterMinutes} phút kể từ khi mở phiên."
+                        )
+                    } else {
+                        Pair(true, "Điểm danh thành công lúc $timeStr!")
+                    }
+                }
+            }
         } catch (e: Exception) {
             return Pair(false, "Lỗi kết nối Firebase: ${e.localizedMessage}")
         }

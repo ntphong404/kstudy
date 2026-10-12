@@ -9,6 +9,7 @@ import android.view.View
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
+import kotlin.math.roundToInt
 
 class QrView @JvmOverloads constructor(
     context: Context,
@@ -28,7 +29,10 @@ class QrView @JvmOverloads constructor(
 
     private fun encodeQrCode(text: String): BitMatrix? {
         return try {
-            QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, 512, 512)
+            // Size 0 asks for the smallest matrix, one cell per QR module (about 30 x 30), which
+            // onDraw scales up. A 512 x 512 matrix meant over 100 000 rectangles per frame and
+            // froze the screen for seconds every time the rotating code changed.
+            QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, 0, 0)
         } catch (e: Exception) {
             null
         }
@@ -52,9 +56,12 @@ class QrView @JvmOverloads constructor(
         for (row in 0 until matrix.height) {
             for (col in 0 until matrix.width) {
                 if (matrix.get(col, row)) {
-                    val left = xOffset + col * cellSize
-                    val top = yOffset + row * cellSize
-                    canvas.drawRect(left, top, left + cellSize, top + cellSize, paint)
+                    // Edges are snapped to whole pixels so neighbouring cells meet without a hairline gap
+                    val left = (xOffset + col * cellSize).roundToInt().toFloat()
+                    val top = (yOffset + row * cellSize).roundToInt().toFloat()
+                    val right = (xOffset + (col + 1) * cellSize).roundToInt().toFloat()
+                    val bottom = (yOffset + (row + 1) * cellSize).roundToInt().toFloat()
+                    canvas.drawRect(left, top, right, bottom, paint)
                 }
             }
         }

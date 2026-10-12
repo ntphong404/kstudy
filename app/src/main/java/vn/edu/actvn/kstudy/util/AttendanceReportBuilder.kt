@@ -62,6 +62,7 @@ object AttendanceReportBuilder {
         header.add(XlsxCell.text("Có mặt", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Muộn", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Vắng", XlsxStyle.HEADER))
+        header.add(XlsxCell.text("Có phép", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Chuyên cần (%)", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Ghi chú", XlsxStyle.HEADER))
         rows.add(header)
@@ -77,6 +78,7 @@ object AttendanceReportBuilder {
             row.add(XlsxCell.number(stat.count.present))
             row.add(XlsxCell.number(stat.count.late))
             row.add(XlsxCell.number(stat.count.absent))
+            row.add(XlsxCell.number(stat.count.excused))
             row.add(rateCell(stat.count))
             row.add(
                 when (stat.risk) {
@@ -99,7 +101,7 @@ object AttendanceReportBuilder {
             rows.add(footer)
         }
 
-        val widths = listOf(6, 12, 28) + report.sessions.map { 13 } + listOf(9, 9, 9, 15, 18)
+        val widths = listOf(6, 12, 28) + report.sessions.map { 13 } + listOf(9, 9, 9, 9, 15, 18)
         return XlsxSheet("Điểm danh", rows, widths)
     }
 
@@ -108,7 +110,7 @@ object AttendanceReportBuilder {
         rows.add(listOf(XlsxCell("TỔNG HỢP THEO BUỔI - ${report.courseClass.name}", style = XlsxStyle.TITLE)))
         rows.add(emptyList())
         rows.add(
-            listOf("STT", "Ngày điểm danh", "Có mặt", "Muộn", "Vắng", "Tỷ lệ đi học (%)")
+            listOf("STT", "Ngày điểm danh", "Có mặt", "Muộn", "Vắng", "Có phép", "Tỷ lệ đi học (%)")
                 .map { XlsxCell.text(it, XlsxStyle.HEADER) }
         )
         report.sessions.forEachIndexed { index, stat ->
@@ -119,17 +121,19 @@ object AttendanceReportBuilder {
                     XlsxCell.number(stat.count.present),
                     XlsxCell.number(stat.count.late),
                     XlsxCell.number(stat.count.absent),
+                    XlsxCell.number(stat.count.excused),
                     rateCell(stat.count)
                 )
             )
         }
-        return XlsxSheet("Theo buổi", rows, listOf(6, 20, 10, 10, 10, 18))
+        return XlsxSheet("Theo buổi", rows, listOf(6, 20, 10, 10, 10, 10, 18))
     }
 
     private fun statusCell(status: String?): XlsxCell = when (status) {
         AttendanceStatus.PRESENT -> XlsxCell.text(AttendanceStatus.label(status), XlsxStyle.PRESENT)
         AttendanceStatus.LATE -> XlsxCell.text(AttendanceStatus.label(status), XlsxStyle.LATE)
         AttendanceStatus.ABSENT -> XlsxCell.text(AttendanceStatus.label(status), XlsxStyle.ABSENT)
+        AttendanceStatus.EXCUSED -> XlsxCell.text(AttendanceStatus.label(status), XlsxStyle.EXCUSED)
         // The student joined the class after this session, so there is no record
         else -> XlsxCell.text("-", XlsxStyle.BODY_CENTER)
     }

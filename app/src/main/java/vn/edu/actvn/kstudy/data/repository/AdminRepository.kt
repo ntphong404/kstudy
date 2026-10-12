@@ -25,30 +25,18 @@ class AdminRepository(private val context: Context) {
         )
         val list = mutableListOf<Teacher>()
         for (doc in querySnapshot.documents) {
-            list.add(
-                Teacher(
-                    id = doc.id,
-                    userId = doc.id,
-                    name = doc.getString("fullName") ?: "",
-                    subject = doc.getString("subject") ?: "",
-                    phone = doc.getString("phone") ?: "",
-                    avatarUrl = doc.getString("avatarUrl") ?: ""
-                )
-            )
+            list.add(doc.toTeacher())
         }
         return list
     }
 
-    suspend fun addTeacher(username: String, pass: String, fullName: String, subject: String, phone: String): Boolean {
+    suspend fun addTeacher(username: String, pass: String, teacher: Teacher): Boolean {
         return try {
             val hashedPassword = org.mindrot.jbcrypt.BCrypt.hashpw(pass, org.mindrot.jbcrypt.BCrypt.gensalt())
-            val data = mapOf(
+            val data = teacher.toFields() + mapOf(
                 "username" to username,
                 "passwordHash" to hashedPassword,
-                "fullName" to fullName,
                 "role" to Role.TEACHER.name,
-                "phone" to phone,
-                "subject" to subject,
                 "avatarUrl" to "teacher_placeholder"
             )
             await(firestore.collection("users").add(data))
@@ -58,17 +46,9 @@ class AdminRepository(private val context: Context) {
         }
     }
 
-    suspend fun updateTeacher(userId: String, fullName: String, subject: String, phone: String): Boolean {
+    suspend fun updateTeacher(teacher: Teacher): Boolean {
         return try {
-            await(
-                firestore.collection("users").document(userId).update(
-                    mapOf(
-                        "fullName" to fullName,
-                        "subject" to subject,
-                        "phone" to phone
-                    )
-                )
-            )
+            await(firestore.collection("users").document(teacher.userId).update(teacher.toFields()))
             true
         } catch (e: Exception) {
             false
@@ -94,32 +74,18 @@ class AdminRepository(private val context: Context) {
         )
         val list = mutableListOf<Student>()
         for (doc in querySnapshot.documents) {
-            list.add(
-                Student(
-                    id = doc.id,
-                    userId = doc.id,
-                    name = doc.getString("fullName") ?: "",
-                    studentCode = doc.getString("studentCode") ?: "",
-                    className = doc.getString("className") ?: "",
-                    phone = doc.getString("phone") ?: "",
-                    avatarUrl = doc.getString("avatarUrl") ?: ""
-                )
-            )
+            list.add(doc.toStudent())
         }
         return list
     }
 
-    suspend fun addStudent(username: String, pass: String, fullName: String, studentCode: String, className: String, phone: String): Boolean {
+    suspend fun addStudent(username: String, pass: String, student: Student): Boolean {
         return try {
             val hashedPassword = org.mindrot.jbcrypt.BCrypt.hashpw(pass, org.mindrot.jbcrypt.BCrypt.gensalt())
-            val data = mapOf(
+            val data = student.toFields() + mapOf(
                 "username" to username,
                 "passwordHash" to hashedPassword,
-                "fullName" to fullName,
                 "role" to Role.STUDENT.name,
-                "phone" to phone,
-                "studentCode" to studentCode,
-                "className" to className,
                 "avatarUrl" to "student_placeholder"
             )
             await(firestore.collection("users").add(data))
@@ -129,18 +95,9 @@ class AdminRepository(private val context: Context) {
         }
     }
 
-    suspend fun updateStudent(userId: String, fullName: String, studentCode: String, className: String, phone: String): Boolean {
+    suspend fun updateStudent(student: Student): Boolean {
         return try {
-            await(
-                firestore.collection("users").document(userId).update(
-                    mapOf(
-                        "fullName" to fullName,
-                        "studentCode" to studentCode,
-                        "className" to className,
-                        "phone" to phone
-                    )
-                )
-            )
+            await(firestore.collection("users").document(student.userId).update(student.toFields()))
             true
         } catch (e: Exception) {
             false
@@ -241,17 +198,7 @@ class AdminRepository(private val context: Context) {
             val studentIdStr = sid.toString()
             val doc = await(firestore.collection("users").document(studentIdStr).get())
             if (doc.exists()) {
-                list.add(
-                    Student(
-                        id = doc.id,
-                        userId = doc.id,
-                        name = doc.getString("fullName") ?: "",
-                        studentCode = doc.getString("studentCode") ?: "",
-                        className = doc.getString("className") ?: "",
-                        phone = doc.getString("phone") ?: "",
-                        avatarUrl = doc.getString("avatarUrl") ?: ""
-                    )
-                )
+                list.add(doc.toStudent())
             }
         }
         return list
@@ -269,17 +216,7 @@ class AdminRepository(private val context: Context) {
         val list = mutableListOf<Student>()
         for (doc in querySnapshot.documents) {
             if (!enrolledIds.contains(doc.id)) {
-                list.add(
-                    Student(
-                        id = doc.id,
-                        userId = doc.id,
-                        name = doc.getString("fullName") ?: "",
-                        studentCode = doc.getString("studentCode") ?: "",
-                        className = doc.getString("className") ?: "",
-                        phone = doc.getString("phone") ?: "",
-                        avatarUrl = doc.getString("avatarUrl") ?: ""
-                    )
-                )
+                list.add(doc.toStudent())
             }
         }
         return list

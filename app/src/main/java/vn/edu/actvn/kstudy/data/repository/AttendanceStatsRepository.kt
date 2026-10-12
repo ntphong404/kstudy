@@ -80,17 +80,7 @@ class AttendanceStatsRepository : AttendanceDataSource {
                     .get()
             )
             for (doc in querySnapshot.documents) {
-                students.add(
-                    Student(
-                        id = doc.id,
-                        userId = doc.id,
-                        name = doc.getString("fullName") ?: "",
-                        studentCode = doc.getString("studentCode") ?: "",
-                        className = doc.getString("className") ?: "",
-                        phone = doc.getString("phone") ?: "",
-                        avatarUrl = doc.getString("avatarUrl") ?: ""
-                    )
-                )
+                students.add(doc.toStudent())
             }
         }
 

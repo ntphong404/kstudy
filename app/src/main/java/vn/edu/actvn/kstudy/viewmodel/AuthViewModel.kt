@@ -7,8 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import vn.edu.actvn.kstudy.data.model.PersonalInfo
 import vn.edu.actvn.kstudy.data.model.User
 import vn.edu.actvn.kstudy.data.repository.UserRepository
+import vn.edu.actvn.kstudy.util.ProfileRules
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = UserRepository(application.applicationContext)
@@ -18,6 +20,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _loginResult = MutableLiveData<Pair<Boolean, String>>()
     val loginResult: LiveData<Pair<Boolean, String>> = _loginResult
+
+    // Outcome of the last profile update; the profile screen clears it once it has shown it
+    private val _profileResult = MutableLiveData<Pair<Boolean, String>?>()
+    val profileResult: LiveData<Pair<Boolean, String>?> = _profileResult
 
     fun login(username: String, pass: String) {
         if (username.isBlank() || pass.isBlank()) {
@@ -81,20 +87,28 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateProfile(fullName: String, phone: String) {
+    fun updateProfile(fullName: String, phone: String, personal: PersonalInfo) {
         val current = _currentUser.value ?: return
         if (fullName.isBlank()) {
-            _loginResult.value = Pair(false, "Họ tên không được để trống!")
+            _profileResult.value = Pair(false, "Họ tên không được để trống!")
+            return
+        }
+        if (!ProfileRules.isValidEmail(personal.email)) {
+            _profileResult.value = Pair(false, ProfileRules.INVALID_EMAIL)
             return
         }
         viewModelScope.launch {
-            val ok = repository.updateUserProfile(current.id, fullName, phone)
+            val ok = repository.updateUserProfile(current.id, fullName, phone, personal)
             if (ok) {
                 refreshProfile()
-                _loginResult.value = Pair(true, "Cập nhật hồ sơ thành công!")
+                _profileResult.value = Pair(true, "Cập nhật hồ sơ thành công!")
             } else {
-                _loginResult.value = Pair(false, "Cập nhật thất bại!")
+                _profileResult.value = Pair(false, "Cập nhật thất bại!")
             }
         }
+    }
+
+    fun clearProfileResult() {
+        _profileResult.value = null
     }
 }

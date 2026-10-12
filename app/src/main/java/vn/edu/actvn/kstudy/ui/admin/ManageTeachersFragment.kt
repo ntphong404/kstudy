@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -22,6 +23,8 @@ import vn.edu.actvn.kstudy.data.model.Teacher
 import vn.edu.actvn.kstudy.ui.adapter.TeacherAdapter
 import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.common.ListState
+import vn.edu.actvn.kstudy.ui.common.PersonalFields
+import vn.edu.actvn.kstudy.util.ProfileRules
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
 import java.util.*
 
@@ -106,7 +109,8 @@ class ManageTeachersFragment : Fragment() {
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
         tvTitle.text = "Thêm giáo viên mới"
 
-        // Every field is required; an empty one is marked where it is
+        // These fields are required; an empty one is marked where it is. The department, the
+        // degree and the personal details may stay empty.
         val fields = FormFields.required(
             dialogView, R.id.tilUsername, R.id.tilPassword,
             R.id.tilTeacherName, R.id.tilTeacherSub, R.id.tilTeacherPhone
@@ -116,8 +120,12 @@ class ManageTeachersFragment : Fragment() {
         val etPass = dialogView.findViewById<EditText>(R.id.etTeacherPass)
         val etName = dialogView.findViewById<EditText>(R.id.etTeacherName)
         val etSub = dialogView.findViewById<EditText>(R.id.etTeacherSub)
+        val etDepartment = dialogView.findViewById<EditText>(R.id.etTeacherDepartment)
+        val actvDegree = dialogView.findViewById<AutoCompleteTextView>(R.id.actvTeacherDegree)
         val etPhone = dialogView.findViewById<EditText>(R.id.etTeacherPhone)
-        
+        val personalFields = PersonalFields(dialogView)
+        FormFields.setChoices(actvDegree, ProfileRules.DEGREES)
+
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancelTeacher)
         val btnSave = dialogView.findViewById<Button>(R.id.btnSaveTeacher)
 
@@ -128,18 +136,27 @@ class ManageTeachersFragment : Fragment() {
             val pass = etPass.text.toString().trim()
             val name = etName.text.toString().trim()
             val sub = etSub.text.toString().trim()
+            val department = etDepartment.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            if (!FormFields.requireFilled(*fields)) {
+            // Both checks run, so that every problem is marked at once
+            val filled = FormFields.requireFilled(*fields)
+            val personalValid = personalFields.validate()
+            if (!filled || !personalValid) {
                 return@setOnClickListener
             }
 
             viewModel.addTeacher(
                 username = user,
                 pass = pass,
-                fullName = name,
-                subject = sub,
-                phone = phone
+                teacher = Teacher(
+                    name = name,
+                    subject = sub,
+                    department = department,
+                    degree = actvDegree.text.toString(),
+                    phone = phone,
+                    personal = personalFields.read()
+                )
             )
             dialog.dismiss()
         }
@@ -169,11 +186,19 @@ class ManageTeachersFragment : Fragment() {
 
         val etName = dialogView.findViewById<EditText>(R.id.etTeacherName)
         val etSub = dialogView.findViewById<EditText>(R.id.etTeacherSub)
+        val etDepartment = dialogView.findViewById<EditText>(R.id.etTeacherDepartment)
+        val actvDegree = dialogView.findViewById<AutoCompleteTextView>(R.id.actvTeacherDegree)
         val etPhone = dialogView.findViewById<EditText>(R.id.etTeacherPhone)
-        
+        val personalFields = PersonalFields(dialogView)
+        FormFields.setChoices(actvDegree, ProfileRules.DEGREES)
+
         etName.setText(teacher.name)
         etSub.setText(teacher.subject)
+        etDepartment.setText(teacher.department)
+        // Without filtering, otherwise the dropdown would only offer the degree it already shows
+        actvDegree.setText(teacher.degree, false)
         etPhone.setText(teacher.phone)
+        personalFields.show(teacher.personal)
 
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancelTeacher)
         val btnSave = dialogView.findViewById<Button>(R.id.btnSaveTeacher)
@@ -183,17 +208,25 @@ class ManageTeachersFragment : Fragment() {
         btnSave.setOnClickListener {
             val name = etName.text.toString().trim()
             val sub = etSub.text.toString().trim()
+            val department = etDepartment.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            if (!FormFields.requireFilled(*fields)) {
+            // Both checks run, so that every problem is marked at once
+            val filled = FormFields.requireFilled(*fields)
+            val personalValid = personalFields.validate()
+            if (!filled || !personalValid) {
                 return@setOnClickListener
             }
 
             viewModel.updateTeacher(
-                userId = teacher.userId,
-                fullName = name,
-                subject = sub,
-                phone = phone
+                teacher.copy(
+                    name = name,
+                    subject = sub,
+                    department = department,
+                    degree = actvDegree.text.toString(),
+                    phone = phone,
+                    personal = personalFields.read()
+                )
             )
             dialog.dismiss()
         }

@@ -1,6 +1,10 @@
 package vn.edu.actvn.kstudy.ui.common
 
+import android.content.Context
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 
@@ -38,5 +42,19 @@ object FormFields {
         for (field in fields) {
             field.editText?.doAfterTextChanged { setError(field, null) }
         }
+    }
+
+    // Turns a field into a dropdown of fixed choices. The keyboard another field left open
+    // would cover the list, so it goes away when the dropdown gets the focus.
+    fun setChoices(field: AutoCompleteTextView, choices: List<String>) {
+        field.setAdapter(ArrayAdapter(field.context, android.R.layout.simple_dropdown_item_1line, choices))
+        field.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) hideKeyboard(field)
+        }
+    }
+
+    fun hideKeyboard(view: View) {
+        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

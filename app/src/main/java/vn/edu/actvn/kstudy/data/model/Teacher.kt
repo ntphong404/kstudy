@@ -6,5 +6,8 @@ data class Teacher(
     val name: String = "",
     val subject: String = "",
     val phone: String = "",
-    val avatarUrl: String = ""
+    val avatarUrl: String = "",
+    val department: String = "",
+    val degree: String = "",
+    val personal: PersonalInfo = PersonalInfo()
 )

@@ -7,5 +7,14 @@ data class User(
     val fullName: String = "",
     val role: Role = Role.STUDENT,
     val phone: String = "",
-    val avatarUrl: String = ""
+    val avatarUrl: String = "",
+    val personal: PersonalInfo = PersonalInfo(),
+    // Filled in for a student
+    val studentCode: String = "",
+    val className: String = "",
+    val major: String = "",
+    // Filled in for a teacher
+    val subject: String = "",
+    val department: String = "",
+    val degree: String = ""
 )

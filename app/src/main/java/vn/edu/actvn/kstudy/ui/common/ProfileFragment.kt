@@ -12,6 +12,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import vn.edu.actvn.kstudy.R
+import vn.edu.actvn.kstudy.data.model.Role
+import vn.edu.actvn.kstudy.data.model.User
 import vn.edu.actvn.kstudy.ui.LoginActivity
 import vn.edu.actvn.kstudy.viewmodel.AuthViewModel
 
@@ -31,8 +33,11 @@ class ProfileFragment : Fragment() {
         val tvFullName = view.findViewById<TextView>(R.id.tvProfileFullName)
         val tvUsername = view.findViewById<TextView>(R.id.tvProfileUsername)
         val tvRole = view.findViewById<TextView>(R.id.tvProfileRole)
+        val tvRoleInfoHeader = view.findViewById<TextView>(R.id.tvProfileRoleInfoHeader)
+        val layoutRoleInfo = view.findViewById<ViewGroup>(R.id.layoutProfileRoleInfo)
         val etName = view.findViewById<EditText>(R.id.etProfileName)
         val etPhone = view.findViewById<EditText>(R.id.etProfilePhone)
+        val personalFields = PersonalFields(view)
         val btnUpdate = view.findViewById<Button>(R.id.btnUpdateProfile)
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
 
@@ -48,6 +53,8 @@ class ProfileFragment : Fragment() {
                 }
                 etName.setText(user.fullName)
                 etPhone.setText(user.phone)
+                personalFields.show(user.personal)
+                showRoleInfo(tvRoleInfoHeader, layoutRoleInfo, user)
 
                 // initials
                 val initials = if (user.fullName.isNotBlank()) {
@@ -64,14 +71,24 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        authViewModel.profileResult.observe(viewLifecycleOwner) { result ->
+            if (result != null) {
+                Toast.makeText(requireContext(), result.second, Toast.LENGTH_SHORT).show()
+                authViewModel.clearProfileResult()
+            }
+        }
+
         // The name is the only required field; the view model rejects an empty one as well
         val nameField = FormFields.required(view, R.id.tilProfileName)
 
         btnUpdate.setOnClickListener {
-            if (!FormFields.requireFilled(*nameField)) return@setOnClickListener
+            // Both checks run, so that every problem is marked at once
+            val nameFilled = FormFields.requireFilled(*nameField)
+            val personalValid = personalFields.validate()
+            if (!nameFilled || !personalValid) return@setOnClickListener
             val name = etName.text.toString().trim()
             val phone = etPhone.text.toString().trim()
-            authViewModel.updateProfile(name, phone)
+            authViewModel.updateProfile(name, phone, personalFields.read())
         }
 
         btnLogout.setOnClickListener {
@@ -83,5 +100,40 @@ class ProfileFragment : Fragment() {
         }
 
         return view
+    }
+
+    // Lists what the admin recorded about a student or a teacher; an admin account has no such details
+    private fun showRoleInfo(header: TextView, container: ViewGroup, user: User) {
+        val (title, lines) = when (user.role) {
+            Role.STUDENT -> "Thông tin học tập" to listOf(
+                "Mã sinh viên" to user.studentCode,
+                "Lớp" to user.className,
+                "Khoa / Ngành học" to user.major
+            )
+            Role.TEACHER -> "Thông tin công tác" to listOf(
+                "Chuyên môn" to user.subject,
+                "Khoa / Bộ môn" to user.department,
+                "Học vị" to user.degree
+            )
+            else -> "" to emptyList()
+        }
+        header.text = title
+        header.visibility = if (lines.isEmpty()) View.GONE else View.VISIBLE
+        container.visibility = header.visibility
+
+        container.removeAllViews()
+        for ((label, value) in lines) {
+            val line = layoutInflater.inflate(R.layout.item_profile_info, container, false)
+            line.findViewById<TextView>(R.id.tvProfileInfoLabel).text = label
+            line.findViewById<TextView>(R.id.tvProfileInfoValue).apply {
+                if (value.isBlank()) {
+                    text = "Chưa cập nhật"
+                    setTextAppearance(R.style.TextAppearance_Kstudy_Body_Secondary)
+                } else {
+                    text = value
+                }
+            }
+            container.addView(line)
+        }
     }
 }

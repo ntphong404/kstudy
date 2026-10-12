@@ -22,6 +22,7 @@ import vn.edu.actvn.kstudy.data.model.Student
 import vn.edu.actvn.kstudy.ui.adapter.StudentAdapter
 import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.common.ListState
+import vn.edu.actvn.kstudy.ui.common.PersonalFields
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
 import java.util.*
 
@@ -107,7 +108,8 @@ class ManageStudentsFragment : Fragment() {
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
         tvTitle.text = "Thêm học sinh mới"
 
-        // Every field is required; an empty one is marked where it is
+        // These fields are required; an empty one is marked where it is. The major and the
+        // personal details may stay empty.
         val fields = FormFields.required(
             dialogView, R.id.tilUsername, R.id.tilPassword,
             R.id.tilStudentName, R.id.tilStudentCode, R.id.tilStudentClass, R.id.tilStudentPhone
@@ -118,8 +120,10 @@ class ManageStudentsFragment : Fragment() {
         val etName = dialogView.findViewById<EditText>(R.id.etStudentName)
         val etCode = dialogView.findViewById<EditText>(R.id.etStudentCode)
         val etClass = dialogView.findViewById<EditText>(R.id.etStudentClass)
+        val etMajor = dialogView.findViewById<EditText>(R.id.etStudentMajor)
         val etPhone = dialogView.findViewById<EditText>(R.id.etStudentPhone)
-        
+        val personalFields = PersonalFields(dialogView)
+
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancelStudent)
         val btnSave = dialogView.findViewById<Button>(R.id.btnSaveStudent)
 
@@ -131,19 +135,27 @@ class ManageStudentsFragment : Fragment() {
             val name = etName.text.toString().trim()
             val code = etCode.text.toString().trim()
             val className = etClass.text.toString().trim()
+            val major = etMajor.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            if (!FormFields.requireFilled(*fields)) {
+            // Both checks run, so that every problem is marked at once
+            val filled = FormFields.requireFilled(*fields)
+            val personalValid = personalFields.validate()
+            if (!filled || !personalValid) {
                 return@setOnClickListener
             }
 
             viewModel.addStudent(
                 username = user,
                 pass = pass,
-                fullName = name,
-                studentCode = code,
-                className = className,
-                phone = phone
+                student = Student(
+                    name = name,
+                    studentCode = code,
+                    className = className,
+                    major = major,
+                    phone = phone,
+                    personal = personalFields.read()
+                )
             )
             dialog.dismiss()
         }
@@ -176,12 +188,16 @@ class ManageStudentsFragment : Fragment() {
         val etName = dialogView.findViewById<EditText>(R.id.etStudentName)
         val etCode = dialogView.findViewById<EditText>(R.id.etStudentCode)
         val etClass = dialogView.findViewById<EditText>(R.id.etStudentClass)
+        val etMajor = dialogView.findViewById<EditText>(R.id.etStudentMajor)
         val etPhone = dialogView.findViewById<EditText>(R.id.etStudentPhone)
-        
+        val personalFields = PersonalFields(dialogView)
+
         etName.setText(student.name)
         etCode.setText(student.studentCode)
         etClass.setText(student.className)
+        etMajor.setText(student.major)
         etPhone.setText(student.phone)
+        personalFields.show(student.personal)
 
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancelStudent)
         val btnSave = dialogView.findViewById<Button>(R.id.btnSaveStudent)
@@ -192,18 +208,25 @@ class ManageStudentsFragment : Fragment() {
             val name = etName.text.toString().trim()
             val code = etCode.text.toString().trim()
             val className = etClass.text.toString().trim()
+            val major = etMajor.text.toString().trim()
             val phone = etPhone.text.toString().trim()
 
-            if (!FormFields.requireFilled(*fields)) {
+            // Both checks run, so that every problem is marked at once
+            val filled = FormFields.requireFilled(*fields)
+            val personalValid = personalFields.validate()
+            if (!filled || !personalValid) {
                 return@setOnClickListener
             }
 
             viewModel.updateStudent(
-                userId = student.userId,
-                fullName = name,
-                studentCode = code,
-                className = className,
-                phone = phone
+                student.copy(
+                    name = name,
+                    studentCode = code,
+                    className = className,
+                    major = major,
+                    phone = phone,
+                    personal = personalFields.read()
+                )
             )
             dialog.dismiss()
         }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.model.*
 import vn.edu.actvn.kstudy.data.repository.AdminRepository
+import vn.edu.actvn.kstudy.util.ProfileRules
 
 class AdminViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AdminRepository(application.applicationContext)
@@ -48,6 +49,13 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // Reports an email that is not an address; the forms mark it at the field before it gets here
+    private fun hasInvalidEmail(personal: PersonalInfo): Boolean {
+        val invalid = !ProfileRules.isValidEmail(personal.email)
+        if (invalid) _operationResult.value = Pair(false, ProfileRules.INVALID_EMAIL)
+        return invalid
+    }
+
     // --- TEACHERS ---
 
     fun loadTeachers() {
@@ -56,13 +64,14 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addTeacher(username: String, pass: String, fullName: String, subject: String, phone: String) {
-        if (username.isBlank() || pass.isBlank() || fullName.isBlank() || subject.isBlank()) {
+    fun addTeacher(username: String, pass: String, teacher: Teacher) {
+        if (username.isBlank() || pass.isBlank() || teacher.name.isBlank() || teacher.subject.isBlank()) {
             _operationResult.value = Pair(false, "Vui lòng nhập đầy đủ thông tin!")
             return
         }
+        if (hasInvalidEmail(teacher.personal)) return
         viewModelScope.launch {
-            val ok = repository.addTeacher(username, pass, fullName, subject, phone)
+            val ok = repository.addTeacher(username, pass, teacher)
             if (ok) {
                 loadTeachers()
                 loadDashboardStats()
@@ -73,13 +82,14 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateTeacher(userId: String, fullName: String, subject: String, phone: String) {
-        if (fullName.isBlank() || subject.isBlank()) {
+    fun updateTeacher(teacher: Teacher) {
+        if (teacher.name.isBlank() || teacher.subject.isBlank()) {
             _operationResult.value = Pair(false, "Vui lòng nhập đầy đủ thông tin!")
             return
         }
+        if (hasInvalidEmail(teacher.personal)) return
         viewModelScope.launch {
-            val ok = repository.updateTeacher(userId, fullName, subject, phone)
+            val ok = repository.updateTeacher(teacher)
             if (ok) {
                 loadTeachers()
                 _operationResult.value = Pair(true, "Cập nhật thành công!")
@@ -110,13 +120,14 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addStudent(username: String, pass: String, fullName: String, studentCode: String, className: String, phone: String) {
-        if (username.isBlank() || pass.isBlank() || fullName.isBlank() || studentCode.isBlank() || className.isBlank()) {
+    fun addStudent(username: String, pass: String, student: Student) {
+        if (username.isBlank() || pass.isBlank() || student.name.isBlank() || student.studentCode.isBlank() || student.className.isBlank()) {
             _operationResult.value = Pair(false, "Vui lòng nhập đầy đủ thông tin!")
             return
         }
+        if (hasInvalidEmail(student.personal)) return
         viewModelScope.launch {
-            val ok = repository.addStudent(username, pass, fullName, studentCode, className, phone)
+            val ok = repository.addStudent(username, pass, student)
             if (ok) {
                 loadStudents()
                 loadDashboardStats()
@@ -127,13 +138,14 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateStudent(userId: String, fullName: String, studentCode: String, className: String, phone: String) {
-        if (fullName.isBlank() || studentCode.isBlank() || className.isBlank()) {
+    fun updateStudent(student: Student) {
+        if (student.name.isBlank() || student.studentCode.isBlank() || student.className.isBlank()) {
             _operationResult.value = Pair(false, "Vui lòng nhập đầy đủ thông tin!")
             return
         }
+        if (hasInvalidEmail(student.personal)) return
         viewModelScope.launch {
-            val ok = repository.updateStudent(userId, fullName, studentCode, className, phone)
+            val ok = repository.updateStudent(student)
             if (ok) {
                 loadStudents()
                 _operationResult.value = Pair(true, "Cập nhật thành công!")

@@ -6,6 +6,68 @@ import vn.edu.actvn.kstudy.data.model.AttendanceSession
 import vn.edu.actvn.kstudy.data.model.GeoLocation
 import vn.edu.actvn.kstudy.data.model.LeaveRequest
 import vn.edu.actvn.kstudy.data.model.LeaveStatus
+import vn.edu.actvn.kstudy.data.model.PersonalInfo
+import vn.edu.actvn.kstudy.data.model.Student
+import vn.edu.actvn.kstudy.data.model.Teacher
+
+// Students and teachers are documents of the `users` collection; a document written before a
+// field existed simply reads as an empty string
+
+internal fun DocumentSnapshot.toPersonalInfo(): PersonalInfo = PersonalInfo(
+    email = getString("email") ?: "",
+    dateOfBirth = getString("dateOfBirth") ?: "",
+    gender = getString("gender") ?: "",
+    address = getString("address") ?: ""
+)
+
+internal fun PersonalInfo.toFields(): Map<String, Any> = mapOf(
+    "email" to email,
+    "dateOfBirth" to dateOfBirth,
+    "gender" to gender,
+    "address" to address
+)
+
+internal fun DocumentSnapshot.toStudent(): Student = Student(
+    id = id,
+    userId = id,
+    name = getString("fullName") ?: "",
+    studentCode = getString("studentCode") ?: "",
+    className = getString("className") ?: "",
+    phone = getString("phone") ?: "",
+    avatarUrl = getString("avatarUrl") ?: "",
+    major = getString("major") ?: "",
+    personal = toPersonalInfo()
+)
+
+// Everything the admin's form can change about a student
+internal fun Student.toFields(): Map<String, Any> = mapOf(
+    "fullName" to name,
+    "studentCode" to studentCode,
+    "className" to className,
+    "major" to major,
+    "phone" to phone
+) + personal.toFields()
+
+internal fun DocumentSnapshot.toTeacher(): Teacher = Teacher(
+    id = id,
+    userId = id,
+    name = getString("fullName") ?: "",
+    subject = getString("subject") ?: "",
+    phone = getString("phone") ?: "",
+    avatarUrl = getString("avatarUrl") ?: "",
+    department = getString("department") ?: "",
+    degree = getString("degree") ?: "",
+    personal = toPersonalInfo()
+)
+
+// Everything the admin's form can change about a teacher
+internal fun Teacher.toFields(): Map<String, Any> = mapOf(
+    "fullName" to name,
+    "subject" to subject,
+    "department" to department,
+    "degree" to degree,
+    "phone" to phone
+) + personal.toFields()
 
 internal fun DocumentSnapshot.toAttendanceSession(): AttendanceSession {
     val qrCode = getString("qrCode") ?: ""

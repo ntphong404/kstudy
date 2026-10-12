@@ -21,15 +21,7 @@ class StudentRepository(private val context: Context) {
     suspend fun getStudentByUserId(userId: String): Student? {
         val doc = await(firestore.collection("users").document(userId).get())
         if (!doc.exists()) return null
-        return Student(
-            id = doc.id,
-            userId = doc.id,
-            name = doc.getString("fullName") ?: "",
-            studentCode = doc.getString("studentCode") ?: "",
-            className = doc.getString("className") ?: "",
-            phone = doc.getString("phone") ?: "",
-            avatarUrl = doc.getString("avatarUrl") ?: ""
-        )
+        return doc.toStudent()
     }
 
     suspend fun getClassesForStudent(studentId: String): List<CourseClass> {

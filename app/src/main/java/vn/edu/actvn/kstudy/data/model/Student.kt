@@ -7,5 +7,7 @@ data class Student(
     val studentCode: String = "",
     val className: String = "",
     val phone: String = "",
-    val avatarUrl: String = ""
+    val avatarUrl: String = "",
+    val major: String = "",
+    val personal: PersonalInfo = PersonalInfo()
 )

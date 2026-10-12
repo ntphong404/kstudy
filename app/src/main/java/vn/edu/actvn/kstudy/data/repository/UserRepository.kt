@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import vn.edu.actvn.kstudy.data.model.PersonalInfo
 import vn.edu.actvn.kstudy.data.model.Role
 import vn.edu.actvn.kstudy.data.model.User
 import java.util.UUID
@@ -44,14 +45,15 @@ class UserRepository(context: Context) {
         return mapDocumentToUser(doc)
     }
 
-    suspend fun updateUserProfile(userId: String, fullName: String, phone: String): Boolean {
+    // What a user may change about themselves; the study and work details belong to the admin
+    suspend fun updateUserProfile(userId: String, fullName: String, phone: String, personal: PersonalInfo): Boolean {
         return try {
             await(
                 firestore.collection("users").document(userId).update(
                     mapOf(
                         "fullName" to fullName,
                         "phone" to phone
-                    )
+                    ) + personal.toFields()
                 )
             )
             true
@@ -69,7 +71,14 @@ class UserRepository(context: Context) {
             fullName = doc.getString("fullName") ?: "",
             role = try { Role.valueOf(roleStr) } catch(e: Exception) { Role.STUDENT },
             phone = doc.getString("phone") ?: "",
-            avatarUrl = doc.getString("avatarUrl") ?: ""
+            avatarUrl = doc.getString("avatarUrl") ?: "",
+            personal = doc.toPersonalInfo(),
+            studentCode = doc.getString("studentCode") ?: "",
+            className = doc.getString("className") ?: "",
+            major = doc.getString("major") ?: "",
+            subject = doc.getString("subject") ?: "",
+            department = doc.getString("department") ?: "",
+            degree = doc.getString("degree") ?: ""
         )
     }
 
@@ -89,6 +98,7 @@ class UserRepository(context: Context) {
                 "phone" to user.phone,
                 "avatarUrl" to user.avatarUrl
             )
+            map.putAll(user.personal.toFields())
             map.putAll(additionalFields)
             await(firestore.collection("users").document(user.id).set(map))
             true

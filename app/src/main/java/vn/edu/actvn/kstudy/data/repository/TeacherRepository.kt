@@ -23,14 +23,7 @@ class TeacherRepository(private val context: Context) {
     suspend fun getTeacherByUserId(userId: String): Teacher? {
         val doc = await(firestore.collection("users").document(userId).get())
         if (!doc.exists()) return null
-        return Teacher(
-            id = doc.id,
-            userId = doc.id,
-            name = doc.getString("fullName") ?: "",
-            subject = doc.getString("subject") ?: "",
-            phone = doc.getString("phone") ?: "",
-            avatarUrl = doc.getString("avatarUrl") ?: ""
-        )
+        return doc.toTeacher()
     }
 
     suspend fun getClassesForTeacher(teacherId: String): List<CourseClass> {
@@ -66,17 +59,7 @@ class TeacherRepository(private val context: Context) {
             val studentIdStr = sid.toString()
             val doc = await(firestore.collection("users").document(studentIdStr).get())
             if (doc.exists()) {
-                list.add(
-                    Student(
-                        id = doc.id,
-                        userId = doc.id,
-                        name = doc.getString("fullName") ?: "",
-                        studentCode = doc.getString("studentCode") ?: "",
-                        className = doc.getString("className") ?: "",
-                        phone = doc.getString("phone") ?: "",
-                        avatarUrl = doc.getString("avatarUrl") ?: ""
-                    )
-                )
+                list.add(doc.toStudent())
             }
         }
         return list

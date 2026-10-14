@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import vn.edu.actvn.kstudy.ui.adapter.StudentAdapter
 import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.common.ListState
 import vn.edu.actvn.kstudy.ui.common.PersonalFields
+import vn.edu.actvn.kstudy.ui.common.ResetPasswordDialog
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
 import java.util.*
 
@@ -48,7 +50,13 @@ class ManageStudentsFragment : Fragment() {
         adapter = StudentAdapter(
             list = emptyList(),
             onEditClick = { student -> showEditDialog(student) },
-            onDeleteClick = { student -> showDeleteConfirm(student) }
+            onDeleteClick = { student -> showDeleteConfirm(student) },
+            onActionClick = { student ->
+                ResetPasswordDialog.show(requireContext(), student.name) { newPassword ->
+                    viewModel.resetPassword(student.userId, student.name, newPassword)
+                }
+            },
+            actionText = "Đặt lại mật khẩu"
         )
         rv.adapter = adapter
 
@@ -62,7 +70,7 @@ class ManageStudentsFragment : Fragment() {
         })
 
         val btnAdd = view.findViewById<Button>(R.id.btnAddStudent)
-        btnAdd.setOnClickListener { showAddDialog() }
+        btnAdd.setOnClickListener { showAddMenu(btnAdd) }
 
         listState = ListState(view)
 
@@ -96,6 +104,23 @@ class ManageStudentsFragment : Fragment() {
                 if (query.isBlank()) "Chưa có học sinh nào." else "Không tìm thấy học sinh phù hợp."
             )
         }
+    }
+
+    // One student through the form, or a whole class list from a file
+    private fun showAddMenu(anchor: View) {
+        val menu = PopupMenu(requireContext(), anchor)
+        menu.menu.add("Thêm một học sinh").setOnMenuItemClickListener {
+            showAddDialog()
+            true
+        }
+        menu.menu.add("Nhập từ file Excel/CSV").setOnMenuItemClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.adminFragmentContainer, ImportStudentsFragment())
+                .addToBackStack(null)
+                .commit()
+            true
+        }
+        menu.show()
     }
 
     private fun showAddDialog() {

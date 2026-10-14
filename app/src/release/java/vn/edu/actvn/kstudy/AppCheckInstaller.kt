@@ -1,8 +1,13 @@
 package vn.edu.actvn.kstudy
 
-// The debug App Check provider must never ship in a release build. Before publishing the app,
-// install a production provider here (Play Integrity) so the AI features keep working.
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+
 object AppCheckInstaller {
     fun install() {
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
     }
 }

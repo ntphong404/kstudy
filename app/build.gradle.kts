@@ -55,6 +55,7 @@ dependencies {
 
     // Lets a debug build pass Firebase App Check (required by Firebase AI Logic) with a debug token
     debugImplementation(libs.firebase.appcheck.debug)
+    releaseImplementation(libs.firebase.appcheck.playintegrity)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

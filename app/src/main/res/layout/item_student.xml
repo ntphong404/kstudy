@@ -72,18 +72,18 @@
             android:visibility="gone" />
 
         <Button
+            android:id="@+id/btnActionStudent"
+            style="@style/Widget.Kstudy.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
             android:id="@+id/btnEditStudent"
             style="@style/Widget.Kstudy.Button.Text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sửa"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btnActionStudent"
-            style="@style/Widget.Kstudy.Button.Text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

@@ -8,6 +8,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import vn.edu.actvn.kstudy.R
+import vn.edu.actvn.kstudy.data.model.Role
+import vn.edu.actvn.kstudy.data.notification.ClassReminders
+import vn.edu.actvn.kstudy.ui.common.NotificationBell
+import vn.edu.actvn.kstudy.ui.common.TimetableFragment
 import vn.edu.actvn.kstudy.util.ScheduleUtils
 import vn.edu.actvn.kstudy.viewmodel.TeacherViewModel
 
@@ -48,6 +52,13 @@ class TeacherDashboardFragment : Fragment() {
         val tvUpcomingName = view.findViewById<TextView>(R.id.tvTeacherUpcomingClassName)
         val tvUpcomingInfo = view.findViewById<TextView>(R.id.tvTeacherUpcomingClassInfo)
 
+        view.findViewById<View>(R.id.btnTeacherTimetable).setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.teacherFragmentContainer, TimetableFragment.newInstance(teacherUserId, Role.TEACHER))
+                .addToBackStack(null)
+                .commit()
+        }
+
         viewModel.teacher.observe(viewLifecycleOwner) { teacher ->
             if (teacher != null) {
                 tvWelcome.text = "Xin chào, ${teacher.name}"
@@ -55,7 +66,11 @@ class TeacherDashboardFragment : Fragment() {
             }
         }
 
+        NotificationBell.bind(this, view, R.id.teacherFragmentContainer)
+
         viewModel.classes.observe(viewLifecycleOwner) { classes ->
+            // The reminders before each lesson follow the classes as they are now
+            ClassReminders.schedule(requireContext(), classes)
             tvStatClasses.text = classes.size.toString()
             tvStatStudents.text = classes.sumOf { it.totalStudents }.toString()
 

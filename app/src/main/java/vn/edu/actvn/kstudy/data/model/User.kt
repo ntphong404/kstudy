@@ -8,6 +8,8 @@ data class User(
     val role: Role = Role.STUDENT,
     val phone: String = "",
     val avatarUrl: String = "",
+    // The password was chosen by an admin and has to be replaced before the app can be used
+    val mustChangePassword: Boolean = false,
     val personal: PersonalInfo = PersonalInfo(),
     // Filled in for a student
     val studentCode: String = "",

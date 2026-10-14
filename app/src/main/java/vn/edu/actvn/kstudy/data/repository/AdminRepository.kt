@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vn.edu.actvn.kstudy.data.model.*
@@ -13,6 +14,29 @@ class AdminRepository(private val context: Context) {
 
     private suspend fun <T> await(task: com.google.android.gms.tasks.Task<T>): T = withContext(Dispatchers.IO) {
         Tasks.await(task)
+    }
+
+    // --- ACCOUNTS ---
+
+    // Gives a student or a teacher who forgot their password a new one; the old one is not needed.
+    // The admin knows the new one, so its owner has to replace it at the next sign-in.
+    suspend fun resetPassword(userId: String, newPassword: String): Boolean {
+        return try {
+            // BCrypt is slow on purpose: keep it off the main thread
+            val hashedPassword = withContext(Dispatchers.Default) {
+                org.mindrot.jbcrypt.BCrypt.hashpw(newPassword, org.mindrot.jbcrypt.BCrypt.gensalt())
+            }
+            await(
+                firestore.collection("users").document(userId).update(
+                    mapOf("passwordHash" to hashedPassword, MUST_CHANGE_PASSWORD to true)
+                )
+            )
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            false
+        }
     }
 
     // --- TEACHER CRUD ---
@@ -36,6 +60,8 @@ class AdminRepository(private val context: Context) {
             val data = teacher.toFields() + mapOf(
                 "username" to username,
                 "passwordHash" to hashedPassword,
+                // Chosen by the admin: the teacher replaces it at the first sign-in
+                MUST_CHANGE_PASSWORD to true,
                 "role" to Role.TEACHER.name,
                 "avatarUrl" to "teacher_placeholder"
             )
@@ -85,6 +111,8 @@ class AdminRepository(private val context: Context) {
             val data = student.toFields() + mapOf(
                 "username" to username,
                 "passwordHash" to hashedPassword,
+                // Chosen by the admin: the student replaces it at the first sign-in
+                MUST_CHANGE_PASSWORD to true,
                 "role" to Role.STUDENT.name,
                 "avatarUrl" to "student_placeholder"
             )

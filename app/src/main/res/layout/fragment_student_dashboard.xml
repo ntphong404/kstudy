@@ -10,20 +10,33 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout style="@style/Widget.Kstudy.PageHeader">
+        <!-- The greeting, with the notification bell at the end of the line -->
+        <LinearLayout
+            style="@style/Widget.Kstudy.PageHeader"
+            android:clipToPadding="false"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvStudentDashboardWelcome"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvStudentDashboardSubDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+                <TextView
+                    android:id="@+id/tvStudentDashboardWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+
+                <TextView
+                    android:id="@+id/tvStudentDashboardSubDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+            </LinearLayout>
+
+            <include layout="@layout/view_notification_bell" />
         </LinearLayout>
 
         <LinearLayout
@@ -105,6 +118,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+
+                <LinearLayout style="@style/Widget.Kstudy.CardActions">
+
+                    <Button
+                        android:id="@+id/btnStudentTimetable"
+                        style="@style/Widget.Kstudy.Button.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Xem thời khóa biểu" />
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
@@ -145,6 +168,18 @@
                     android:text="Đang tải dữ liệu…"
                     android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
             </LinearLayout>
+
+            <!-- Attendance score out of 10, one line per class; filled in by the fragment -->
+            <TextView
+                style="@style/Widget.Kstudy.SectionHeader"
+                android:text="Điểm chuyên cần" />
+
+            <LinearLayout
+                android:id="@+id/layoutStudentScores"
+                style="@style/Widget.Kstudy.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

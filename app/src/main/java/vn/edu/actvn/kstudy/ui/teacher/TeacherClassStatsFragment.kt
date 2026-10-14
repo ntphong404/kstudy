@@ -5,20 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.ui.common.AttendanceViews
 import vn.edu.actvn.kstudy.ui.common.BarChartView
 import vn.edu.actvn.kstudy.ui.common.DonutChartView
+import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.common.ReportSharer
 import vn.edu.actvn.kstudy.util.AttendanceAnalyzer
+import vn.edu.actvn.kstudy.util.AttendanceScore
 import vn.edu.actvn.kstudy.util.ClassReport
 import vn.edu.actvn.kstudy.util.SessionDates
 import vn.edu.actvn.kstudy.viewmodel.AiAnalysisState
@@ -37,6 +42,9 @@ class TeacherClassStatsFragment : Fragment() {
     companion object {
         // The bar chart stays readable with at most this many sessions
         private const val MAX_BARS = 10
+
+        // A class up to this size has its list of scores unfolded from the start
+        private const val MAX_OPEN_SCORES = 10
 
         fun newInstance(classId: String, className: String): TeacherClassStatsFragment {
             return TeacherClassStatsFragment().apply {
@@ -73,6 +81,18 @@ class TeacherClassStatsFragment : Fragment() {
         val chartSessions = view.findViewById<BarChartView>(R.id.chartClassSessions)
         val tvRiskTitle = view.findViewById<TextView>(R.id.tvStatsRiskTitle)
         val layoutRisk = view.findViewById<LinearLayout>(R.id.layoutStatsRisk)
+        val tvScoreRule = view.findViewById<TextView>(R.id.tvScoreRule)
+        val btnEditPenalty = view.findViewById<Button>(R.id.btnEditPenalty)
+        val rowToggleScores = view.findViewById<View>(R.id.rowToggleScores)
+        val tvScoresTitle = view.findViewById<TextView>(R.id.tvScoresTitle)
+        val imgScoresArrow = view.findViewById<View>(R.id.imgScoresArrow)
+        val layoutScores = view.findViewById<LinearLayout>(R.id.layoutStatsScores)
+        // Once the teacher has folded or unfolded the list, a reload leaves it that way
+        var scoresToggled = false
+        fun showScores(show: Boolean) {
+            layoutScores.visibility = if (show) View.VISIBLE else View.GONE
+            imgScoresArrow.rotation = if (show) 180f else 0f
+        }
         val tvAiAnalysis = view.findViewById<TextView>(R.id.tvAiAnalysis)
         val pbAiAnalysis = view.findViewById<ProgressBar>(R.id.pbAiAnalysis)
         val btnAiAnalysis = view.findViewById<Button>(R.id.btnAiAnalysis)
@@ -103,8 +123,32 @@ class TeacherClassStatsFragment : Fragment() {
 
             showAtRiskStudents(report, tvRiskTitle, layoutRisk)
 
+            tvScoreRule.text = AttendanceScore.rule(report.courseClass.absencePenalty)
+            tvScoresTitle.text = "Điểm của cả lớp (${report.students.size})"
+            layoutScores.removeAllViews()
+            for (stat in report.students) {
+                AttendanceViews.addScore(
+                    container = layoutScores,
+                    title = stat.student.name,
+                    details = "${stat.student.studentCode} • vắng không phép ${stat.count.absent} buổi",
+                    value = AttendanceScore.format(report.scoreOf(stat))
+                )
+            }
+            // A short list is shown straight away; a whole class would push the rest off the screen
+            if (!scoresToggled) showScores(report.students.size <= MAX_OPEN_SCORES)
+
+            btnEditPenalty.isEnabled = true
             btnAiAnalysis.isEnabled = true
             btnExport.isEnabled = true
+        }
+
+        rowToggleScores.setOnClickListener {
+            scoresToggled = true
+            showScores(layoutScores.visibility != View.VISIBLE)
+        }
+
+        btnEditPenalty.setOnClickListener {
+            viewModel.classReport.value?.let { showPenaltyDialog(it.courseClass.absencePenalty) }
         }
 
         viewModel.aiAnalysis.observe(viewLifecycleOwner) { state ->
@@ -139,7 +183,8 @@ class TeacherClassStatsFragment : Fragment() {
             if (message != null) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                 viewModel.clearErrorMessage()
-                tvSummary.text = "Chưa tải được dữ liệu."
+                // Later failures (saving the penalty, exporting) leave the loaded figures alone
+                if (viewModel.classReport.value == null) tvSummary.text = "Chưa tải được dữ liệu."
             }
         }
 
@@ -178,6 +223,33 @@ class TeacherClassStatsFragment : Fragment() {
                 title = "${stat.student.name} (${stat.student.studentCode})",
                 body = "${AttendanceAnalyzer.riskLabel(stat.risk)} • ${AttendanceAnalyzer.absenceSummary(stat.count)}"
             )
+        }
+    }
+
+    // How many points one absence without permission costs in this class
+    private fun showPenaltyDialog(current: Double) {
+        val content = layoutInflater.inflate(R.layout.dialog_absence_penalty, null)
+        val tilPenalty = content.findViewById<TextInputLayout>(R.id.tilAbsencePenalty)
+        val etPenalty = content.findViewById<EditText>(R.id.etAbsencePenalty)
+        etPenalty.setText(AttendanceScore.format(current))
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Mức trừ điểm chuyên cần")
+            .setMessage("Điểm của cả lớp $className được tính lại ngay theo mức mới.")
+            .setView(content)
+            .setNegativeButton("Hủy", null)
+            .setPositiveButton("Lưu", null)
+            .show()
+        FormFields.clearErrorOnEdit(tilPenalty)
+        // Set after show() so that a wrong number keeps the dialog open instead of closing it
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            val penalty = AttendanceScore.parsePenalty(etPenalty.text.toString())
+            if (penalty == null) {
+                FormFields.setError(tilPenalty, AttendanceScore.INVALID_PENALTY)
+            } else {
+                viewModel.updateAbsencePenalty(penalty)
+                dialog.dismiss()
+            }
         }
     }
 

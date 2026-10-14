@@ -65,6 +65,23 @@ class TeacherRepository(private val context: Context) {
         return list
     }
 
+    // The class and the ids of its students: who to notify about it, and under which name
+    suspend fun getClassWithStudentIds(classId: String): Pair<CourseClass, List<String>>? {
+        val doc = await(firestore.collection("classes").document(classId).get())
+        if (!doc.exists()) return null
+        val studentIds = (doc.get("studentIds") as? List<*>)?.map { it.toString() } ?: emptyList()
+        val courseClass = CourseClass(
+            id = doc.id,
+            name = doc.getString("name") ?: "",
+            academicYear = doc.getString("academicYear") ?: "",
+            teacherId = doc.getString("teacherId") ?: "",
+            room = doc.getString("room") ?: "",
+            schedule = doc.getString("schedule") ?: "",
+            totalStudents = studentIds.size
+        )
+        return courseClass to studentIds
+    }
+
     // position: where the teacher is standing, or null to open the session without a location check
     suspend fun createAttendanceSession(classId: String, lateAfterMinutes: Int, position: CheckInRules.Position?): String {
         try {

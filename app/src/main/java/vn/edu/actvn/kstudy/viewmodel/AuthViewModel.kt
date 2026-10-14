@@ -9,6 +9,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.model.PersonalInfo
 import vn.edu.actvn.kstudy.data.model.User
+import vn.edu.actvn.kstudy.data.repository.PasswordChange
 import vn.edu.actvn.kstudy.data.repository.UserRepository
 import vn.edu.actvn.kstudy.util.ProfileRules
 
@@ -24,6 +25,15 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     // Outcome of the last profile update; the profile screen clears it once it has shown it
     private val _profileResult = MutableLiveData<Pair<Boolean, String>?>()
     val profileResult: LiveData<Pair<Boolean, String>?> = _profileResult
+
+    // Outcome of the last password change; the profile screen clears it once it has handled it
+    private val _passwordResult = MutableLiveData<PasswordChange?>()
+    val passwordResult: LiveData<PasswordChange?> = _passwordResult
+
+    // The password the user has just signed in with. An account whose password an admin chose
+    // must replace it before going any further, and must not be asked to type it twice.
+    var signedInPassword: String = ""
+        private set
 
     fun login(username: String, pass: String) {
         if (username.isBlank() || pass.isBlank()) {
@@ -41,6 +51,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 return@launch
             }
             if (user != null) {
+                signedInPassword = pass
                 _currentUser.value = user
                 _loginResult.value = Pair(true, "Đăng nhập thành công!")
             } else {
@@ -65,6 +76,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logout() {
+        signedInPassword = ""
         _currentUser.value = null
     }
 
@@ -110,5 +122,21 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearProfileResult() {
         _profileResult.value = null
+    }
+
+    // The dialog has already checked the new password against PasswordRules
+    fun changePassword(currentPassword: String, newPassword: String) {
+        val current = _currentUser.value
+        if (current == null) {
+            _passwordResult.value = PasswordChange.FAILED
+            return
+        }
+        viewModelScope.launch {
+            _passwordResult.value = repository.changePassword(current.id, currentPassword, newPassword)
+        }
+    }
+
+    fun clearPasswordResult() {
+        _passwordResult.value = null
     }
 }

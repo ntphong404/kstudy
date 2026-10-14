@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
@@ -118,10 +119,81 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
 
-            <!-- AI analysis -->
+            <!-- Attendance scores -->
             <TextView
                 style="@style/Widget.Kstudy.SectionHeader"
                 android:layout_marginTop="16dp"
+                android:text="Điểm chuyên cần" />
+
+            <LinearLayout
+                style="@style/Widget.Kstudy.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvScoreRule"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Thang điểm 10. Đi muộn và vắng có phép không bị trừ điểm."
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+
+                <Button
+                    android:id="@+id/btnEditPenalty"
+                    style="@style/Widget.Kstudy.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:enabled="false"
+                    android:text="Sửa mức trừ điểm" />
+
+                <!-- The scores of the whole class; a long list starts folded -->
+                <LinearLayout
+                    android:id="@+id/rowToggleScores"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvScoresTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Điểm của cả lớp"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Section" />
+
+                    <ImageView
+                        android:id="@+id/imgScoresArrow"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_expand_more"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutStatsScores"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- AI analysis -->
+            <TextView
+                style="@style/Widget.Kstudy.SectionHeader"
                 android:text="Nhận xét từ AI" />
 
             <LinearLayout

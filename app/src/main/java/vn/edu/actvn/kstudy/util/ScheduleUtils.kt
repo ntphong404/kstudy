@@ -2,11 +2,43 @@ package vn.edu.actvn.kstudy.util
 
 import vn.edu.actvn.kstudy.data.model.CourseClass
 import java.util.Calendar
+import java.util.Locale
 
 data class UpcomingClass(
     val courseClass: CourseClass,
     val dayLabel: String,
     val timeLabel: String
+)
+
+// One weekly lesson: a class that meets on several days has one lesson on each of them
+data class Lesson(
+    val courseClass: CourseClass,
+    val slot: String // "07:30-09:00"
+)
+
+data class TimetableDay(
+    val name: String, // "Thứ 2" ... "Chủ Nhật"
+    val date: String, // day of the shown week, "dd/MM"
+    val isToday: Boolean,
+    val lessons: List<Lesson>
+) {
+    fun lessonsAt(slot: String): List<Lesson> = lessons.filter { it.slot == slot }
+}
+
+// The week as a grid: one row per day from Monday to Sunday, one column per time slot that
+// at least one class uses, earliest first
+data class WeekTimetable(
+    val slots: List<String>,
+    val days: List<TimetableDay>
+) {
+    val isEmpty: Boolean get() = slots.isEmpty()
+}
+
+// The next occurrence of a weekly lesson
+data class UpcomingLesson(
+    val courseClass: CourseClass,
+    val slot: String, // "07:30-09:00"
+    val startMillis: Long
 )
 
 // Parses the free-text `schedule` field (e.g. "Thứ 2, Thứ 4 (7h30-9h)") set by
@@ -71,6 +103,61 @@ object ScheduleUtils {
             }
         }
         return best
+    }
+
+    // Lays the classes out over the week that contains `today`. A class whose schedule names no
+    // known day or time slot cannot be placed and is left out.
+    fun weekTimetable(classes: List<CourseClass>, today: Calendar = Calendar.getInstance()): WeekTimetable {
+        val slotOfClass = classes.mapNotNull { courseClass ->
+            timeSlotRange.keys.firstOrNull { courseClass.schedule.contains(it) }?.let { courseClass to it }
+        }
+
+        // Calendar counts from Sunday; the school week starts on Monday
+        val daysSinceMonday = (today.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY + 7) % 7
+        val day = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -daysSinceMonday) }
+
+        val days = dayNameToCalendarDay.keys.mapIndexed { index, dayName ->
+            val lessons = slotOfClass
+                .filter { (courseClass, _) -> courseClass.schedule.contains(dayName) }
+                .map { (courseClass, slot) -> Lesson(courseClass, slot) }
+                .sortedWith(compareBy({ startMinutes(it.slot) }, { it.courseClass.name }))
+            val date = String.format(Locale.US, "%02d/%02d", day.get(Calendar.DAY_OF_MONTH), day.get(Calendar.MONTH) + 1)
+            day.add(Calendar.DAY_OF_YEAR, 1)
+            TimetableDay(dayName, date, isToday = index == daysSinceMonday, lessons = lessons)
+        }
+
+        val slots = days.flatMap { it.lessons }.map { it.slot }.distinct().sortedBy { startMinutes(it) }
+        return WeekTimetable(slots, days)
+    }
+
+    // The next time each weekly lesson starts, counted from `now`, soonest first: a class that
+    // meets twice a week gives two lessons. A lesson that has already begun today comes back
+    // as next week's.
+    fun upcomingLessons(classes: List<CourseClass>, now: Calendar = Calendar.getInstance()): List<UpcomingLesson> {
+        val lessons = ArrayList<UpcomingLesson>()
+        for (courseClass in classes) {
+            val slot = timeSlotRange.keys.firstOrNull { courseClass.schedule.contains(it) } ?: continue
+            val (startHour, startMinute, _, _) = timeSlotRange.getValue(slot)
+            for ((dayName, calendarDay) in dayNameToCalendarDay) {
+                if (!courseClass.schedule.contains(dayName)) continue
+                val start = (now.clone() as Calendar).apply {
+                    set(Calendar.HOUR_OF_DAY, startHour)
+                    set(Calendar.MINUTE, startMinute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                var dayDiff = (calendarDay - now.get(Calendar.DAY_OF_WEEK) + 7) % 7
+                if (dayDiff == 0 && !start.after(now)) dayDiff = 7
+                start.add(Calendar.DAY_OF_YEAR, dayDiff)
+                lessons.add(UpcomingLesson(courseClass, slot, start.timeInMillis))
+            }
+        }
+        return lessons.sortedWith(compareBy({ it.startMillis }, { it.courseClass.name }))
+    }
+
+    private fun startMinutes(slot: String): Int {
+        val (startHour, startMinute, _, _) = timeSlotRange.getValue(slot)
+        return startHour * 60 + startMinute
     }
 
     // True only when the real device clock is on a scheduled day, inside the scheduled time slot.

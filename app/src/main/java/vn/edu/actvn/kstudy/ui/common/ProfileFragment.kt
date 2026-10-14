@@ -14,12 +14,17 @@ import androidx.lifecycle.ViewModelProvider
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.Role
 import vn.edu.actvn.kstudy.data.model.User
+import vn.edu.actvn.kstudy.data.notification.NotificationCenter
+import vn.edu.actvn.kstudy.data.repository.PasswordChange
 import vn.edu.actvn.kstudy.ui.LoginActivity
 import vn.edu.actvn.kstudy.viewmodel.AuthViewModel
 
 class ProfileFragment : Fragment() {
 
     private lateinit var authViewModel: AuthViewModel
+
+    // The open "change password" dialog, kept to show it the answer of the server
+    private var passwordDialog: ChangePasswordDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,7 +96,35 @@ class ProfileFragment : Fragment() {
             authViewModel.updateProfile(name, phone, personalFields.read())
         }
 
+        view.findViewById<Button>(R.id.btnChangePassword).setOnClickListener {
+            passwordDialog = ChangePasswordDialog(requireContext()) { currentPassword, newPassword ->
+                authViewModel.changePassword(currentPassword, newPassword)
+            }.also { it.show() }
+        }
+
+        authViewModel.passwordResult.observe(viewLifecycleOwner) { result ->
+            if (result == null) return@observe
+            authViewModel.clearPasswordResult()
+            when (result) {
+                PasswordChange.CHANGED -> {
+                    passwordDialog?.dismiss()
+                    passwordDialog = null
+                    Toast.makeText(requireContext(), "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show()
+                }
+                PasswordChange.WRONG_CURRENT -> passwordDialog?.showWrongCurrentPassword()
+                PasswordChange.FAILED -> {
+                    passwordDialog?.setBusy(false)
+                    Toast.makeText(
+                        requireContext(),
+                        "Không đổi được mật khẩu. Vui lòng kiểm tra mạng và thử lại!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+
         btnLogout.setOnClickListener {
+            NotificationCenter.signOut(requireContext())
             authViewModel.logout()
             val intent = Intent(requireActivity(), LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -100,6 +133,13 @@ class ProfileFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onDestroyView() {
+        // A dialog must not outlive the screen it belongs to
+        passwordDialog?.dismiss()
+        passwordDialog = null
+        super.onDestroyView()
     }
 
     // Lists what the admin recorded about a student or a teacher; an admin account has no such details

@@ -9,9 +9,14 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import vn.edu.actvn.kstudy.R
+import vn.edu.actvn.kstudy.data.model.Role
+import vn.edu.actvn.kstudy.data.notification.ClassReminders
 import vn.edu.actvn.kstudy.ui.common.AttendanceViews
 import vn.edu.actvn.kstudy.ui.common.DonutChartView
+import vn.edu.actvn.kstudy.ui.common.NotificationBell
+import vn.edu.actvn.kstudy.ui.common.TimetableFragment
 import vn.edu.actvn.kstudy.util.AttendanceAnalyzer
+import vn.edu.actvn.kstudy.util.AttendanceScore
 import vn.edu.actvn.kstudy.util.RiskLevel
 import vn.edu.actvn.kstudy.util.ScheduleUtils
 import vn.edu.actvn.kstudy.util.StatusCount
@@ -61,6 +66,14 @@ class StudentDashboardFragment : Fragment() {
         val chartAttendance = view.findViewById<DonutChartView>(R.id.chartStudentAttendance)
         val legendAttendance = view.findViewById<View>(R.id.legendStudentAttendance)
         val tvChartNote = view.findViewById<TextView>(R.id.tvStudentChartNote)
+        val layoutScores = view.findViewById<LinearLayout>(R.id.layoutStudentScores)
+
+        view.findViewById<View>(R.id.btnStudentTimetable).setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.studentFragmentContainer, TimetableFragment.newInstance(studentUserId, Role.STUDENT))
+                .addToBackStack(null)
+                .commit()
+        }
 
         viewModel.student.observe(viewLifecycleOwner) { student ->
             if (student != null) {
@@ -69,8 +82,12 @@ class StudentDashboardFragment : Fragment() {
             }
         }
 
+        NotificationBell.bind(this, view, R.id.studentFragmentContainer)
+
         viewModel.classes.observe(viewLifecycleOwner) { classes ->
             tvStatClasses.text = classes.size.toString()
+            // The reminders before each lesson follow the classes as they are now
+            ClassReminders.schedule(requireContext(), classes)
 
             val upcoming = ScheduleUtils.findUpcomingClass(classes)
             if (upcoming != null) {
@@ -106,6 +123,20 @@ class StudentDashboardFragment : Fragment() {
                 )
             }
             layoutWarnings.visibility = if (layoutWarnings.childCount > 0) View.VISIBLE else View.GONE
+
+            layoutScores.removeAllViews()
+            if (stats.isEmpty()) {
+                AttendanceViews.addEmptyNote(layoutScores, "Bạn chưa được xếp vào lớp học nào.")
+            }
+            for (stat in stats) {
+                AttendanceViews.addScore(
+                    container = layoutScores,
+                    title = stat.courseClass.name,
+                    details = "Vắng không phép ${stat.count.absent} buổi • " +
+                        AttendanceScore.shortRule(stat.courseClass.absencePenalty),
+                    value = AttendanceScore.outOfTen(stat.score)
+                )
+            }
         }
 
         statsViewModel.errorMessage.observe(viewLifecycleOwner) { message ->

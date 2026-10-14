@@ -44,8 +44,10 @@ class GeminiAiService(private val modelName: String = DEFAULT_MODEL) : AiService
                 "Trợ lý AI phản hồi quá lâu. Vui lòng thử lại."
             "quota" in detail || "resource_exhausted" in detail || "429" in detail ->
                 "Trợ lý AI đang quá tải (hết lượt gọi miễn phí trong phút này). Vui lòng thử lại sau ít phút."
+            "must enforce firebase app check" in detail || "app check enforcement" in detail ->
+                "Firebase AI Logic yêu cầu bật App Check ở mục APIs trong Firebase Console."
             "app check" in detail || "appcheck" in detail ->
-                "Ứng dụng chưa được xác thực App Check. Hãy đăng ký debug token trong Firebase Console."
+                "App Check từ bản cài này chưa được chấp nhận. Hãy kiểm tra cấu hình App Check và dự án Firebase."
             "apinotconfigured" in detail || "servicedisabled" in detail || "has not been used" in detail ||
                 "permission_denied" in detail || "403" in detail ->
                 "Tính năng AI chưa được bật cho dự án Firebase. Hãy bật Firebase AI Logic trong Firebase Console."

@@ -50,7 +50,7 @@ class AttendanceReportBuilderTest {
             listOf(
                 "STT", "Mã SV", "Họ và tên",
                 "01/09/2026", "08/09/2026", "15/09/2026", "22/09/2026", "29/09/2026",
-                "Có mặt", "Muộn", "Vắng", "Có phép", "Chuyên cần (%)", "Ghi chú"
+                "Có mặt", "Muộn", "Vắng", "Có phép", "Chuyên cần (%)", "Điểm chuyên cần", "Ghi chú"
             ),
             roster.texts(headerRow)
         )
@@ -65,15 +65,15 @@ class AttendanceReportBuilderTest {
     @Test
     fun rosterSheet_hasOneRowPerStudentWithStatusesAndTotals() {
         assertEquals(
-            listOf("1", "SV001", "Học sinh 1", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "5", "0", "0", "0", "100", ""),
+            listOf("1", "SV001", "Học sinh 1", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "Có mặt", "5", "0", "0", "0", "100", "10", ""),
             roster.texts(headerRow + 1)
         )
         assertEquals(
-            listOf("2", "SV002", "Học sinh 2", "Có mặt", "Muộn", "Vắng", "Có mặt", "Có mặt", "3", "1", "1", "0", "80", "Cảnh báo"),
+            listOf("2", "SV002", "Học sinh 2", "Có mặt", "Muộn", "Vắng", "Có mặt", "Có mặt", "3", "1", "1", "0", "80", "9", "Cảnh báo"),
             roster.texts(headerRow + 2)
         )
         assertEquals(
-            listOf("3", "SV003", "Học sinh 3", "Vắng", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "2", "0", "60", "Nguy cơ cấm thi"),
+            listOf("3", "SV003", "Học sinh 3", "Vắng", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "2", "0", "60", "8", "Nguy cơ cấm thi"),
             roster.texts(headerRow + 3)
         )
     }
@@ -101,7 +101,7 @@ class AttendanceReportBuilderTest {
         val sheet = AttendanceReportBuilder.build(AttendanceAnalyzer.analyzeClass(data), exportedAt)[0]
 
         assertEquals(
-            listOf("3", "SV003", "Học sinh 3", "Có phép", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "1", "1", "60", "Cảnh báo"),
+            listOf("3", "SV003", "Học sinh 3", "Có phép", "Vắng", "Có mặt", "Muộn", "Có mặt", "2", "1", "1", "1", "60", "9", "Cảnh báo"),
             sheet.texts(headerRow + 3)
         )
         assertEquals(XlsxStyle.EXCUSED, sheet.rows[headerRow + 3][3].style)
@@ -132,7 +132,7 @@ class AttendanceReportBuilderTest {
         val sheet = AttendanceReportBuilder.build(AttendanceAnalyzer.analyzeClass(data), exportedAt)[0]
 
         assertEquals(
-            listOf("4", "SV004", "Học sinh 4", "-", "-", "-", "-", "Có mặt", "1", "0", "0", "0", "100", ""),
+            listOf("4", "SV004", "Học sinh 4", "-", "-", "-", "-", "Có mặt", "1", "0", "0", "0", "100", "10", ""),
             sheet.texts(headerRow + 4)
         )
     }
@@ -154,11 +154,11 @@ class AttendanceReportBuilderTest {
         val emptySheets = AttendanceReportBuilder.build(AttendanceAnalyzer.analyzeClass(TestData.emptyClass()), exportedAt)
 
         assertEquals(
-            listOf("STT", "Mã SV", "Họ và tên", "Có mặt", "Muộn", "Vắng", "Có phép", "Chuyên cần (%)", "Ghi chú"),
+            listOf("STT", "Mã SV", "Họ và tên", "Có mặt", "Muộn", "Vắng", "Có phép", "Chuyên cần (%)", "Điểm chuyên cần", "Ghi chú"),
             emptySheets[0].texts(headerRow)
         )
         assertEquals(
-            listOf("1", "SV003", "Học sinh 3", "0", "0", "0", "0", "-", ""),
+            listOf("1", "SV003", "Học sinh 3", "0", "0", "0", "0", "-", "10", ""),
             emptySheets[0].texts(headerRow + 1)
         )
         assertEquals("no per-session footer without sessions", headerRow + 2, emptySheets[0].rows.size)
@@ -179,7 +179,8 @@ class AttendanceReportBuilderTest {
             assertEquals(CellType.NUMERIC, danger.getCell(10).cellType)
             assertEquals(2.0, danger.getCell(10).numericCellValue, 0.0)
             assertEquals(60.0, danger.getCell(12).numericCellValue, 0.0)
-            assertEquals("Nguy cơ cấm thi", danger.getCell(13).stringCellValue)
+            assertEquals(8.0, danger.getCell(13).numericCellValue, 0.0)
+            assertEquals("Nguy cơ cấm thi", danger.getCell(14).stringCellValue)
             assertEquals(5, workbook.getSheet("Theo buổi").lastRowNum - 2)
         }
     }

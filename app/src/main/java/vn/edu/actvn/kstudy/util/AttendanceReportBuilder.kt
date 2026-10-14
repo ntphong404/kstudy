@@ -46,7 +46,9 @@ object AttendanceReportBuilder {
                     teacher +
                         "Sĩ số: ${report.students.size}   |   " +
                         "Số buổi đã chốt: ${report.sessions.size}   |   " +
-                        "Ngày xuất: $exportedAt"
+                        "Ngày xuất: $exportedAt   |   " +
+                        "Điểm chuyên cần: thang ${AttendanceScore.format(AttendanceScore.MAX)}, " +
+                        AttendanceScore.rule(courseClass.absencePenalty).replaceFirstChar { it.lowercase() }
                 )
             )
         )
@@ -64,6 +66,7 @@ object AttendanceReportBuilder {
         header.add(XlsxCell.text("Vắng", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Có phép", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Chuyên cần (%)", XlsxStyle.HEADER))
+        header.add(XlsxCell.text("Điểm chuyên cần", XlsxStyle.HEADER))
         header.add(XlsxCell.text("Ghi chú", XlsxStyle.HEADER))
         rows.add(header)
 
@@ -80,6 +83,8 @@ object AttendanceReportBuilder {
             row.add(XlsxCell.number(stat.count.absent))
             row.add(XlsxCell.number(stat.count.excused))
             row.add(rateCell(stat.count))
+            // A number, so the column can be averaged or sorted in the spreadsheet
+            row.add(XlsxCell(number = report.scoreOf(stat), style = XlsxStyle.BODY_CENTER))
             row.add(
                 when (stat.risk) {
                     RiskLevel.DANGER -> XlsxCell.text("Nguy cơ cấm thi", XlsxStyle.DANGER)
@@ -101,7 +106,7 @@ object AttendanceReportBuilder {
             rows.add(footer)
         }
 
-        val widths = listOf(6, 12, 28) + report.sessions.map { 13 } + listOf(9, 9, 9, 9, 15, 18)
+        val widths = listOf(6, 12, 28) + report.sessions.map { 13 } + listOf(9, 9, 9, 9, 15, 16, 18)
         return XlsxSheet("Điểm danh", rows, widths)
     }
 

@@ -4,12 +4,16 @@ import android.content.Context
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vn.edu.actvn.kstudy.data.model.PersonalInfo
 import vn.edu.actvn.kstudy.data.model.Role
 import vn.edu.actvn.kstudy.data.model.User
 import java.util.UUID
+
+// How an attempt to change one's own password ended
+enum class PasswordChange { CHANGED, WRONG_CURRENT, FAILED }
 
 class UserRepository(context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
@@ -29,14 +33,41 @@ class UserRepository(context: Context) {
         if (querySnapshot.isEmpty) return null
         val doc = querySnapshot.documents[0]
         val storedHash = doc.getString("passwordHash") ?: ""
-        
-        val isPasswordCorrect = try {
-            org.mindrot.jbcrypt.BCrypt.checkpw(pass, storedHash)
-        } catch (e: Exception) {
-            pass == storedHash
-        }
-        if (!isPasswordCorrect) return null
+
+        if (!passwordMatches(pass, storedHash)) return null
         return mapDocumentToUser(doc)
+    }
+
+    // An account written by hand in the Firebase console may still hold its password as plain text
+    private fun passwordMatches(pass: String, storedHash: String): Boolean = try {
+        org.mindrot.jbcrypt.BCrypt.checkpw(pass, storedHash)
+    } catch (e: Exception) {
+        pass == storedHash
+    }
+
+    // The current password is checked against the database again, so a phone left unlocked on
+    // the profile screen is not enough to take over the account
+    suspend fun changePassword(userId: String, currentPassword: String, newPassword: String): PasswordChange {
+        return try {
+            val doc = await(firestore.collection("users").document(userId).get())
+            if (!doc.exists()) return PasswordChange.FAILED
+            val storedHash = doc.getString("passwordHash") ?: ""
+            // BCrypt is slow on purpose: keep it off the main thread
+            val newHash = withContext(Dispatchers.Default) {
+                if (passwordMatches(currentPassword, storedHash)) {
+                    org.mindrot.jbcrypt.BCrypt.hashpw(newPassword, org.mindrot.jbcrypt.BCrypt.gensalt())
+                } else {
+                    null
+                }
+            } ?: return PasswordChange.WRONG_CURRENT
+            // A password the user chose: nobody else knows it any more
+            await(doc.reference.update(mapOf("passwordHash" to newHash, MUST_CHANGE_PASSWORD to false)))
+            PasswordChange.CHANGED
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            PasswordChange.FAILED
+        }
     }
 
     suspend fun getUserProfile(userId: String): User? {
@@ -72,6 +103,7 @@ class UserRepository(context: Context) {
             role = try { Role.valueOf(roleStr) } catch(e: Exception) { Role.STUDENT },
             phone = doc.getString("phone") ?: "",
             avatarUrl = doc.getString("avatarUrl") ?: "",
+            mustChangePassword = doc.getBoolean(MUST_CHANGE_PASSWORD) ?: false,
             personal = doc.toPersonalInfo(),
             studentCode = doc.getString("studentCode") ?: "",
             className = doc.getString("className") ?: "",

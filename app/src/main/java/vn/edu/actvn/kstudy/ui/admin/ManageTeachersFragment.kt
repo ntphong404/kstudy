@@ -24,6 +24,7 @@ import vn.edu.actvn.kstudy.ui.adapter.TeacherAdapter
 import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.common.ListState
 import vn.edu.actvn.kstudy.ui.common.PersonalFields
+import vn.edu.actvn.kstudy.ui.common.ResetPasswordDialog
 import vn.edu.actvn.kstudy.util.ProfileRules
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
 import java.util.*
@@ -50,7 +51,12 @@ class ManageTeachersFragment : Fragment() {
         adapter = TeacherAdapter(
             list = emptyList(),
             onEditClick = { teacher -> showEditDialog(teacher) },
-            onDeleteClick = { teacher -> showDeleteConfirm(teacher) }
+            onDeleteClick = { teacher -> showDeleteConfirm(teacher) },
+            onResetPasswordClick = { teacher ->
+                ResetPasswordDialog.show(requireContext(), teacher.name) { newPassword ->
+                    viewModel.resetPassword(teacher.userId, teacher.name, newPassword)
+                }
+            }
         )
         rv.adapter = adapter
 

@@ -3,7 +3,11 @@ package vn.edu.actvn.kstudy.testutil
 import vn.edu.actvn.kstudy.data.ai.AiService
 import vn.edu.actvn.kstudy.data.ai.AiTurn
 import vn.edu.actvn.kstudy.data.model.ClassAttendanceData
+import vn.edu.actvn.kstudy.data.model.CourseClass
 import vn.edu.actvn.kstudy.data.repository.AttendanceDataSource
+import vn.edu.actvn.kstudy.data.repository.StudentImportStore
+import vn.edu.actvn.kstudy.util.ExistingAccounts
+import vn.edu.actvn.kstudy.util.ImportedStudent
 
 // In-memory stand-in for Firestore
 class FakeAttendanceDataSource(
@@ -35,6 +39,51 @@ class FakeAttendanceDataSource(
         calls.add("all")
         failure?.let { throw it }
         return classes
+    }
+
+    override suspend fun getClassesForTeacher(teacherId: String): List<CourseClass> =
+        getAttendanceForTeacher(teacherId).map { it.courseClass }
+
+    override suspend fun getClassesForStudent(studentId: String): List<CourseClass> =
+        getAttendanceForStudent(studentId).map { it.courseClass }
+
+    override suspend fun setAbsencePenalty(classId: String, penalty: Double) {
+        calls.add("penalty:$classId=$penalty")
+        failure?.let { throw it }
+        classes = classes.map { data ->
+            if (data.courseClass.id == classId) {
+                data.copy(courseClass = data.courseClass.copy(absencePenalty = penalty))
+            } else {
+                data
+            }
+        }
+    }
+}
+
+// In-memory stand-in for the accounts and classes a student import reads and writes
+class FakeStudentImportStore(
+    var existing: ExistingAccounts = ExistingAccounts(),
+    var classes: List<CourseClass> = emptyList()
+) : StudentImportStore {
+
+    data class Import(val students: List<ImportedStudent>, val classId: String?, val alsoEnrollIds: List<String>)
+
+    var failure: Exception? = null
+    val imports = mutableListOf<Import>()
+
+    override suspend fun getExistingAccounts(): ExistingAccounts {
+        failure?.let { throw it }
+        return existing
+    }
+
+    override suspend fun getClasses(): List<CourseClass> {
+        failure?.let { throw it }
+        return classes
+    }
+
+    override suspend fun importStudents(students: List<ImportedStudent>, classId: String?, alsoEnrollIds: List<String>) {
+        failure?.let { throw it }
+        imports.add(Import(students, classId, alsoEnrollIds))
     }
 }
 

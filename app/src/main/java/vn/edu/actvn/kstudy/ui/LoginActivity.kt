@@ -16,7 +16,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.Role
+import vn.edu.actvn.kstudy.data.model.User
+import vn.edu.actvn.kstudy.data.notification.NotificationCenter
+import vn.edu.actvn.kstudy.data.repository.PasswordChange
 import vn.edu.actvn.kstudy.ui.admin.AdminMainActivity
+import vn.edu.actvn.kstudy.ui.common.ChangePasswordDialog
 import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.student.StudentMainActivity
 import vn.edu.actvn.kstudy.ui.teacher.TeacherMainActivity
@@ -26,12 +30,18 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var viewModel: AuthViewModel
 
+    // Open while an account signed in with a password an admin chose has to replace it
+    private var passwordDialog: ChangePasswordDialog? = null
+
     override fun onCreate(saved: Bundle?) {
         super.onCreate(saved)
         setContentView(R.layout.activity_login)
 
         viewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         viewModel.initializeMockData()
+
+        // Nobody is signed in on this screen: stop listening for the account that was
+        NotificationCenter.stop()
 
         androidx.core.view.WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = true
 
@@ -75,18 +85,62 @@ class LoginActivity : AppCompatActivity() {
         }
 
         viewModel.currentUser.observe(this) { user ->
-            if (user != null) {
-                val intent = when (user.role) {
-                    Role.ADMIN -> Intent(this, AdminMainActivity::class.java)
-                    Role.TEACHER -> Intent(this, TeacherMainActivity::class.java)
-                    Role.STUDENT -> Intent(this, StudentMainActivity::class.java)
-                }
-                // Store user context in intent or global singleton (Intent extras here)
-                intent.putExtra("USER_ID", user.id)
-                startActivity(intent)
-                finish()
+            if (user == null) return@observe
+            if (user.mustChangePassword) askForOwnPassword() else openMain(user)
+        }
+
+        viewModel.passwordResult.observe(this) { result ->
+            if (result == null) return@observe
+            viewModel.clearPasswordResult()
+            if (result == PasswordChange.CHANGED) {
+                passwordDialog?.dismiss()
+                passwordDialog = null
+                Toast.makeText(this, "Đã lưu mật khẩu mới!", Toast.LENGTH_SHORT).show()
+                viewModel.currentUser.value?.let { openMain(it) }
+            } else {
+                passwordDialog?.setBusy(false)
+                Toast.makeText(
+                    this,
+                    "Không lưu được mật khẩu. Vui lòng kiểm tra mạng và thử lại!",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
+    }
+
+    // The password was chosen by an admin (imported, added by hand or reset): the account opens
+    // only once its owner has replaced it with one nobody else knows
+    private fun askForOwnPassword() {
+        if (passwordDialog != null) return
+        passwordDialog = ChangePasswordDialog(
+            this,
+            signedInPassword = viewModel.signedInPassword,
+            onSignOut = {
+                passwordDialog = null
+                viewModel.logout()
+            }
+        ) { currentPassword, newPassword ->
+            viewModel.changePassword(currentPassword, newPassword)
+        }.also { it.show() }
+    }
+
+    private fun openMain(user: User) {
+        val intent = when (user.role) {
+            Role.ADMIN -> Intent(this, AdminMainActivity::class.java)
+            Role.TEACHER -> Intent(this, TeacherMainActivity::class.java)
+            Role.STUDENT -> Intent(this, StudentMainActivity::class.java)
+        }
+        // Store user context in intent or global singleton (Intent extras here)
+        intent.putExtra("USER_ID", user.id)
+        startActivity(intent)
+        finish()
+    }
+
+    override fun onDestroy() {
+        // A dialog must not outlive the screen it belongs to
+        passwordDialog?.dismiss()
+        passwordDialog = null
+        super.onDestroy()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

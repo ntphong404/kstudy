@@ -9,4 +9,6 @@
 
     <dimen name="screen_padding">16dp</dimen>
     <dimen name="app_bar_height">64dp</dimen>
+    <!-- First column of the timetable grid: wide enough for "Chủ Nhật" -->
+    <dimen name="timetable_day_width">80dp</dimen>
 </resources>

@@ -36,7 +36,7 @@ object ReportSharer {
         }
     }
 
-    fun share(context: Context, uri: Uri, subject: String) {
+    fun share(context: Context, uri: Uri, subject: String, chooserTitle: String = "Chia sẻ báo cáo điểm danh") {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = AttendanceReportBuilder.MIME_TYPE
             putExtra(Intent.EXTRA_STREAM, uri)
@@ -45,6 +45,6 @@ object ReportSharer {
             clipData = ClipData.newRawUri(subject, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(intent, "Chia sẻ báo cáo điểm danh"))
+        context.startActivity(Intent.createChooser(intent, chooserTitle))
     }
 }

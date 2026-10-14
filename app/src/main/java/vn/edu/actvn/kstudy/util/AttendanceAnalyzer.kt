@@ -76,6 +76,9 @@ data class ClassReport(
             .sortedWith(compareByDescending<StudentStat> { it.risk }.thenByDescending { it.count.absent })
 
     fun statusOf(studentId: String, sessionId: String): String? = statuses[studentId]?.get(sessionId)
+
+    // Attendance score out of 10, with the penalty this class sets for an absence
+    fun scoreOf(stat: StudentStat): Double = AttendanceScore.of(stat.count, courseClass.absencePenalty)
 }
 
 // One student's attendance in one class
@@ -84,7 +87,10 @@ data class StudentClassStat(
     val count: StatusCount,
     val risk: RiskLevel,
     val history: List<Pair<AttendanceSession, String>> // closed sessions, oldest first, with this student's status
-)
+) {
+    // Attendance score out of 10, with the penalty this class sets for an absence
+    val score: Double get() = AttendanceScore.of(count, courseClass.absencePenalty)
+}
 
 // Statistics only use sessions that have been closed: while a session is still open every
 // student who has not scanned yet is stored as ABSENT, which would raise false warnings.

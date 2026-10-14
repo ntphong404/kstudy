@@ -6,6 +6,16 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- Shows notifications in the status bar (asked at sign-in on Android 13 and later) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Lesson reminders go off at the minute they are set for, not up to an hour later.
+         USE_EXACT_ALARM is granted on install (Android 13+); before that SCHEDULE_EXACT_ALARM is. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
+
     <application
         android:name=".KstudyApplication"
         android:allowBackup="true"
@@ -47,6 +57,11 @@
             android:stateNotNeeded="true"
             android:theme="@style/zxing_CaptureTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <!-- Raises the reminder set by ClassReminders shortly before a lesson -->
+        <receiver
+            android:name=".data.notification.ReminderReceiver"
+            android:exported="false" />
 
         <!-- Shares exported Excel reports with other apps without any storage permission -->
         <provider

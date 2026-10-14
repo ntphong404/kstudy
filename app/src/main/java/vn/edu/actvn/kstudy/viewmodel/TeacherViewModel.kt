@@ -9,14 +9,21 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.location.DeviceLocation
 import vn.edu.actvn.kstudy.data.model.*
+import vn.edu.actvn.kstudy.data.repository.AttendanceStatsRepository
 import vn.edu.actvn.kstudy.data.repository.LeaveRequestRepository
+import vn.edu.actvn.kstudy.data.repository.NotificationRepository
 import vn.edu.actvn.kstudy.data.repository.TeacherRepository
+import vn.edu.actvn.kstudy.data.repository.notificationScope
+import vn.edu.actvn.kstudy.util.AttendanceAnalyzer
 import vn.edu.actvn.kstudy.util.LeaveRequestRules
+import vn.edu.actvn.kstudy.util.NotificationRules
 import vn.edu.actvn.kstudy.util.SessionDates
 
 class TeacherViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = TeacherRepository(application.applicationContext)
     private val leaveRepository = LeaveRequestRepository()
+    private val notifications = NotificationRepository()
+    private val attendance = AttendanceStatsRepository()
 
     private val _teacher = MutableLiveData<Teacher?>()
     val teacher: LiveData<Teacher?> = _teacher
@@ -104,6 +111,9 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
             if (session != null) {
                 _activeSession.value = session
                 _openedSession.value = session
+                notifyStudents(classId) { (courseClass, studentIds) ->
+                    NotificationRules.sessionOpened(courseClass, session.id, studentIds, System.currentTimeMillis())
+                }
             } else {
                 _operationResult.value = Pair(false, "Mở phiên điểm danh thất bại!")
             }
@@ -119,6 +129,41 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
             repository.closeAttendanceSession(sessionId)
             loadActiveSession(classId)
             _operationResult.value = Pair(true, "Đã đóng phiên điểm danh!")
+        }
+        notificationScope.launch { notifyOfClosedSession(sessionId, classId) }
+    }
+
+    // Tells the students the closed session leaves absent what it did to their attendance score.
+    // The figures come from the same analysis as the statistics screen, so they always agree.
+    private suspend fun notifyOfClosedSession(sessionId: String, classId: String) {
+        try {
+            // Closing twice changes nothing; waiting for it here makes sure the analysis below
+            // already counts this session, whatever became of the coroutine of the screen
+            repository.closeAttendanceSession(sessionId)
+            val data = attendance.getClassAttendance(classId) ?: return
+            val notices = NotificationRules.sessionClosed(
+                AttendanceAnalyzer.analyzeClass(data), sessionId, System.currentTimeMillis()
+            )
+            notifications.sendQuietly(notices.send, notices.withdrawIds)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // The session is closed either way; only the notifications are missing
+        }
+    }
+
+    // Sends what `build` makes of the class and its students. Runs after the action it reports
+    // has succeeded and never fails it.
+    private fun notifyStudents(classId: String, build: (Pair<CourseClass, List<String>>) -> List<AppNotification>) {
+        notificationScope.launch {
+            try {
+                val recipients = repository.getClassWithStudentIds(classId) ?: return@launch
+                notifications.sendQuietly(build(recipients))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Only the notifications are missing
+            }
         }
     }
 
@@ -161,6 +206,11 @@ class TeacherViewModel(application: Application) : AndroidViewModel(application)
             try {
                 leaveRepository.decide(request, approve)
                 loadLeaveRequests(request.classId)
+                notifyStudents(request.classId) { (courseClass, _) ->
+                    listOf(
+                        NotificationRules.leaveDecided(request, courseClass.name, approve, System.currentTimeMillis())
+                    )
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

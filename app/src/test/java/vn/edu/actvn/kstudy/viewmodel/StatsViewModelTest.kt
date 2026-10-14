@@ -265,4 +265,62 @@ class StatsViewModelTest {
 
         assertNull(viewModel.exportedReport.value)
     }
+
+    // --- Attendance score ---
+
+    @Test
+    fun updateAbsencePenalty_savesItAndRescoresTheClass() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.loadClassReport("c1")
+        advanceUntilIdle()
+        val before = viewModel.classReport.value!!
+        assertEquals(listOf(10.0, 9.0, 8.0), before.students.map { before.scoreOf(it) })
+
+        viewModel.updateAbsencePenalty(0.5)
+        advanceUntilIdle()
+
+        val after = viewModel.classReport.value!!
+        assertEquals(0.5, after.courseClass.absencePenalty, 0.0)
+        assertEquals(listOf(10.0, 9.5, 9.0), after.students.map { after.scoreOf(it) })
+        assertTrue(dataSource.calls.contains("penalty:c1=0.5"))
+        assertEquals("the attendance figures are untouched", before.overall, after.overall)
+        assertNull(viewModel.errorMessage.value)
+
+        // The new penalty is what the next load reads back
+        viewModel.loadClassReport("c1")
+        advanceUntilIdle()
+        assertEquals(0.5, viewModel.classReport.value!!.courseClass.absencePenalty, 0.0)
+    }
+
+    @Test
+    fun updateAbsencePenalty_whenSavingFails_keepsTheOldScores() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.loadClassReport("c1")
+        advanceUntilIdle()
+        dataSource.failure = IOException("no network")
+
+        viewModel.updateAbsencePenalty(2.0)
+        advanceUntilIdle()
+
+        assertEquals(1.0, viewModel.classReport.value!!.courseClass.absencePenalty, 0.0)
+        assertEquals(StatsViewModel.PENALTY_FAILED, viewModel.errorMessage.value)
+    }
+
+    @Test
+    fun exportClassReport_includesTheAttendanceScore() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.loadClassReport("c1")
+        advanceUntilIdle()
+        viewModel.updateAbsencePenalty(2.5)
+        advanceUntilIdle()
+
+        viewModel.exportClassReport()
+        advanceUntilIdle()
+
+        XSSFWorkbook(ByteArrayInputStream(viewModel.exportedReport.value!!.bytes)).use { workbook ->
+            val sheet = workbook.getSheet("Điểm danh")
+            assertTrue(sheet.getRow(2).getCell(0).stringCellValue.contains("mỗi buổi vắng không phép trừ 2,5 điểm"))
+            assertEquals("Điểm chuyên cần", sheet.getRow(4).getCell(13).stringCellValue)
+            // SV003 was absent twice without permission
+            assertEquals(5.0, sheet.getRow(7).getCell(13).numericCellValue, 0.0)
+            assertEquals(7.5, sheet.getRow(6).getCell(13).numericCellValue, 0.0)
+        }
+    }
 }

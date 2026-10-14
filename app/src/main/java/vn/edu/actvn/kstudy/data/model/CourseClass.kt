@@ -8,5 +8,7 @@ data class CourseClass(
     val room: String = "",
     val schedule: String = "",
     val totalStudents: Int = 0,
-    val teacherName: String = ""
+    val teacherName: String = "",
+    // Points of the attendance score lost for every absence without permission, see AttendanceScore
+    val absencePenalty: Double = 1.0
 )

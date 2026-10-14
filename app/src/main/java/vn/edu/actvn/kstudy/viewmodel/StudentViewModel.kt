@@ -12,12 +12,16 @@ import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.location.DeviceLocation
 import vn.edu.actvn.kstudy.data.model.*
 import vn.edu.actvn.kstudy.data.repository.LeaveRequestRepository
+import vn.edu.actvn.kstudy.data.repository.NotificationRepository
 import vn.edu.actvn.kstudy.data.repository.StudentRepository
+import vn.edu.actvn.kstudy.data.repository.notificationScope
 import vn.edu.actvn.kstudy.util.LeaveRequestRules
+import vn.edu.actvn.kstudy.util.NotificationRules
 
 class StudentViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = StudentRepository(application.applicationContext)
     private val leaveRepository = LeaveRequestRepository()
+    private val notifications = NotificationRepository()
 
     private val _student = MutableLiveData<Student?>()
     val student: LiveData<Student?> = _student
@@ -120,17 +124,17 @@ class StudentViewModel(application: Application) : AndroidViewModel(application)
                     problem != null -> Pair(false, problem)
                     student == null -> Pair(false, "Lỗi tải thông tin học sinh!")
                     else -> {
-                        leaveRepository.submit(
-                            LeaveRequest(
-                                classId = classId,
-                                studentId = studentId,
-                                studentName = student.name,
-                                studentCode = student.studentCode,
-                                date = date,
-                                reason = reason.trim(),
-                                createdAt = System.currentTimeMillis()
-                            )
+                        val request = LeaveRequest(
+                            classId = classId,
+                            studentId = studentId,
+                            studentName = student.name,
+                            studentCode = student.studentCode,
+                            date = date,
+                            reason = reason.trim(),
+                            createdAt = System.currentTimeMillis()
                         )
+                        leaveRepository.submit(request)
+                        notifyTeacher(request)
                         Pair(true, "Đã gửi đơn xin nghỉ, chờ giáo viên duyệt.")
                     }
                 }
@@ -145,6 +149,24 @@ class StudentViewModel(application: Application) : AndroidViewModel(application)
 
     fun clearLeaveResult() {
         _leaveResult.value = null
+    }
+
+    // Lets the teacher of the class know there is a request to decide. The request has been
+    // sent either way: this runs afterwards and never fails it.
+    private fun notifyTeacher(request: LeaveRequest) {
+        notificationScope.launch {
+            try {
+                val courseClass = repository.getClassesForStudent(request.studentId)
+                    .firstOrNull { it.id == request.classId } ?: return@launch
+                val notification = NotificationRules.leaveSubmitted(request, courseClass, System.currentTimeMillis())
+                    ?: return@launch
+                notifications.sendQuietly(listOf(notification))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Only the notification is missing
+            }
+        }
     }
 
     // Stays the same for this app on this phone until a factory reset; identifies the phone,

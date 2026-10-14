@@ -54,6 +54,10 @@ $data
                 "- Số buổi đã chốt: ${stat.count.total}. ${countText(stat.count)}. " +
                     "Đánh giá: ${AttendanceAnalyzer.riskLabel(stat.risk)}."
             )
+            sb.appendLine(
+                "- Điểm chuyên cần: ${AttendanceScore.outOfTen(stat.score)} " +
+                    "(${AttendanceScore.rule(stat.courseClass.absencePenalty).replaceFirstChar { it.lowercase() }})."
+            )
             val details = stat.history.joinToString("; ") { (session, status) ->
                 "${session.date}: ${AttendanceStatus.label(status)}"
             }
@@ -137,11 +141,15 @@ ${classDetail(report, includeTeacher = false)}
             val late = namesWithStatus(report, stat.session.id, AttendanceStatus.LATE)
             sb.appendLine("  + ${stat.session.date}: ${countText(stat.count)}. Vắng: $absent. Muộn: $late.")
         }
-        sb.appendLine("- Từng học sinh:")
+        sb.appendLine(
+            "- Từng học sinh (điểm chuyên cần thang 10, " +
+                "${AttendanceScore.rule(report.courseClass.absencePenalty).replaceFirstChar { it.lowercase() }}):"
+        )
         for (stat in report.students) {
             sb.appendLine(
                 "  + ${stat.student.studentCode} ${stat.student.name}: ${countText(stat.count)}; " +
-                    "${AttendanceAnalyzer.riskLabel(stat.risk)}"
+                    "${AttendanceAnalyzer.riskLabel(stat.risk)}; " +
+                    "điểm chuyên cần ${AttendanceScore.format(report.scoreOf(stat))}"
             )
         }
         return sb.toString().trim()

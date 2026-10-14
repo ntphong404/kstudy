@@ -91,6 +91,16 @@ object AttendanceViews {
         container.addView(item)
     }
 
+    // Adds one line of item_attendance_score.xml: whose score (or of which class), a detail
+    // under it and the points on the right
+    fun addScore(container: ViewGroup, title: String, details: String, value: String) {
+        val item = LayoutInflater.from(container.context).inflate(R.layout.item_attendance_score, container, false)
+        item.findViewById<TextView>(R.id.tvScoreTitle).text = title
+        item.findViewById<TextView>(R.id.tvScoreDetails).text = details
+        item.findViewById<TextView>(R.id.tvScoreValue).text = value
+        container.addView(item)
+    }
+
     // Placeholder line of an empty list
     fun addEmptyNote(container: ViewGroup, message: String) {
         val context = container.context

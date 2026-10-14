@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import vn.edu.actvn.kstudy.data.model.*
 import vn.edu.actvn.kstudy.data.repository.AdminRepository
+import vn.edu.actvn.kstudy.util.PasswordRules
 import vn.edu.actvn.kstudy.util.ProfileRules
 
 class AdminViewModel(application: Application) : AndroidViewModel(application) {
@@ -54,6 +55,26 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         val invalid = !ProfileRules.isValidEmail(personal.email)
         if (invalid) _operationResult.value = Pair(false, ProfileRules.INVALID_EMAIL)
         return invalid
+    }
+
+    // --- ACCOUNTS ---
+
+    // personName only appears in the message; the dialog marks a password that breaks the rules
+    // at the field before it gets here
+    fun resetPassword(userId: String, personName: String, newPassword: String) {
+        val problem = PasswordRules.problemWithNew(newPassword)
+        if (problem != null) {
+            _operationResult.value = Pair(false, problem)
+            return
+        }
+        viewModelScope.launch {
+            val ok = repository.resetPassword(userId, newPassword)
+            _operationResult.value = if (ok) {
+                Pair(true, "Đã đặt lại mật khẩu cho $personName!")
+            } else {
+                Pair(false, "Đặt lại mật khẩu thất bại!")
+            }
+        }
     }
 
     // --- TEACHERS ---

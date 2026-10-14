@@ -157,6 +157,23 @@ class StatsViewModel(
         }
     }
 
+    // Changes how many points of the attendance score an absence costs in the class on screen.
+    // The dialog has already checked the number with AttendanceScore.parsePenalty.
+    fun updateAbsencePenalty(penalty: Double) {
+        val report = _classReport.value ?: return
+        viewModelScope.launch {
+            try {
+                dataSource.setAbsencePenalty(report.courseClass.id, penalty)
+                // The scores are worked out from the class, so only the class changes: no reload
+                _classReport.value = report.copy(courseClass = report.courseClass.copy(absencePenalty = penalty))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _errorMessage.value = PENALTY_FAILED
+            }
+        }
+    }
+
     // The screen calls these after handling a one-shot event, so it is not replayed on rotation
     fun clearExportedReport() {
         _exportedReport.value = null
@@ -166,7 +183,8 @@ class StatsViewModel(
         _errorMessage.value = null
     }
 
-    private companion object {
-        const val LOAD_FAILED = "Không tải được dữ liệu thống kê. Vui lòng kiểm tra kết nối mạng!"
+    companion object {
+        private const val LOAD_FAILED = "Không tải được dữ liệu thống kê. Vui lòng kiểm tra kết nối mạng!"
+        const val PENALTY_FAILED = "Không lưu được mức trừ điểm. Vui lòng thử lại!"
     }
 }

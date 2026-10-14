@@ -13,6 +13,10 @@ import vn.edu.actvn.kstudy.data.model.Teacher
 // Students and teachers are documents of the `users` collection; a document written before a
 // field existed simply reads as an empty string
 
+// Field of a `users` document: true while the account still has a password an admin chose
+// (imported, added by hand or reset), which its owner must replace before using the app
+internal const val MUST_CHANGE_PASSWORD = "mustChangePassword"
+
 internal fun DocumentSnapshot.toPersonalInfo(): PersonalInfo = PersonalInfo(
     email = getString("email") ?: "",
     dateOfBirth = getString("dateOfBirth") ?: "",

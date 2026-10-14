@@ -11,14 +11,24 @@ import vn.edu.actvn.kstudy.data.model.AttendanceSession
 import vn.edu.actvn.kstudy.data.model.ClassAttendanceData
 import vn.edu.actvn.kstudy.data.model.CourseClass
 import vn.edu.actvn.kstudy.data.model.Student
+import vn.edu.actvn.kstudy.util.AttendanceScore
 
-// Read-only source of the raw attendance data behind statistics, reports and the AI assistant.
-// It is an interface so the ViewModels can be unit tested with an in-memory fake.
+// Source of the raw attendance data behind statistics, reports and the AI assistant; all of it is
+// read-only except setAbsencePenalty. It is an interface so the ViewModels can be unit tested
+// with an in-memory fake.
 interface AttendanceDataSource {
     suspend fun getClassAttendance(classId: String): ClassAttendanceData?
     suspend fun getAttendanceForTeacher(teacherId: String): List<ClassAttendanceData>
     suspend fun getAttendanceForStudent(studentId: String): List<ClassAttendanceData>
     suspend fun getAllAttendance(): List<ClassAttendanceData>
+
+    // The classes alone, without their students and attendance: all a timetable needs
+    suspend fun getClassesForTeacher(teacherId: String): List<CourseClass>
+    suspend fun getClassesForStudent(studentId: String): List<CourseClass>
+
+    // The one thing written here: how many points of the attendance score an absence costs in
+    // this class. It belongs with the data it changes the reading of.
+    suspend fun setAbsencePenalty(classId: String, penalty: Double)
 }
 
 // The name in the teacher's profile wins; the copy stored on the class is only a fallback
@@ -64,6 +74,44 @@ class AttendanceStatsRepository : AttendanceDataSource {
         val teacherNames = HashMap<String, String>()
         return querySnapshot.documents.map { loadAttendance(it, teacherNames) }
     }
+
+    override suspend fun getClassesForTeacher(teacherId: String): List<CourseClass> {
+        val querySnapshot = await(
+            firestore.collection("classes")
+                .whereEqualTo("teacherId", teacherId)
+                .get()
+        )
+        val teacherNames = HashMap<String, String>()
+        return querySnapshot.documents.map { toCourseClass(it, teacherNames) }
+    }
+
+    override suspend fun getClassesForStudent(studentId: String): List<CourseClass> {
+        val querySnapshot = await(
+            firestore.collection("classes")
+                .whereArrayContains("studentIds", studentId)
+                .get()
+        )
+        val teacherNames = HashMap<String, String>()
+        return querySnapshot.documents.map { toCourseClass(it, teacherNames) }
+    }
+
+    override suspend fun setAbsencePenalty(classId: String, penalty: Double) {
+        await(firestore.collection("classes").document(classId).update("absencePenalty", penalty))
+    }
+
+    private suspend fun toCourseClass(classDoc: DocumentSnapshot, teacherNames: MutableMap<String, String>) =
+        CourseClass(
+            id = classDoc.id,
+            name = classDoc.getString("name") ?: "",
+            academicYear = classDoc.getString("academicYear") ?: "",
+            teacherId = classDoc.getString("teacherId") ?: "",
+            room = classDoc.getString("room") ?: "",
+            schedule = classDoc.getString("schedule") ?: "",
+            totalStudents = (classDoc.get("studentIds") as? List<*>)?.size ?: 0,
+            teacherName = loadTeacherName(classDoc, teacherNames),
+            // A class saved before the score existed has no such field and uses the default
+            absencePenalty = classDoc.getDouble("absencePenalty") ?: AttendanceScore.DEFAULT_PENALTY
+        )
 
     // teacherNames: names already looked up during this call, so a teacher with several classes is read once
     private suspend fun loadAttendance(
@@ -121,17 +169,7 @@ class AttendanceStatsRepository : AttendanceDataSource {
             }
         }
 
-        val courseClass = CourseClass(
-            id = classDoc.id,
-            name = classDoc.getString("name") ?: "",
-            academicYear = classDoc.getString("academicYear") ?: "",
-            teacherId = classDoc.getString("teacherId") ?: "",
-            room = classDoc.getString("room") ?: "",
-            schedule = classDoc.getString("schedule") ?: "",
-            totalStudents = studentIds.size,
-            teacherName = loadTeacherName(classDoc, teacherNames)
-        )
-        return ClassAttendanceData(courseClass, students, sessions, records)
+        return ClassAttendanceData(toCourseClass(classDoc, teacherNames), students, sessions, records)
     }
 
     // The `teacherName` field of a class is a copy made when the class was saved. It is not updated

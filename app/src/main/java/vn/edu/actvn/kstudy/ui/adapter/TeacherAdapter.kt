@@ -12,7 +12,8 @@ import vn.edu.actvn.kstudy.data.model.Teacher
 class TeacherAdapter(
     private var list: List<Teacher>,
     private val onEditClick: (Teacher) -> Unit,
-    private val onDeleteClick: (Teacher) -> Unit
+    private val onDeleteClick: (Teacher) -> Unit,
+    private val onResetPasswordClick: (Teacher) -> Unit
 ) : RecyclerView.Adapter<TeacherAdapter.ViewHolder>() {
 
     fun updateList(newList: List<Teacher>) {
@@ -27,7 +28,7 @@ class TeacherAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val teacher = list[position]
-        holder.bind(teacher, onEditClick, onDeleteClick)
+        holder.bind(teacher, onEditClick, onDeleteClick, onResetPasswordClick)
     }
 
     override fun getItemCount(): Int = list.size
@@ -38,9 +39,15 @@ class TeacherAdapter(
         private val tvPhone: TextView = view.findViewById(R.id.tvTeacherPhone)
         private val btnEdit: Button = view.findViewById(R.id.btnEditTeacher)
         private val btnDelete: Button = view.findViewById(R.id.btnDeleteTeacher)
+        private val btnResetPassword: Button = view.findViewById(R.id.btnResetTeacherPassword)
         private val tvInitials: TextView = view.findViewById(R.id.tvInitials)
 
-        fun bind(teacher: Teacher, onEdit: (Teacher) -> Unit, onDelete: (Teacher) -> Unit) {
+        fun bind(
+            teacher: Teacher,
+            onEdit: (Teacher) -> Unit,
+            onDelete: (Teacher) -> Unit,
+            onResetPassword: (Teacher) -> Unit
+        ) {
             tvName.text = teacher.name
             tvSubject.text = teacher.subject
             tvPhone.text = "SĐT: ${teacher.phone.ifBlank { "N/A" }}"
@@ -60,6 +67,7 @@ class TeacherAdapter(
 
             btnEdit.setOnClickListener { onEdit(teacher) }
             btnDelete.setOnClickListener { onDelete(teacher) }
+            btnResetPassword.setOnClickListener { onResetPassword(teacher) }
         }
     }
 }

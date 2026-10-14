@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
+
+        <ImageView
+            android:id="@+id/btnBackTimetable"
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thời khóa biểu"
+                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+
+            <TextView
+                android:id="@+id/tvTimetableWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/screen_padding"
+                android:paddingTop="8dp"
+                android:paddingBottom="24dp">
+
+                <!-- The grid: a header row with the time slots, then one row per day. Filled in by
+                     TimetableFragment; the 1dp padding keeps the rows off the outline. -->
+                <LinearLayout
+                    android:id="@+id/layoutTimetableGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical"
+                    android:padding="1dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvTimetableNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Chạm vào một buổi học để xem chi tiết."
+                    android:textAppearance="@style/TextAppearance.Kstudy.Caption"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <include layout="@layout/view_list_state" />
+    </FrameLayout>
+</LinearLayout>

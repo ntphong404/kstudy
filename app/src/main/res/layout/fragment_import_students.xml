@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/Widget.Kstudy.AppBar">
+
+        <ImageView
+            android:id="@+id/btnBackImport"
+            style="@style/Widget.Kstudy.AppBar.BackButton"
+            android:contentDescription="Quay lại" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Nhập học sinh từ file"
+            android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Step 1: what the file has to look like, and the button to pick it -->
+        <ScrollView
+            android:id="@+id/layoutImportChoose"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/screen_padding"
+                android:paddingTop="8dp"
+                android:paddingBottom="24dp">
+
+                <LinearLayout
+                    style="@style/Widget.Kstudy.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chọn file danh sách học sinh"
+                        android:textAppearance="@style/TextAppearance.Kstudy.ItemTitle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Dùng file Excel (.xlsx) hoặc CSV, mỗi học sinh một dòng. Dòng tiêu đề cần có các cột Họ và tên, Mã sinh viên và Lớp; có thể thêm Ngành, Số điện thoại, Email, Ngày sinh, Giới tính, Địa chỉ."
+                        android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Mỗi học sinh được tạo một tài khoản: tên đăng nhập là mã sinh viên viết thường, mật khẩu ban đầu được tạo ngẫu nhiên và hiện ra sau khi nhập. Học sinh phải đổi mật khẩu ở lần đăng nhập đầu tiên."
+                        android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+
+                    <!-- Why the last file could not be used -->
+                    <TextView
+                        android:id="@+id/tvImportError"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:textAppearance="@style/TextAppearance.Kstudy.Body"
+                        android:textColor="?attr/colorError"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/btnChooseImportFile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Chọn file" />
+
+                    <Button
+                        android:id="@+id/btnImportTemplate"
+                        style="@style/Widget.Kstudy.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Tải file mẫu" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Step 2: every row of the file with what will happen to it -->
+        <LinearLayout
+            android:id="@+id/layoutImportPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/screen_padding"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvImportFileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Strong" />
+
+                <TextView
+                    android:id="@+id/tvImportSummary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+
+                <!-- Not saved with the view state: text restored that way would filter the list down
+                     to the one choice it shows -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilImportClass"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Xếp vào lớp học"
+                    app:helperText="Học sinh đã có tài khoản cũng được xếp vào lớp đã chọn.">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvImportClass"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:saveEnabled="false" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvImportRows"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/screen_padding" />
+
+            <View style="@style/Widget.Kstudy.Divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/screen_padding"
+                android:paddingVertical="8dp">
+
+                <Button
+                    android:id="@+id/btnImportOtherFile"
+                    style="@style/Widget.Kstudy.Button.Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Chọn file khác" />
+
+                <Button
+                    android:id="@+id/btnImportConfirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- While the file is being read and checked against the accounts in the system -->
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/pbImportReading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

@@ -181,6 +181,14 @@
             android:text="Cập nhật hồ sơ" />
 
         <Button
+            android:id="@+id/btnChangePassword"
+            style="@style/Widget.Kstudy.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Đổi mật khẩu" />
+
+        <Button
             android:id="@+id/btnLogout"
             style="@style/Widget.Kstudy.Button.Outlined"
             android:layout_width="match_parent"

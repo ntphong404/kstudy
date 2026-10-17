@@ -107,6 +107,8 @@ class AttendanceStatsRepository : AttendanceDataSource {
             teacherId = classDoc.getString("teacherId") ?: "",
             room = classDoc.getString("room") ?: "",
             schedule = classDoc.getString("schedule") ?: "",
+            startDate = classDoc.getString("startDate") ?: "",
+            endDate = classDoc.getString("endDate") ?: "",
             totalStudents = (classDoc.get("studentIds") as? List<*>)?.size ?: 0,
             teacherName = loadTeacherName(classDoc, teacherNames),
             // A class saved before the score existed has no such field and uses the default

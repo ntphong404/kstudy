@@ -15,7 +15,7 @@
 | Đăng nhập, hồ sơ cá nhân, đổi mật khẩu | ✓ | ✓ | ✓ |
 | Quản lý giáo viên, học sinh, lớp học, danh sách lớp | ✓ | | |
 | Nhập học sinh từ file Excel/CSV, đặt lại mật khẩu | ✓ | | |
-| Thời khóa biểu tuần | | ✓ | ✓ |
+| Thời khóa biểu theo ngày, tuần, tháng | | ✓ | ✓ |
 | Điểm danh bằng mã QR xoay vòng (chống điểm danh hộ) | | mở phiên | quét mã |
 | Tự tính đi muộn, sửa điểm danh thủ công | | ✓ | |
 | Đơn xin nghỉ phép | | duyệt | gửi |
@@ -38,7 +38,7 @@
 - **Tổng quan**: tổng số học sinh, giáo viên, lớp học; tỷ lệ đi học của toàn hệ thống kèm biểu đồ tròn (có mặt / muộn / vắng / có phép); danh sách các phiên điểm danh đang mở; lối vào Trợ lý AI.
 - **Quản lý giáo viên**: thêm, sửa, xóa, tìm kiếm. Mỗi giáo viên có tài khoản, họ tên, số điện thoại, chuyên môn, khoa / bộ môn, học vị (Cử nhân, Kỹ sư, Thạc sĩ, Tiến sĩ) và thông tin cá nhân.
 - **Quản lý học sinh**: thêm, sửa, xóa, tìm kiếm. Mỗi học sinh có tài khoản, họ tên, mã sinh viên, lớp, khoa / ngành, số điện thoại và thông tin cá nhân.
-- **Quản lý lớp học**: thêm, sửa, xóa, tìm kiếm theo tên hoặc năm học. Mỗi lớp có tên, năm học, phòng học, ca học (chọn trong danh sách), các ngày học trong tuần (chọn nhiều ngày) và giáo viên phụ trách. Lịch học này là căn cứ cho thời khóa biểu, lớp học sắp tới, nhắc giờ học và giờ được phép mở điểm danh.
+- **Quản lý lớp học**: thêm, sửa, xóa, tìm kiếm theo tên hoặc năm học. Mỗi lớp có tên, năm học, phòng học, ca học (chọn trong danh sách), các ngày học trong tuần (chọn nhiều ngày), ngày bắt đầu và ngày kết thúc (chọn trên lịch, có thể bỏ trống; ngày kết thúc không được trước ngày bắt đầu) và giáo viên phụ trách. Lịch học này là căn cứ cho thời khóa biểu, lớp học sắp tới, nhắc giờ học và giờ được phép mở điểm danh.
 - **Danh sách lớp**: thêm học sinh vào lớp hoặc xóa khỏi lớp.
 - **Nhập học sinh từ file Excel/CSV**: chọn file danh sách, xem trước từng dòng (hợp lệ / đã có trong hệ thống / lỗi kèm lý do), bấm một lần để tạo tài khoản cho cả danh sách và xếp luôn vào một lớp học; có nút tải file mẫu. Mỗi tài khoản có mật khẩu ban đầu ngẫu nhiên (8 ký tự, sinh bằng `SecureRandom`), hiện ra một lần sau khi nhập, kèm file Excel danh sách tài khoản để phát cho học sinh. Cả danh sách được lưu trong một lần ghi: hoặc lưu hết, hoặc không lưu gì.
 - **Đặt lại mật khẩu** cho giáo viên / học sinh quên mật khẩu (gợi ý sẵn một mật khẩu ngẫu nhiên).
@@ -48,7 +48,7 @@
 ### Giáo viên
 
 - **Tổng quan**: số lớp đang dạy, tổng số học sinh, lớp học sắp tới (tính theo lịch học và giờ hiện tại), chuông thông báo.
-- **Thời khóa biểu tuần**: lưới thứ 2 → chủ nhật theo các ca học của những lớp đang dạy; chạm vào một buổi để xem phòng, sĩ số.
+- **Thời khóa biểu** theo các ca học của những lớp đang dạy, xem theo ngày, tuần hoặc tháng (xem [Thời khóa biểu](#thời-khóa-biểu)); chạm vào một buổi để xem phòng, sĩ số.
 - **Chi tiết lớp**: sĩ số và danh sách học sinh, phiên điểm danh đang mở, lịch sử các buổi, đơn xin nghỉ phép, lối vào Thống kê & báo cáo.
 - **Mở phiên điểm danh**: chỉ mở được trong đúng khung giờ đã xếp lịch của lớp. Giáo viên chọn mốc tính đi muộn (1, 5, 10 hoặc 15 phút kể từ khi mở phiên); ứng dụng lấy vị trí điện thoại của giáo viên làm vị trí lớp học (xem [Điểm danh chống gian lận](#điểm-danh-chống-gian-lận)).
 - **Màn hình phiên điểm danh**:
@@ -71,10 +71,20 @@
 - **Tổng quan**: số lớp đang học, tỷ lệ điểm danh trung bình, lớp học sắp tới, biểu đồ chuyên cần của bản thân, chuông thông báo.
   - **Điểm chuyên cần** của từng lớp (ví dụ 9/10).
   - **Cảnh báo cấm thi**: vắng không phép quá 10% số buổi của một lớp → thẻ cảnh báo vàng, quá 20% → thẻ đỏ "Nguy cơ cấm thi".
-- **Thời khóa biểu tuần**: lưới thứ 2 → chủ nhật theo các ca học của những lớp đang học; chạm vào một buổi để xem phòng, giáo viên.
+- **Thời khóa biểu** theo các ca học của những lớp đang học, xem theo ngày, tuần hoặc tháng (xem [Thời khóa biểu](#thời-khóa-biểu)); chạm vào một buổi để xem phòng, giáo viên.
 - **Lớp học**: danh sách lớp đang học; mỗi lớp có tỷ lệ đi học, số buổi có mặt / vắng, lịch sử điểm danh từng buổi và các đơn xin nghỉ đã gửi.
 - **Điểm danh**: quét mã QR bằng camera hoặc gõ mã 6 ký tự; ứng dụng báo ngay kết quả (thành công, đi muộn, hoặc lý do bị từ chối).
 - **Xin nghỉ phép** cho một buổi học (xem [Nghỉ phép](#nghỉ-phép)).
+
+### Thời khóa biểu
+
+Giáo viên và học sinh mở từ thẻ "Lớp học sắp tới" ở Tổng quan; chọn chế độ xem ở thanh **Ngày | Tuần | Tháng**:
+
+- **Tuần**: lưới thứ 2 → chủ nhật, mỗi cột một ca học; các cột giữ nguyên khi chuyển tuần.
+- **Tháng**: lịch tháng, ngày có buổi học có chấm dưới số ngày; chạm vào một ngày để xem các buổi của ngày đó ngay bên dưới.
+- **Ngày**: các buổi học trong ngày, xếp theo giờ.
+
+Nút **‹ ›** sang ngày / tuần / tháng trước và sau, nút **Hôm nay** quay về hôm nay; đổi chế độ thì vẫn ở quanh ngày đang xem. Lớp có ngày bắt đầu / kết thúc chỉ hiện từ ngày bắt đầu đến ngày kết thúc; lớp chưa có hai ngày này (tạo trước khi có trường này) hiện ở mọi tuần như trước.
 
 ### Điểm danh chống gian lận
 
@@ -165,7 +175,7 @@ app/src/main/java/vn/edu/actvn/kstudy/
 │   ├── StudentViewModel.kt        Điểm danh, gửi đơn xin nghỉ
 │   ├── StatsViewModel.kt          Thống kê, điểm chuyên cần, nhận xét AI, xuất Excel
 │   ├── AiChatViewModel.kt         Hội thoại với trợ lý AI
-│   ├── TimetableViewModel.kt      Thời khóa biểu tuần
+│   ├── TimetableViewModel.kt      Thời khóa biểu theo ngày / tuần / tháng, chuyển kỳ trước / sau
 │   ├── ImportStudentsViewModel.kt Nhập học sinh từ file: đọc, kiểm tra, xem trước, lưu
 │   └── KstudyViewModelFactory.kt  Tạo StatsViewModel, AiChatViewModel, TimetableViewModel,
 │                                  ImportStudentsViewModel (nhận phụ thuộc qua constructor)
@@ -184,7 +194,7 @@ app/src/main/java/vn/edu/actvn/kstudy/
     ├── RotatingCode.kt             Mã điểm danh đổi mỗi 15 giây (kiểu TOTP, HMAC-SHA256)
     ├── CheckInRules.kt             Nhận / từ chối một lần điểm danh: mã, thiết bị, khoảng cách GPS, đi muộn
     ├── LeaveRequestRules.kt        Kiểm tra đơn xin nghỉ, thứ tự hiển thị, trạng thái sau khi duyệt
-    ├── ScheduleUtils.kt            Tính lớp học sắp tới / kiểm tra đúng khung giờ học / xếp thời khóa biểu tuần
+    ├── ScheduleUtils.kt            Tính lớp học sắp tới / kiểm tra đúng khung giờ học / xếp thời khóa biểu ngày, tuần, tháng
     ├── PasswordRules.kt            Quy tắc của mật khẩu mới
     ├── ProfileRules.kt             Định dạng email, danh sách giới tính / học vị
     ├── AttendanceScore.kt          Điểm chuyên cần thang 10 và mức trừ mỗi buổi vắng
@@ -204,7 +214,7 @@ app/src/main/java/vn/edu/actvn/kstudy/
 | Collection | Mô tả | Trường chính |
 |---|---|---|
 | `users` | Tài khoản (mọi vai trò) | `username`, `passwordHash`, `mustChangePassword` (mật khẩu do admin cấp, phải đổi khi đăng nhập), `fullName`, `role`, `phone`, `avatarUrl`, `email`, `dateOfBirth`, `gender`, `address` (+ `subject`, `department`, `degree` cho giáo viên; `studentCode`, `className`, `major` cho học sinh) |
-| `classes` | Lớp học | `name`, `academicYear`, `teacherId`, `teacherName`, `room`, `schedule`, `studentIds[]`, `absencePenalty` (điểm trừ mỗi buổi vắng, mặc định 1) |
+| `classes` | Lớp học | `name`, `academicYear`, `teacherId`, `teacherName`, `room`, `schedule`, `startDate`, `endDate` (ngày bắt đầu / kết thúc, `dd/MM/yyyy`, trống = không giới hạn), `studentIds[]`, `absencePenalty` (điểm trừ mỗi buổi vắng, mặc định 1) |
 | `sessions` | Phiên điểm danh của một lớp | `classId`, `date`, `isActive`, `secret` (khóa sinh mã QR xoay vòng), `openedAt` (thời điểm mở phiên), `lateAfterMinutes` (quét sau số phút này thì tính muộn), `latitude`, `longitude`, `locationAccuracy` (vị trí và sai số định vị của điện thoại giáo viên lúc mở phiên; trống = không kiểm tra vị trí), `qrCode` (mã tĩnh của các phiên cũ) |
 | `records` | Bản ghi điểm danh từng học sinh | `sessionId`, `studentId`, `studentName`, `studentCode`, `status` (`PRESENT` / `LATE` / `ABSENT` / `EXCUSED`), `timeMarked`, `deviceId` (điện thoại đã dùng để điểm danh) |
 | `leaveRequests` | Đơn xin nghỉ phép | `classId`, `studentId`, `studentName`, `studentCode`, `date` (ngày xin nghỉ, `dd/MM/yyyy`), `reason`, `status` (`PENDING` / `APPROVED` / `REJECTED`), `createdAt` |
@@ -293,7 +303,7 @@ Cả hai loại test đều dùng dữ liệu mẫu và AI giả (`app/src/share
 | `PasswordRulesTest` | Độ dài tối thiểu, khoảng trắng, trùng mật khẩu cũ, nhập lại không khớp |
 | `AttendanceScoreTest` | Trừ điểm theo số buổi vắng không phép và mức trừ của lớp, không âm, đi muộn / có phép không bị trừ, đọc mức trừ "0,5" |
 | `NotificationRulesTest` | Ai nhận thông báo khi mở / chốt phiên, đơn xin nghỉ; nội dung kèm điểm và cảnh báo; giờ nhắc lịch học; thông báo nào cần hiện lên |
-| `WeekTimetableTest`, `TimetableViewModelTest` | Xếp lớp vào đúng ngày và ca, ngày của tuần hiện tại, lớp chưa có lịch, lỗi mạng |
+| `WeekTimetableTest`, `TimetablePeriodTest`, `TimetableViewModelTest` | Xếp lớp vào đúng ngày và ca, ngày của tuần hiện tại, lớp chưa có lịch, lỗi mạng; chế độ ngày / tháng (tháng nhuận, ngày 1 rơi vào thứ mấy), lớp chỉ học từ ngày bắt đầu đến ngày kết thúc, ngày không đọc được bị bỏ qua; chuyển kỳ trước / sau, về hôm nay, chọn ngày trong tháng |
 | `CsvParserTest`, `XlsxReaderTest`, `SpreadsheetReaderTest` | Đọc CSV (dấu `,` `;` tab, ô có dấu nháy), đọc file .xlsx do Apache POI ghi (số, ngày tháng, công thức), nhận dạng bảng mã và file không hợp lệ |
 | `StudentImportTest`, `ImportStudentsViewModelTest` | Nhận diện cột, dòng thiếu thông tin / trùng mã / đã có trong hệ thống, luồng xem trước rồi lưu, xếp vào lớp |
 | `RotatingCodeTest` | Mã khớp với một bản HMAC-SHA256 tính độc lập, giữ nguyên trong 15 giây rồi đổi, chỉ dùng ký tự dễ gõ; chấp nhận mã của khung liền trước / liền sau, từ chối ảnh chụp mã cũ và mã của phiên khác |

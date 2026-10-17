@@ -12,6 +12,7 @@ import vn.edu.actvn.kstudy.data.model.Role
 import vn.edu.actvn.kstudy.testutil.FakeAttendanceDataSource
 import vn.edu.actvn.kstudy.testutil.MainDispatcherRule
 import vn.edu.actvn.kstudy.testutil.TestData
+import vn.edu.actvn.kstudy.util.TimetableMode
 import java.io.IOException
 import java.util.Calendar
 
@@ -84,6 +85,101 @@ class TimetableViewModelTest {
         advanceUntilIdle()
 
         assertTrue(ready().isEmpty)
+    }
+
+    @Test
+    fun nextAndPrevious_inTheWeek_moveByAWeek() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+
+        viewModel.next()
+        assertEquals("19/10", ready().days.first().date)
+        assertTrue(ready().days.none { it.isToday })
+
+        viewModel.previous()
+        viewModel.previous()
+        assertEquals("05/10", ready().days.first().date)
+    }
+
+    @Test
+    fun setMode_month_showsTheMonthOfTheDayTheUserWasOn() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+
+        viewModel.next()
+        viewModel.setMode(TimetableMode.MONTH)
+
+        val timetable = ready()
+        assertEquals(TimetableMode.MONTH, timetable.mode)
+        assertEquals(31, timetable.days.size)
+        assertEquals("21/10/2026", timetable.selected.fullDate)
+    }
+
+    @Test
+    fun nextInTheMonth_movesToTheNextMonth() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+
+        viewModel.setMode(TimetableMode.MONTH)
+        viewModel.next()
+
+        val timetable = ready()
+        assertEquals("Tháng 11/2026", timetable.title)
+        assertEquals(30, timetable.days.size)
+    }
+
+    @Test
+    fun selectDay_inTheMonth_picksThatDay_andKeepsTheMonth() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+        viewModel.setMode(TimetableMode.MONTH)
+
+        val monday = ready().days.first { it.dayOfMonth == 19 }
+        viewModel.selectDay(monday)
+
+        val timetable = ready()
+        assertEquals(TimetableMode.MONTH, timetable.mode)
+        assertEquals("19/10/2026", timetable.selected.fullDate)
+        assertEquals(listOf("Toán cao cấp A1"), timetable.selected.lessons.map { it.courseClass.name })
+    }
+
+    @Test
+    fun nextInTheDay_movesToTheNextDay() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+
+        viewModel.setMode(TimetableMode.DAY)
+        assertEquals("Thứ 4, 14/10/2026", ready().title)
+
+        viewModel.next()
+        assertEquals("Thứ 5, 15/10/2026", ready().title)
+        assertEquals(listOf("Anh văn B1"), ready().selected.lessons.map { it.courseClass.name })
+    }
+
+    @Test
+    fun goToToday_comesBackToTodaysPeriod() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+        viewModel.setMode(TimetableMode.MONTH)
+        viewModel.next()
+        viewModel.next()
+
+        viewModel.goToToday()
+
+        val timetable = ready()
+        assertEquals("Tháng 10/2026", timetable.title)
+        assertTrue(timetable.selected.isToday)
+    }
+
+    @Test
+    fun modeChosenBeforeTheClassesArrive_isUsedOnceTheyDo() = runTest(mainDispatcherRule.dispatcher) {
+        viewModel.setMode(TimetableMode.MONTH)
+        assertEquals(TimetableState.Loading, viewModel.state.value)
+
+        viewModel.load("s3", Role.STUDENT)
+        advanceUntilIdle()
+
+        assertEquals(TimetableMode.MONTH, ready().mode)
     }
 
     @Test

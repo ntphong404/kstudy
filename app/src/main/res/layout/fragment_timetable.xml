@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
@@ -12,23 +13,95 @@
             style="@style/Widget.Kstudy.AppBar.BackButton"
             android:contentDescription="Quay lại" />
 
-        <LinearLayout
+        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:text="Thời khóa biểu"
+            android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+
+        <!-- Back to the period that contains today; disabled while today is the day shown -->
+        <Button
+            android:id="@+id/btnTimetableToday"
+            style="@style/Widget.Kstudy.Button.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="-12dp"
+            android:text="Hôm nay"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Stays in place while the timetable under it scrolls -->
+    <LinearLayout
+        android:id="@+id/layoutTimetableControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleTimetableMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:checkedButton="@id/btnModeWeek"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <Button
+                android:id="@+id/btnModeDay"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ngày" />
+
+            <Button
+                android:id="@+id/btnModeWeek"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tuần" />
+
+            <Button
+                android:id="@+id/btnModeMonth"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tháng" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        <!-- The period shown, between the arrows to the one before and the one after it. The
+             negative margins line the arrow icons up with the content. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="-12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnTimetablePrevious"
+                style="@style/Widget.Kstudy.IconButton"
+                android:contentDescription="Trước"
+                android:src="@drawable/ic_chevron_left" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvTimetablePeriod"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Thời khóa biểu"
-                android:textAppearance="@style/TextAppearance.Kstudy.Title" />
+                android:layout_weight="1"
+                android:accessibilityLiveRegion="polite"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Kstudy.ItemTitle" />
 
-            <TextView
-                android:id="@+id/tvTimetableWeek"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Kstudy.Body.Secondary" />
+            <ImageView
+                android:id="@+id/btnTimetableNext"
+                style="@style/Widget.Kstudy.IconButton"
+                android:contentDescription="Sau"
+                android:src="@drawable/ic_chevron_right" />
         </LinearLayout>
     </LinearLayout>
 
@@ -42,33 +115,58 @@
             android:layout_height="match_parent"
             android:fillViewport="true">
 
+            <!-- Filled in by TimetableFragment for the mode chosen: the week grid, the month grid
+                 with the lessons of the picked day under it, or the lessons of a single day -->
             <LinearLayout
+                android:id="@+id/layoutTimetableContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="@dimen/screen_padding"
-                android:paddingTop="8dp"
-                android:paddingBottom="24dp">
+                android:paddingTop="4dp"
+                android:paddingBottom="24dp"
+                android:visibility="gone">
 
-                <!-- The grid: a header row with the time slots, then one row per day. Filled in by
-                     TimetableFragment; the 1dp padding keeps the rows off the outline. -->
+                <!-- A header row with the time slots, then one row per day. The 1dp padding keeps
+                     the rows off the outline. -->
                 <LinearLayout
                     android:id="@+id/layoutTimetableGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical"
-                    android:padding="1dp"
-                    android:visibility="gone" />
+                    android:padding="1dp" />
+
+                <!-- A header row with the days of the week, then one row per week of the month -->
+                <LinearLayout
+                    android:id="@+id/layoutTimetableMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical"
+                    android:padding="4dp" />
+
+                <!-- The day picked in the month, above its lessons -->
+                <TextView
+                    android:id="@+id/tvTimetableDayTitle"
+                    style="@style/Widget.Kstudy.SectionHeader"
+                    android:layout_marginTop="16dp" />
+
+                <!-- One row per time slot of the day -->
+                <LinearLayout
+                    android:id="@+id/layoutTimetableLessons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical"
+                    android:padding="1dp" />
 
                 <TextView
                     android:id="@+id/tvTimetableNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Chạm vào một buổi học để xem chi tiết."
-                    android:textAppearance="@style/TextAppearance.Kstudy.Caption"
-                    android:visibility="gone" />
+                    android:textAppearance="@style/TextAppearance.Kstudy.Caption" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

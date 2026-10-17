@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One row of the timetable grid: the day, then one cell per time slot added by TimetableFragment -->
+<!-- One row of the timetable: a label (a day of the week grid, or the time of a lesson in the list of
+     a day), then the cells added by TimetableFragment, one per time slot -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

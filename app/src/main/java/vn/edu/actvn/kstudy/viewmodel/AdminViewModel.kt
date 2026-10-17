@@ -197,13 +197,17 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addClass(name: String, academicYear: String, teacherId: String, room: String, schedule: String) {
+    // startDate, endDate: "dd/MM/yyyy", or blank for a class without such a date
+    fun addClass(
+        name: String, academicYear: String, teacherId: String, room: String, schedule: String,
+        startDate: String, endDate: String
+    ) {
         if (name.isBlank() || academicYear.isBlank() || teacherId.isBlank() || room.isBlank() || schedule.isBlank()) {
             _operationResult.value = Pair(false, "Vui lòng nhập đầy đủ thông tin!")
             return
         }
         viewModelScope.launch {
-            val ok = repository.addClass(name, academicYear, teacherId, room, schedule)
+            val ok = repository.addClass(name, academicYear, teacherId, room, schedule, startDate, endDate)
             if (ok) {
                 loadClasses()
                 loadDashboardStats()
@@ -214,13 +218,16 @@ class AdminViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateClass(classId: String, name: String, academicYear: String, teacherId: String, room: String, schedule: String) {
+    fun updateClass(
+        classId: String, name: String, academicYear: String, teacherId: String, room: String, schedule: String,
+        startDate: String, endDate: String
+    ) {
         if (name.isBlank() || academicYear.isBlank() || teacherId.isBlank() || room.isBlank() || schedule.isBlank()) {
             _operationResult.value = Pair(false, "Vui lòng nhập đầy đủ thông tin!")
             return
         }
         viewModelScope.launch {
-            val ok = repository.updateClass(classId, name, academicYear, teacherId, room, schedule)
+            val ok = repository.updateClass(classId, name, academicYear, teacherId, room, schedule, startDate, endDate)
             if (ok) {
                 loadClasses()
                 _operationResult.value = Pair(true, "Cập nhật lớp học thành công!")

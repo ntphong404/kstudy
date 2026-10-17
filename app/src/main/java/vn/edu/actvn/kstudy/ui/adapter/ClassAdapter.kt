@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.CourseClass
+import vn.edu.actvn.kstudy.util.ScheduleUtils
 
 class ClassAdapter(
     private var list: List<CourseClass>,
@@ -52,7 +53,8 @@ class ClassAdapter(
             tvName.text = courseClass.name
             tvSubject.text = "Năm học: ${courseClass.academicYear}"
             tvRoom.text = "Phòng: ${courseClass.room}"
-            tvSchedule.text = "Lịch học: ${courseClass.schedule}"
+            val dates = ScheduleUtils.datesLabel(courseClass)
+            tvSchedule.text = "Lịch học: ${courseClass.schedule}" + if (dates.isEmpty()) "" else "\nThời gian: $dates"
             tvStudentCount.text = "${courseClass.totalStudents} học sinh"
 
             btnEdit.setOnClickListener { onEdit(courseClass) }

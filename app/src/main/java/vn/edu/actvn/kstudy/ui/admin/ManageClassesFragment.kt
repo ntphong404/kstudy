@@ -1,6 +1,8 @@
 package vn.edu.actvn.kstudy.ui.admin
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,17 +15,22 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import vn.edu.actvn.kstudy.R
 import vn.edu.actvn.kstudy.data.model.CourseClass
 import vn.edu.actvn.kstudy.ui.adapter.ClassAdapter
 import vn.edu.actvn.kstudy.ui.common.FormFields
 import vn.edu.actvn.kstudy.ui.common.ListState
+import vn.edu.actvn.kstudy.util.ScheduleUtils
 import vn.edu.actvn.kstudy.viewmodel.AdminViewModel
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ManageClassesFragment : Fragment() {
@@ -126,10 +133,11 @@ class ManageClassesFragment : Fragment() {
         val tvTitle = dialogView.findViewById<TextView>(R.id.tvDialogTitle)
         tvTitle.text = "Thêm lớp học mới"
 
-        // Every field is required; an empty one is marked where it is
+        // Every field but the dates is required; an empty one is marked where it is
         val fields = FormFields.required(
             dialogView, R.id.tilClassName, R.id.tilAcademicYear, R.id.tilRoom, R.id.tilTimeSlot, R.id.tilDays
         )
+        val dates = ClassDateFields(dialogView)
 
         val etName = dialogView.findViewById<EditText>(R.id.etClassName)
         val etAcademic = dialogView.findViewById<EditText>(R.id.etAcademicYear)
@@ -201,7 +209,9 @@ class ManageClassesFragment : Fragment() {
             val timeSlot = actvTimeSlot.text.toString().trim()
             val daysStr = etDays.text.toString().trim()
 
-            if (!FormFields.requireFilled(*fields)) {
+            // Both checks run, so that every mistake is marked at once
+            val filled = FormFields.requireFilled(*fields)
+            if (!dates.validate() || !filled) {
                 return@setOnClickListener
             }
 
@@ -212,7 +222,9 @@ class ManageClassesFragment : Fragment() {
                 academicYear = academicYear,
                 teacherId = selectedTeacherId,
                 room = room,
-                schedule = schedule
+                schedule = schedule,
+                startDate = dates.startDate,
+                endDate = dates.endDate
             )
             dialog.dismiss()
         }
@@ -239,6 +251,8 @@ class ManageClassesFragment : Fragment() {
         val fields = FormFields.required(
             dialogView, R.id.tilClassName, R.id.tilAcademicYear, R.id.tilRoom, R.id.tilTimeSlot, R.id.tilDays
         )
+        val dates = ClassDateFields(dialogView)
+        dates.show(courseClass)
 
         val etName = dialogView.findViewById<EditText>(R.id.etClassName)
         val etAcademic = dialogView.findViewById<EditText>(R.id.etAcademicYear)
@@ -337,7 +351,8 @@ class ManageClassesFragment : Fragment() {
             val timeSlot = actvTimeSlot.text.toString().trim()
             val daysStr = etDays.text.toString().trim()
 
-            if (!FormFields.requireFilled(*fields)) {
+            val filled = FormFields.requireFilled(*fields)
+            if (!dates.validate() || !filled) {
                 return@setOnClickListener
             }
 
@@ -349,7 +364,9 @@ class ManageClassesFragment : Fragment() {
                 academicYear = academicYear,
                 teacherId = selectedTeacherId,
                 room = room,
-                schedule = schedule
+                schedule = schedule,
+                startDate = dates.startDate,
+                endDate = dates.endDate
             )
             dialog.dismiss()
         }
@@ -370,5 +387,62 @@ class ManageClassesFragment : Fragment() {
             }
             .setNegativeButton("Hủy", null)
             .show()
+    }
+}
+
+// The first and last day of a class in its add/edit form. Both are optional; tapping one opens a
+// date picker, whose "Xóa ngày" button empties it again.
+private class ClassDateFields(form: View) {
+
+    private val etStart = form.findViewById<EditText>(R.id.etStartDate)
+    private val etEnd = form.findViewById<EditText>(R.id.etEndDate)
+    private val tilEnd = form.findViewById<TextInputLayout>(R.id.tilEndDate)
+
+    val startDate: String get() = etStart.text.toString()
+    val endDate: String get() = etEnd.text.toString()
+
+    init {
+        setUpPicker(etStart)
+        setUpPicker(etEnd)
+        // The error is about the two dates together: changing either of them may fix it
+        etStart.doAfterTextChanged { FormFields.setError(tilEnd, null) }
+        etEnd.doAfterTextChanged { FormFields.setError(tilEnd, null) }
+    }
+
+    fun show(courseClass: CourseClass) {
+        etStart.setText(courseClass.startDate)
+        etEnd.setText(courseClass.endDate)
+    }
+
+    // Marks an end date before the start date; returns true when the dates can be saved
+    fun validate(): Boolean {
+        val valid = ScheduleUtils.isValidDateRange(startDate, endDate)
+        FormFields.setError(tilEnd, if (valid) null else ScheduleUtils.END_BEFORE_START)
+        return valid
+    }
+
+    // The picker opens on the date the field holds; an empty end date opens on the start date
+    private fun setUpPicker(field: EditText) {
+        field.setOnClickListener {
+            FormFields.hideKeyboard(field)
+            val formatter = SimpleDateFormat(ScheduleUtils.DATE_PATTERN, Locale.US)
+            val day = Calendar.getInstance()
+            val shown = field.text.toString().ifBlank { if (field === etEnd) startDate else "" }
+            try {
+                formatter.parse(shown)?.let { day.time = it }
+            } catch (e: ParseException) {
+                // Nothing to start from: the picker opens on today
+            }
+            val picker = DatePickerDialog(
+                field.context,
+                { _, year, month, dayOfMonth ->
+                    day.set(year, month, dayOfMonth)
+                    field.setText(formatter.format(day.time))
+                },
+                day.get(Calendar.YEAR), day.get(Calendar.MONTH), day.get(Calendar.DAY_OF_MONTH)
+            )
+            picker.setButton(DialogInterface.BUTTON_NEUTRAL, "Xóa ngày") { _, _ -> field.setText("") }
+            picker.show()
+        }
     }
 }

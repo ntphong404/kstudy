@@ -1,6 +1,8 @@
 package vn.edu.actvn.kstudy.util
 
 import vn.edu.actvn.kstudy.data.model.CourseClass
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
@@ -18,20 +20,44 @@ data class Lesson(
 
 data class TimetableDay(
     val name: String, // "Thứ 2" ... "Chủ Nhật"
-    val date: String, // day of the shown week, "dd/MM"
+    val weekday: Int, // column of the day in a week that starts on Monday: 0 = Thứ 2 ... 6 = Chủ Nhật
+    val year: Int,
+    val month: Int, // 1 = January
+    val dayOfMonth: Int,
     val isToday: Boolean,
     val lessons: List<Lesson>
 ) {
+    // "dd/MM"
+    val date: String get() = String.format(Locale.US, "%02d/%02d", dayOfMonth, month)
+
+    // "dd/MM/yyyy"
+    val fullDate: String get() = String.format(Locale.US, "%02d/%02d/%04d", dayOfMonth, month, year)
+
     fun lessonsAt(slot: String): List<Lesson> = lessons.filter { it.slot == slot }
 }
 
-// The week as a grid: one row per day from Monday to Sunday, one column per time slot that
-// at least one class uses, earliest first
-data class WeekTimetable(
+enum class TimetableMode { DAY, WEEK, MONTH }
+
+// The days of one period: a single day, Monday to Sunday of a week, or the first to the last day
+// of a month. `selected` is the day the period was built around: the day shown alone, or the one
+// picked in the month.
+// `slots` holds every time slot the user's classes use, earliest first, whether or not one falls in
+// this period: the week grid keeps the same columns from one week to the next.
+data class Timetable(
+    val mode: TimetableMode,
     val slots: List<String>,
-    val days: List<TimetableDay>
+    val days: List<TimetableDay>,
+    val selected: TimetableDay
 ) {
+    // None of the user's classes can be placed, in any period
     val isEmpty: Boolean get() = slots.isEmpty()
+
+    val title: String
+        get() = when (mode) {
+            TimetableMode.DAY -> "${selected.name}, ${selected.fullDate}"
+            TimetableMode.WEEK -> "Tuần ${days.first().date} – ${days.last().fullDate}"
+            TimetableMode.MONTH -> "Tháng ${selected.month}/${selected.year}"
+        }
 }
 
 // The next occurrence of a weekly lesson
@@ -105,29 +131,118 @@ object ScheduleUtils {
         return best
     }
 
-    // Lays the classes out over the week that contains `today`. A class whose schedule names no
-    // known day or time slot cannot be placed and is left out.
-    fun weekTimetable(classes: List<CourseClass>, today: Calendar = Calendar.getInstance()): WeekTimetable {
-        val slotOfClass = classes.mapNotNull { courseClass ->
-            timeSlotRange.keys.firstOrNull { courseClass.schedule.contains(it) }?.let { courseClass to it }
+    // Lays the classes out over the week that contains `today`
+    fun weekTimetable(classes: List<CourseClass>, today: Calendar = Calendar.getInstance()): Timetable =
+        timetable(classes, TimetableMode.WEEK, today, today)
+
+    // Lays the classes out over the period of `mode` that contains `day`. A class whose schedule
+    // names no known day or time slot cannot be placed and is left out; one with a start or an end
+    // date only meets from the one and up to the other.
+    fun timetable(
+        classes: List<CourseClass>,
+        mode: TimetableMode,
+        day: Calendar,
+        today: Calendar = Calendar.getInstance()
+    ): Timetable {
+        val placements = classes.mapNotNull { placement(it) }
+        val cursor = day.clone() as Calendar
+        val count = when (mode) {
+            TimetableMode.DAY -> 1
+            TimetableMode.WEEK -> {
+                cursor.add(Calendar.DAY_OF_YEAR, -weekdayOf(day))
+                7
+            }
+            TimetableMode.MONTH -> {
+                cursor.set(Calendar.DAY_OF_MONTH, 1)
+                day.getActualMaximum(Calendar.DAY_OF_MONTH)
+            }
         }
 
-        // Calendar counts from Sunday; the school week starts on Monday
-        val daysSinceMonday = (today.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY + 7) % 7
-        val day = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -daysSinceMonday) }
-
-        val days = dayNameToCalendarDay.keys.mapIndexed { index, dayName ->
-            val lessons = slotOfClass
-                .filter { (courseClass, _) -> courseClass.schedule.contains(dayName) }
-                .map { (courseClass, slot) -> Lesson(courseClass, slot) }
+        val todayKey = dateKey(today)
+        val dayKey = dateKey(day)
+        var selected: TimetableDay? = null
+        val days = List(count) {
+            val key = dateKey(cursor)
+            val weekday = weekdayOf(cursor)
+            val dayName = dayNameToCalendarDay.keys.elementAt(weekday)
+            val lessons = placements
+                .filter { it.meetsOn(dayName, key) }
+                .map { Lesson(it.courseClass, it.slot) }
                 .sortedWith(compareBy({ startMinutes(it.slot) }, { it.courseClass.name }))
-            val date = String.format(Locale.US, "%02d/%02d", day.get(Calendar.DAY_OF_MONTH), day.get(Calendar.MONTH) + 1)
-            day.add(Calendar.DAY_OF_YEAR, 1)
-            TimetableDay(dayName, date, isToday = index == daysSinceMonday, lessons = lessons)
+            val timetableDay = TimetableDay(
+                name = dayName,
+                weekday = weekday,
+                year = cursor.get(Calendar.YEAR),
+                month = cursor.get(Calendar.MONTH) + 1,
+                dayOfMonth = cursor.get(Calendar.DAY_OF_MONTH),
+                isToday = key == todayKey,
+                lessons = lessons
+            )
+            if (key == dayKey) selected = timetableDay
+            cursor.add(Calendar.DAY_OF_YEAR, 1)
+            timetableDay
         }
 
-        val slots = days.flatMap { it.lessons }.map { it.slot }.distinct().sortedBy { startMinutes(it) }
-        return WeekTimetable(slots, days)
+        val slots = placements.map { it.slot }.distinct().sortedBy { startMinutes(it) }
+        return Timetable(mode, slots, days, selected ?: days.first())
+    }
+
+    // The dates a class meets between, for its details: "01/09/2026 – 15/01/2027", "Từ 01/09/2026",
+    // "Đến 15/01/2027", or "" for a class without dates
+    fun datesLabel(courseClass: CourseClass): String {
+        val start = courseClass.startDate.trim()
+        val end = courseClass.endDate.trim()
+        return when {
+            start.isNotEmpty() && end.isNotEmpty() -> "$start – $end"
+            start.isNotEmpty() -> "Từ $start"
+            end.isNotEmpty() -> "Đến $end"
+            else -> ""
+        }
+    }
+
+    // The dates of a class can be saved unless it would end before it starts; either may be blank
+    fun isValidDateRange(startDate: String, endDate: String): Boolean {
+        val first = dateKey(startDate) ?: return true
+        val last = dateKey(endDate) ?: return true
+        return first <= last
+    }
+
+    const val DATE_PATTERN = "dd/MM/yyyy"
+    const val END_BEFORE_START = "Ngày kết thúc không được trước ngày bắt đầu"
+
+    // A class that has a place on the timetable: its time slot and the first and last day it meets,
+    // as date keys, null when it has no such date
+    private class Placement(val courseClass: CourseClass, val slot: String, val firstDay: Int?, val lastDay: Int?) {
+        fun meetsOn(dayName: String, dayKey: Int): Boolean =
+            courseClass.schedule.contains(dayName) &&
+                (firstDay == null || dayKey >= firstDay) &&
+                (lastDay == null || dayKey <= lastDay)
+    }
+
+    private fun placement(courseClass: CourseClass): Placement? {
+        val schedule = courseClass.schedule
+        val slot = timeSlotRange.keys.firstOrNull { schedule.contains(it) } ?: return null
+        if (dayNameToCalendarDay.keys.none { schedule.contains(it) }) return null
+        return Placement(courseClass, slot, dateKey(courseClass.startDate), dateKey(courseClass.endDate))
+    }
+
+    // Calendar counts from Sunday; the school week starts on Monday
+    private fun weekdayOf(day: Calendar): Int = (day.get(Calendar.DAY_OF_WEEK) - Calendar.MONDAY + 7) % 7
+
+    // A day as yyyyMMdd, so that two days compare as numbers whatever their time of day
+    private fun dateKey(day: Calendar): Int =
+        day.get(Calendar.YEAR) * 10000 + (day.get(Calendar.MONTH) + 1) * 100 + day.get(Calendar.DAY_OF_MONTH)
+
+    // null for a blank date or one that is not "dd/MM/yyyy"
+    private fun dateKey(date: String): Int? {
+        if (date.isBlank()) return null
+        val format = SimpleDateFormat(DATE_PATTERN, Locale.US).apply { isLenient = false }
+        val parsed = try {
+            format.parse(date.trim())
+        } catch (e: ParseException) {
+            null
+        } ?: return null
+        return dateKey(Calendar.getInstance().apply { time = parsed })
     }
 
     // The next time each weekly lesson starts, counted from `now`, soonest first: a class that

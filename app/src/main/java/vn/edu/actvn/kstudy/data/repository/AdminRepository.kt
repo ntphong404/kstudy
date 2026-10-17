@@ -157,6 +157,8 @@ class AdminRepository(private val context: Context) {
                     teacherId = doc.getString("teacherId") ?: "",
                     room = doc.getString("room") ?: "",
                     schedule = doc.getString("schedule") ?: "",
+                    startDate = doc.getString("startDate") ?: "",
+                    endDate = doc.getString("endDate") ?: "",
                     totalStudents = total
                 )
             )
@@ -164,7 +166,10 @@ class AdminRepository(private val context: Context) {
         return list
     }
 
-    suspend fun addClass(name: String, academicYear: String, teacherId: String, room: String, schedule: String): Boolean {
+    suspend fun addClass(
+        name: String, academicYear: String, teacherId: String, room: String, schedule: String,
+        startDate: String, endDate: String
+    ): Boolean {
         return try {
             // Get teacher name
             val teacherDoc = await(firestore.collection("users").document(teacherId).get())
@@ -176,6 +181,8 @@ class AdminRepository(private val context: Context) {
                 "teacherName" to teacherName,
                 "room" to room,
                 "schedule" to schedule,
+                "startDate" to startDate,
+                "endDate" to endDate,
                 "studentIds" to emptyList<String>()
             )
             await(firestore.collection("classes").add(data))
@@ -185,7 +192,10 @@ class AdminRepository(private val context: Context) {
         }
     }
 
-    suspend fun updateClass(classId: String, name: String, academicYear: String, teacherId: String, room: String, schedule: String): Boolean {
+    suspend fun updateClass(
+        classId: String, name: String, academicYear: String, teacherId: String, room: String, schedule: String,
+        startDate: String, endDate: String
+    ): Boolean {
         return try {
             val teacherDoc = await(firestore.collection("users").document(teacherId).get())
             val teacherName = teacherDoc.getString("fullName") ?: "Giáo viên"
@@ -197,7 +207,9 @@ class AdminRepository(private val context: Context) {
                         "teacherId" to teacherId,
                         "teacherName" to teacherName,
                         "room" to room,
-                        "schedule" to schedule
+                        "schedule" to schedule,
+                        "startDate" to startDate,
+                        "endDate" to endDate
                     )
                 )
             )
